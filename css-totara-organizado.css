@@ -1086,13 +1086,56 @@ a[href*="/message/edit.php"] {
   opacity: 0.8 !important;
 }
 
-/* --- CTA catálogo LFE --- */
+/* --- CTA catálogo LFE (rebranding): banner degradado azul→teal --- */
 .cta-catalog .content.block-content {
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/bg-cta.jpg") !important;
-  background-position: center !important;
-  background-size: cover !important;
-  color: white !important;
-  padding: 1em !important;
+  background: linear-gradient(100deg,
+    var(--light-blue) 0%, #1E7FE0 48%, var(--teal) 100%) !important;
+  border-radius: 16px !important;
+  color: #ffffff !important;
+  padding: 2em 2.5em !important;
+  box-shadow: none !important;
+}
+
+.cta-catalog .no-overflow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.cta-catalog .izq .title {
+  font-family: var(--font-title);
+  font-size: 1.7em;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.cta-catalog .izq p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.cta-catalog .btn-dcha a {
+  display: inline-block;
+  background: #ffffff;
+  color: var(--light-blue);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05em;
+  padding: 12px 26px;
+  border-radius: 8px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.cta-catalog .btn-dcha a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(8, 0, 79, 0.20);
+  color: var(--blue-hover);
+  text-decoration: none;
 }
 
 /* --- Customizaciones LFE (#inst286 - Formación LFE, .bloque-codigo) --- */
