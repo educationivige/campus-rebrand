@@ -34,63 +34,59 @@
   /* ============================================================
      PALETA OFICIAL — REBRANDING IVI INSTITUTE EDUCATION (2026)
      Fuente: guía de marca (Colores-nuevos.jpg).
-     Tokens --neo-*: se aplican sección a sección.
-     Secciones migradas: Expediente (cards, estado de cursos, certificados).
+     Se aplica sección a sección. Migrado: Expediente.
      ============================================================ */
 
   /* --- Colores de marca (nombres de la guía) --- */
-  --neo-light-blue:    #004DF0;   /* primario */
-  --neo-navy-blue:     #08004F;   /* footer */
-  --neo-white:         #FFFFFF;
-  --neo-black:         #000000;
+  --light-blue:    #004DF0;   /* primario */
+  --navy-blue:     #08004F;   /* footer */
+  --white:         #FFFFFF;
+  --black:         #000000;
 
-  --neo-teal:          #0CE3C6;   /* secundario */
-  --neo-deep-teal:     #002B34;
-  --neo-warm-gray:     #FAF4EE;
+  --teal:          #0CE3C6;   /* secundario */
+  --deep-teal:     #002B34;
+  --warm-gray:     #FAF4EE;
 
-  --neo-bright-lime:   #D5E74C;
-  --neo-lime:          #98AB06;
-  --neo-deep-lime:     #5D6900;
+  --bright-lime:   #D5E74C;
+  --lime:          #98AB06;
+  --deep-lime:     #5D6900;
 
-  --neo-bright-orange: #FC814C;
-  --neo-orange:        #E9482A;
-  --neo-deep-orange:   #7D1400;
+  --bright-orange: #FC814C;
+  --orange:        #E9482A;
+  --deep-orange:   #7D1400;
 
-  --neo-bright-red:    #EE5590;
-  --neo-red:           #B4084A;
-  --neo-deep-red:      #650027;
+  --bright-red:    #EE5590;
+  --red:           #B4084A;
+  --deep-red:      #650027;
 
-  --neo-bright-purple: #B794FF;
-  --neo-purple:        #7D43F5;
-  --neo-deep-purple:   #2C0086;
+  --bright-purple: #B794FF;
+  --purple:        #7D43F5;
+  --deep-purple:   #2C0086;
 
   /* --- Roles semánticos (referencian la paleta de marca) --- */
-  --neo-primary:       var(--neo-light-blue);   /* color primario del campus */
-  --neo-secondary:     var(--neo-teal);         /* color secundario */
-  --neo-footer:        var(--neo-navy-blue);    /* fondo del footer */
-  --neo-success:       var(--neo-teal);         /* finalizado / completado */
-  --neo-danger:        var(--neo-red);          /* error / no superada */
-  --neo-warning:       var(--neo-orange);       /* aviso */
+  --primary:       var(--light-blue);   /* color primario del campus */
+  --secondary:     var(--teal);         /* color secundario */
+  --footer:        var(--navy-blue);    /* fondo del footer */
+  --success:       var(--teal);         /* finalizado / completado */
+  --danger:        var(--red);          /* error / no superada */
+  --warning:       var(--orange);       /* aviso */
 
-  /* --- Tokens de aplicación (tintes y neutros de UI) --- */
-  --neo-navy:          var(--neo-navy-blue);    /* títulos, tab activa, botones oscuros */
-  --neo-navy-hover:    #1D146F;                 /* hover de navy */
-  --neo-blue:          var(--neo-light-blue);   /* CTAs, enlaces, badges de tipo */
-  --neo-blue-hover:    #0038C4;                 /* hover de light-blue */
-  --neo-turquoise:     var(--neo-teal);         /* progreso, estado finalizado */
-  --neo-pink:          var(--neo-bright-red);   /* obligatorio / no superada */
-  --neo-text-gray:     #8A8A9E;                 /* texto secundario */
-  --neo-bg-blue:       #DCE6FF;                 /* fondo azul claro (badges, gradientes) */
-  --neo-bg-mint:       #EAF6F3;                 /* fondo menta claro (gradientes) */
-  --neo-bg-cream:      var(--neo-warm-gray);    /* fondo crema (contenedores destacados) */
-  --neo-track-beige:   #ECE9E2;                 /* pista de barras de progreso */
-  --neo-border:        #E4E2EE;                 /* bordes suaves */
-  --neo-shadow:        0 2px 8px rgba(8, 0, 79, 0.05);
-  /* Tipografías del rebranding: IVI Glance (principal, títulos) y
-     Noto Sans (secundaria, textos). Declaradas en additional-html-head.html.
-     Si IVI Glance aún no carga, los títulos caen a Noto Sans. */
-  --neo-font-title: 'IVI Glance', 'Noto Sans', -apple-system, sans-serif;
-  --neo-font: 'Noto Sans', -apple-system, sans-serif;
+  /* --- Auxiliares de UI (tintes y neutros fuera de la guía) --- */
+  --navy-hover:    #1D146F;             /* hover de navy-blue */
+  --blue-hover:    #0038C4;             /* hover de light-blue */
+  --text-gray:     #8A8A9E;             /* texto secundario */
+  --bg-blue:       #DCE6FF;             /* fondo azul claro (badges, gradientes) */
+  --bg-mint:       #EAF6F3;             /* fondo menta claro (gradientes) */
+  --track-beige:   #ECE9E2;             /* pista de barras de progreso */
+  --border-soft:   #E4E2EE;             /* bordes suaves */
+  --shadow-soft:   0 2px 8px rgba(8, 0, 79, 0.05);
+
+  /* --- Tipografías del rebranding --- */
+  /* IVI Glance (principal, títulos) y Noto Sans (secundaria, textos).
+     Declaradas en additional-html-head.html; si IVI Glance no carga,
+     los títulos caen a Noto Sans. */
+  --font-title:    'IVI Glance', 'Noto Sans', -apple-system, sans-serif;
+  --font-body:     'Noto Sans', -apple-system, sans-serif;
 }
 
 /* --- 1.2 Tipografías --- */
@@ -5707,15 +5703,15 @@ div:has(> #region-main) > #block-region-side-post {
    EXPEDIENTE — Cursos como cards (rebranding IVI 2026)
    El modulo expediente/expediente-script.html reutiliza los estilos
    globales .dai-filters / .dai-empty-notice; las tabs se re-tematizan
-   dentro de .exp-filters. Paleta nueva: tokens --neo-* (seccion 1.1).
+   dentro de .exp-filters. Paleta nueva: variables de la guía (seccion 1.1).
    ============================================================ */
 
 /* Títulos de bloque del dashboard Expediente (dashboard-16):
    tipografía principal IVI Glance en azul marino */
 #page-totara-dashboard-16 .block .block-title h2,
 #page-totara-dashboard-16 .block .header .title h2 {
-  font-family: var(--neo-font-title);
-  color: var(--neo-navy);
+  font-family: var(--font-title);
+  color: var(--navy-blue);
   font-weight: 500;
 }
 
@@ -5746,14 +5742,14 @@ div:has(> #region-main) > #block-region-side-post {
 
 /* Tipo de curso — pastilla azul claro con texto azul de marca */
 .exp-badge--type {
-  background: var(--neo-bg-blue, #DCE6FF);
-  color: var(--neo-blue, #004DF0);
+  background: var(--bg-blue, #DCE6FF);
+  color: var(--light-blue, #004DF0);
 }
 
 /* Fecha de inscripción — texto gris sin pastilla */
 .exp-badge--enrol {
   background: transparent;
-  color: var(--neo-text-gray, #8A8A9E);
+  color: var(--text-gray, #8A8A9E);
   font-weight: 500;
   padding-left: 0;
   padding-right: 0;
@@ -5761,14 +5757,14 @@ div:has(> #region-main) > #block-region-side-post {
 
 /* Finalizado — turquesa con texto azul marino */
 .exp-badge--end {
-  background: var(--neo-turquoise, #0CE3C6);
-  color: var(--neo-navy, #08004F);
+  background: var(--teal, #0CE3C6);
+  color: var(--navy-blue, #08004F);
 }
 
 /* En curso / pendiente — gris suave */
 .exp-badge--pending {
-  background: var(--neo-track-beige, #ECE9E2);
-  color: var(--neo-text-gray, #8A8A9E);
+  background: var(--track-beige, #ECE9E2);
+  color: var(--text-gray, #8A8A9E);
 }
 
 /* Barra de progreso al pie de la card */
@@ -5783,14 +5779,14 @@ div:has(> #region-main) > #block-region-side-post {
 .exp-progress__track {
   flex: 1;
   height: 7px;
-  background: var(--neo-track-beige, #ECE9E2);
+  background: var(--track-beige, #ECE9E2);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .exp-progress__fill {
   height: 100%;
-  background: var(--neo-turquoise, #0CE3C6);
+  background: var(--teal, #0CE3C6);
   border-radius: 999px;
   transition: width 0.3s ease;
 }
@@ -5798,17 +5794,17 @@ div:has(> #region-main) > #block-region-side-post {
 .exp-progress__label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
   white-space: nowrap;
 }
 
 /* Completado: turquesa con etiqueta azul marino (igual que en curso) */
-.exp-progress--done .exp-progress__fill { background: var(--neo-turquoise, #0CE3C6); }
-.exp-progress--done .exp-progress__label { color: var(--neo-navy, #08004F); }
+.exp-progress--done .exp-progress__fill { background: var(--teal, #0CE3C6); }
+.exp-progress--done .exp-progress__label { color: var(--navy-blue, #08004F); }
 
 /* No superada: barra y texto en rosa */
-.exp-progress--failed .exp-progress__fill { background: var(--neo-pink, #E23B7B); }
-.exp-progress--failed .exp-progress__label { color: var(--neo-pink, #E23B7B); }
+.exp-progress--failed .exp-progress__fill { background: var(--bright-red, #E23B7B); }
+.exp-progress--failed .exp-progress__label { color: var(--bright-red, #E23B7B); }
 
 /* Pantallas grandes: 4 columnas.
    Acotado a #exp-grid para no afectar al grid de one-tech. */
@@ -5831,13 +5827,13 @@ div:has(> #region-main) > #block-region-side-post {
   cursor: pointer;
   text-decoration: none;
   color: inherit;
-  font-family: var(--neo-font);
-  box-shadow: var(--neo-shadow);
+  font-family: var(--font-body);
+  box-shadow: var(--shadow-soft);
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .exp-card:hover {
-  border-color: var(--neo-blue, #004DF0);
+  border-color: var(--light-blue, #004DF0);
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0, 77, 240, 0.12), 0 2px 4px rgba(8, 0, 79, 0.06);
   text-decoration: none;
@@ -5850,7 +5846,7 @@ div:has(> #region-main) > #block-region-side-post {
   position: relative;
   height: 190px;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--neo-bg-blue, #DCE6FF) 0%, var(--neo-bg-mint, #EAF6F3) 100%);
+  background: linear-gradient(135deg, var(--bg-blue, #DCE6FF) 0%, var(--bg-mint, #EAF6F3) 100%);
   flex-shrink: 0;
 }
 
@@ -5890,7 +5886,7 @@ div:has(> #region-main) > #block-region-side-post {
 
 .exp-card__title {
   display: block;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
   font-size: 17px;
   font-weight: 700;
   line-height: 1.35;
@@ -5916,45 +5912,45 @@ div:has(> #region-main) > #block-region-side-post {
 }
 
 .exp-status i { font-size: 11px; }
-.exp-status--done { background: var(--neo-turquoise, #0CE3C6); color: var(--neo-navy, #08004F); }
-.exp-status--pending { background: #ffffff; color: var(--neo-navy, #08004F); }
-.exp-status--failed { background: var(--neo-pink, #E23B7B); color: #ffffff; }
+.exp-status--done { background: var(--teal, #0CE3C6); color: var(--navy-blue, #08004F); }
+.exp-status--pending { background: #ffffff; color: var(--navy-blue, #08004F); }
+.exp-status--failed { background: var(--bright-red, #E23B7B); color: #ffffff; }
 
 /* Aviso "sin formaciones" en azul de marca */
 .dai-empty-notice--corp {
-  background: var(--neo-bg-blue, #DCE6FF);
+  background: var(--bg-blue, #DCE6FF);
   border-color: #C4D4FB;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 .dai-empty-notice--corp .dai-empty-notice__icon {
-  color: var(--neo-blue, #004DF0);
+  color: var(--light-blue, #004DF0);
 }
 
 /* Tabs del expediente re-tematizadas: pastillas blancas con borde fino
    y activa en azul marino sólido (sin gradiente). Acotado a .exp-filters
    para no afectar a las tabs one-tech. */
 .exp-filters {
-  --dai-primary:       var(--neo-navy, #08004F);
-  --dai-primary-hover: var(--neo-blue, #004DF0);
-  --dai-primary-light: var(--neo-bg-blue, #DCE6FF);
-  --dai-primary-dark:  var(--neo-navy, #08004F);
+  --dai-primary:       var(--navy-blue, #08004F);
+  --dai-primary-hover: var(--light-blue, #004DF0);
+  --dai-primary-light: var(--bg-blue, #DCE6FF);
+  --dai-primary-dark:  var(--navy-blue, #08004F);
 }
 
 .exp-filters .dai-filter-btn {
-  font-family: var(--neo-font);
+  font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
   padding: 11px 24px;
-  border: 1px solid var(--neo-border, #E4E2EE);
+  border: 1px solid var(--border-soft, #E4E2EE);
   background: #ffffff;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 .exp-filters .dai-filter-btn:hover:not(.active) {
   border: 1px solid #C4D4FB;
-  background: var(--neo-bg-blue, #DCE6FF);
-  color: var(--neo-navy, #08004F);
+  background: var(--bg-blue, #DCE6FF);
+  color: var(--navy-blue, #08004F);
 }
 
 .exp-filters .dai-filter-btn:active:not(.active) {
@@ -5963,8 +5959,8 @@ div:has(> #region-main) > #block-region-side-post {
 
 .exp-filters .dai-filter-btn.active,
 .exp-filters .dai-filter-btn.active:hover {
-  background: var(--neo-navy, #08004F);
-  border: 1px solid var(--neo-navy, #08004F);
+  background: var(--navy-blue, #08004F);
+  border: 1px solid var(--navy-blue, #08004F);
   color: #ffffff;
 }
 
@@ -5981,12 +5977,12 @@ div:has(> #region-main) > #block-region-side-post {
   display: flex;
   align-items: center;
   width: 100%;
-  background: var(--neo-bg-cream, #FAF4EE);
+  background: var(--warm-gray, #FAF4EE);
   border-radius: 14px;
   border: 1px solid rgba(8, 0, 79, 0.05);
-  box-shadow: var(--neo-shadow);
+  box-shadow: var(--shadow-soft);
   padding: 28px 32px;
-  font-family: var(--neo-font);
+  font-family: var(--font-body);
 }
 
 .status-chart__donut {
@@ -6003,7 +5999,7 @@ div:has(> #region-main) > #block-region-side-post {
   position: absolute;
   z-index: 5;
   transform: translate(-50%, -135%);
-  background: var(--neo-navy, #08004F);
+  background: var(--navy-blue, #08004F);
   color: #ffffff;
   font-size: 12px;
   font-weight: 500;
@@ -6047,12 +6043,12 @@ div:has(> #region-main) > #block-region-side-post {
   font-size: 40px;
   font-weight: 800;
   line-height: 1;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 .status-chart__total-label {
   font-size: 13px;
-  color: var(--neo-text-gray, #8A8A9E);
+  color: var(--text-gray, #8A8A9E);
   margin-top: 3px;
 }
 
@@ -6067,7 +6063,7 @@ div:has(> #region-main) > #block-region-side-post {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 .status-chart__th {
@@ -6075,7 +6071,7 @@ div:has(> #region-main) > #block-region-side-post {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--neo-text-gray, #8A8A9E);
+  color: var(--text-gray, #8A8A9E);
   text-align: left;
   padding: 0 16px 10px;
   border-bottom: 1px solid #EAE5DA;
@@ -6089,7 +6085,7 @@ div:has(> #region-main) > #block-region-side-post {
   padding: 11px 16px;
   border-bottom: 1px solid #F1ECE2;
   white-space: nowrap;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 .status-chart__cell:first-child { padding-left: 0; }
@@ -6109,12 +6105,12 @@ div:has(> #region-main) > #block-region-side-post {
 .status-chart__cell--num {
   text-align: right;
   font-weight: 700;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 .status-chart__cell--pct {
   text-align: right;
-  color: var(--neo-text-gray, #8A8A9E);
+  color: var(--text-gray, #8A8A9E);
 }
 
 .status-chart__row:last-child .status-chart__cell { border-bottom: none; }
@@ -6123,7 +6119,7 @@ div:has(> #region-main) > #block-region-side-post {
   border-top: 1.5px solid #E3DCCE;
   border-bottom: none;
   font-weight: 700;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
 }
 
 /* En pantallas estrechas el donut y la tabla se apilan */
@@ -6144,12 +6140,12 @@ div:has(> #region-main) > #block-region-side-post {
    ============================================================ */
 /* Contenedor del bloque en crema */
 .block_mycertificates .content.block-content {
-  background: var(--neo-bg-cream, #FAF4EE);
+  background: var(--warm-gray, #FAF4EE);
   border: 1px solid rgba(8, 0, 79, 0.05);
   border-radius: 14px;
-  box-shadow: var(--neo-shadow);
+  box-shadow: var(--shadow-soft);
   padding: 28px 32px;
-  font-family: var(--neo-font);
+  font-family: var(--font-body);
 }
 
 .block_mycertificates .certificateitem {
@@ -6174,7 +6170,7 @@ div:has(> #region-main) > #block-region-side-post {
 .block_mycertificates .coursename {
   font-size: 13px;
   font-weight: 600;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
   line-height: 1.3;
   margin-top: 8px;
 }
@@ -6200,7 +6196,7 @@ div:has(> #region-main) > #block-region-side-post {
   border-radius: 999px;
   text-decoration: none;
   cursor: pointer;
-  font-family: var(--neo-font);
+  font-family: var(--font-body);
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -6208,12 +6204,12 @@ div:has(> #region-main) > #block-region-side-post {
 
 /* "Ver": pastilla azul marino */
 .cert-btn--view {
-  background: var(--neo-navy, #08004F);
+  background: var(--navy-blue, #08004F);
   color: #ffffff;
 }
 
 .cert-btn--view:hover {
-  background: var(--neo-navy-hover, #1D146F);
+  background: var(--navy-hover, #1D146F);
   color: #ffffff;
   text-decoration: none;
 }
@@ -6221,14 +6217,14 @@ div:has(> #region-main) > #block-region-side-post {
 /* "Descargar": pastilla blanca con borde fino */
 .cert-btn--download {
   background: #ffffff;
-  color: var(--neo-navy, #08004F);
-  border: 1px solid var(--neo-border, #E4E2EE);
+  color: var(--navy-blue, #08004F);
+  border: 1px solid var(--border-soft, #E4E2EE);
 }
 
 .cert-btn--download:hover {
-  background: var(--neo-bg-blue, #DCE6FF);
+  background: var(--bg-blue, #DCE6FF);
   border-color: #C4D4FB;
-  color: var(--neo-navy, #08004F);
+  color: var(--navy-blue, #08004F);
   text-decoration: none;
 }
 
@@ -6238,9 +6234,9 @@ div:has(> #region-main) > #block-region-side-post {
   padding: 11px 24px;
   border: none;
   border-radius: 8px;
-  background: var(--neo-blue, #004DF0);
+  background: var(--light-blue, #004DF0);
   color: #ffffff;
-  font-family: var(--neo-font);
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.2px;
@@ -6249,7 +6245,7 @@ div:has(> #region-main) > #block-region-side-post {
 }
 
 .block_mycertificates .seeall:hover {
-  background: var(--neo-blue-hover, #0038C4);
+  background: var(--blue-hover, #0038C4);
   color: #ffffff;
   text-decoration: none;
 }
