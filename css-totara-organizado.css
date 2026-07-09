@@ -9,18 +9,25 @@
 
 /* --- 1.1 Variables CSS --- */
 :root {
-  --color-primary: #006975;
-  --color-primary-light: #00B7BD;
-  --color-accent: #F18D7E;
-  --color-secondary: #3b8695;
-  --color-secondary-dark: #2c6773;
-  --color-secondary-quiz: #006d7c;
-  --color-gray-light: #f9f9f9;
-  --color-gray-border: #dddddd;
-  --color-background: #EFF5F6;
-  --color-white: #ffffff;
-  --color-text-gray: #666666;
-  --color-text-light: #999999;
+  /* --- Paleta antigua (teal) REAPUNTADA a la marca nueva ---
+     Se conservan los nombres --color-* para no romper los ~116 usos
+     repartidos por las secciones aún no rediseñadas; solo cambia su
+     valor, que ahora referencia la paleta de la guía (definida abajo).
+     Mapeo antiguo→nuevo documentado en MAPEO-COLORES.md.
+     Las custom properties se resuelven al usarse, así que referenciar
+     tokens declarados más abajo en este mismo :root es válido. */
+  --color-primary:        var(--light-blue);     /* antes #006975 (teal) */
+  --color-primary-light:  var(--teal);           /* antes #00B7BD (cian) */
+  --color-accent:         var(--bright-orange);  /* antes #F18D7E (coral) */
+  --color-secondary:      var(--teal);           /* antes #3b8695 (teal grisáceo) */
+  --color-secondary-dark: var(--navy-blue);      /* antes #2c6773 (teal oscuro) */
+  --color-secondary-quiz: var(--light-blue);     /* antes #006d7c (teal quiz) */
+  --color-gray-light:     var(--warm-gray);      /* antes #f9f9f9 */
+  --color-gray-border:    var(--border-soft);    /* antes #dddddd */
+  --color-background:     var(--bg-mint);        /* antes #EFF5F6 */
+  --color-white:          var(--white);          /* antes #ffffff (idéntico) */
+  --color-text-gray:      var(--text-gray);      /* antes #666666 — REVISAR contraste */
+  --color-text-light:     var(--text-gray);      /* antes #999999 */
   --border-radius: 12px;
   --border-radius-small: 4px;
   --border-radius-medium: 10px;
@@ -33,7 +40,7 @@
 
   /* ============================================================
      PALETA OFICIAL — REBRANDING IVI INSTITUTE EDUCATION (2026)
-     Fuente: guía de marca (Colores-nuevos.jpg).
+     Fuente: guía de marca 
      Se aplica sección a sección. Migrado: Expediente.
      ============================================================ */
 
