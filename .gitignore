@@ -4,3 +4,11 @@
 # Editores
 .vscode/
 .idea/
+
+# Material de trabajo / referencia (no se versiona)
+Pages-structure/
+Secciones PNG/
+Code/Expediente/
+
+# Scripts del Expediente (se gestionan en Totara, no en el repo)
+expediente/
