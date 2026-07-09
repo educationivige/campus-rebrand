@@ -234,26 +234,45 @@ a[href*="/message/edit.php"] {
   font-weight: 500;
 }
 
-/* --- 1.9 Iconos navegación (FA Regular) --- */
-.flex-icon.tfont-var-gear::before {
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 900 !important;
-  content: "\f013" !important; /* fa-gear */
-  color: var(--color-icons);
-  margin-right: 8px;
-  font-size: 19px;
-}
-
-.flex-icon.email.actua-icon::before {
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 500 !important;
-  content: "\f0e0" !important; /* fa-envelope */
-}
-
+/* --- 1.9 Iconos navegación del topbar (SVG de marca) ---
+   Ajustes, mensajes y notificaciones. Los SVG están subidos a la
+   plataforma (local_uploadfiles/additionalimages); se aplican como
+   máscara para poder colorearlos con la marca (--navy-blue) y en hover,
+   sustituyendo los glifos de la fuente de iconos de Totara. */
+.flex-icon.tfont-var-gear::before,
+.flex-icon.email.actua-icon::before,
 .flex-icon.notification-non-filled.actua-icon::before {
-  font-family: "Font Awesome 6 Free" !important;
-  font-weight: 500 !important;
-  content: "\f0f3" !important; /* fa-bell */
+  content: "" !important;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  background-color: var(--navy-blue);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+/* Ajustes (engranaje) — conserva la separación a la derecha del original */
+.flex-icon.tfont-var-gear::before {
+  margin-right: 8px;
+  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
+  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
+}
+
+/* Mensajes (sobre) */
+.flex-icon.email.actua-icon::before {
+  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
+  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
+}
+
+/* Notificaciones (campana) */
+.flex-icon.notification-non-filled.actua-icon::before {
+  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
+  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
 }
 
 /* --- 1.11 Breadcrumbs --- */
@@ -583,15 +602,7 @@ a[href*="/message/edit.php"] {
 
 
 .block_slickslider .conttext .text {
-  color: #fff;
-}
-
-.block_slickslider .elslide .conttext .titol {
-  font-weight: bold !important;
-}
-
-.block_slickslider.hero-principal .elslide .conttext .titol {
-  max-width: 420px;
+  color: #ffffffdc;
 }
 
 
@@ -721,7 +732,7 @@ a[href*="/message/edit.php"] {
 /* --- Bloques one-tech-launch --- */
 #inst9929.one-tech-launch .content.block-content,
 #inst10654.one-tech-launch .content.block-content{
-    background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/BG-One-Tech-Training-2.png');
+    background-image: url('https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
