@@ -31,22 +31,61 @@
   --spacing-large: 20px;
   --spacing-xl: 30px;
 
-  /* --- Paleta rebranding IVI Institute Education (2026) ---
-     Tokens --neo-*: se van aplicando sección a sección.
-     Secciones migradas: Expediente (cards, estado de cursos, certificados). */
-  --neo-navy: #08004F;          /* azul marino: títulos, tab activa, botones oscuros */
-  --neo-navy-hover: #1D146F;
-  --neo-blue: #004DF0;          /* azul brillante: CTAs, enlaces, badges de tipo */
-  --neo-blue-hover: #0038C4;
-  --neo-turquoise: #0CE3C6;     /* turquesa: progreso, estado finalizado */
-  --neo-pink: #E23B7B;          /* rosa: obligatorio / no superada */
-  --neo-text-gray: #8A8A9E;     /* texto secundario */
-  --neo-bg-blue: #DCE6FF;       /* fondo azul claro (badges, gradientes) */
-  --neo-bg-mint: #EAF6F3;       /* fondo menta claro (gradientes) */
-  --neo-bg-cream: #FAF4EE;      /* fondo crema (contenedores destacados) */
-  --neo-track-beige: #ECE9E2;   /* pista de barras de progreso */
-  --neo-border: #E4E2EE;        /* bordes suaves */
-  --neo-shadow: 0 2px 8px rgba(8, 0, 79, 0.05);
+  /* ============================================================
+     PALETA OFICIAL — REBRANDING IVI INSTITUTE EDUCATION (2026)
+     Fuente: guía de marca (Colores-nuevos.jpg).
+     Tokens --neo-*: se aplican sección a sección.
+     Secciones migradas: Expediente (cards, estado de cursos, certificados).
+     ============================================================ */
+
+  /* --- Colores de marca (nombres de la guía) --- */
+  --neo-light-blue:    #004DF0;   /* primario */
+  --neo-navy-blue:     #08004F;   /* footer */
+  --neo-white:         #FFFFFF;
+  --neo-black:         #000000;
+
+  --neo-teal:          #0CE3C6;   /* secundario */
+  --neo-deep-teal:     #002B34;
+  --neo-warm-gray:     #FAF4EE;
+
+  --neo-bright-lime:   #D5E74C;
+  --neo-lime:          #98AB06;
+  --neo-deep-lime:     #5D6900;
+
+  --neo-bright-orange: #FC814C;
+  --neo-orange:        #E9482A;
+  --neo-deep-orange:   #7D1400;
+
+  --neo-bright-red:    #EE5590;
+  --neo-red:           #B4084A;
+  --neo-deep-red:      #650027;
+
+  --neo-bright-purple: #B794FF;
+  --neo-purple:        #7D43F5;
+  --neo-deep-purple:   #2C0086;
+
+  /* --- Roles semánticos (referencian la paleta de marca) --- */
+  --neo-primary:       var(--neo-light-blue);   /* color primario del campus */
+  --neo-secondary:     var(--neo-teal);         /* color secundario */
+  --neo-footer:        var(--neo-navy-blue);    /* fondo del footer */
+  --neo-success:       var(--neo-teal);         /* finalizado / completado */
+  --neo-danger:        var(--neo-red);          /* error / no superada */
+  --neo-warning:       var(--neo-orange);       /* aviso */
+
+  /* --- Tokens de aplicación (tintes y neutros de UI) --- */
+  --neo-navy:          var(--neo-navy-blue);    /* títulos, tab activa, botones oscuros */
+  --neo-navy-hover:    #1D146F;                 /* hover de navy */
+  --neo-blue:          var(--neo-light-blue);   /* CTAs, enlaces, badges de tipo */
+  --neo-blue-hover:    #0038C4;                 /* hover de light-blue */
+  --neo-turquoise:     var(--neo-teal);         /* progreso, estado finalizado */
+  --neo-pink:          var(--neo-bright-red);   /* obligatorio / no superada */
+  --neo-text-gray:     #8A8A9E;                 /* texto secundario */
+  --neo-bg-blue:       #DCE6FF;                 /* fondo azul claro (badges, gradientes) */
+  --neo-bg-mint:       #EAF6F3;                 /* fondo menta claro (gradientes) */
+  --neo-bg-cream:      var(--neo-warm-gray);    /* fondo crema (contenedores destacados) */
+  --neo-track-beige:   #ECE9E2;                 /* pista de barras de progreso */
+  --neo-border:        #E4E2EE;                 /* bordes suaves */
+  --neo-shadow:        0 2px 8px rgba(8, 0, 79, 0.05);
   /* Tipografías del rebranding: IVI Glance (principal, títulos) y
      Noto Sans (secundaria, textos). Declaradas en additional-html-head.html.
      Si IVI Glance aún no carga, los títulos caen a Noto Sans. */
