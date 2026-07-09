@@ -13,13 +13,12 @@
 
 <!-- ============================================================
    FUENTES PERSONALIZADAS
-   VAGRoundedStd: servida desde el tema Actua (mismo dominio).
    Neue Montreal y Canela son externas y se declaran aquí.
 
    REBRANDING IVI 2026 (variables --font-title / --font-body):
-   - IVI Glance  → tipografía principal (títulos). Subida a la plataforma;
-     PENDIENTE confirmar el nombre exacto del archivo en webfont.php
-     (mientras tanto los títulos caen a Noto Sans).
+   - IVI Glance  → tipografía principal (títulos). SUSTITUYE a VAG Rounded.
+     Subida a la plataforma; PENDIENTE confirmar el nombre exacto del
+     archivo en webfont.php (mientras tanto los títulos caen a Noto Sans).
    - Noto Sans   → tipografía secundaria (textos). De momento desde Google
      Fonts; cambiar a la copia de la plataforma cuando se conozca su URL.
    ============================================================ -->
@@ -41,20 +40,11 @@
 }
 </style>
 
-<!-- Preload: el navegador descarga la fuente antes de procesar el CSS -->
-<link rel="preload" href="https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff" as="font" type="font/woff" crossorigin>
+<!-- Preload de la fuente principal (IVI Glance): añadir aquí cuando se
+     confirme el nombre real del archivo en webfont.php. Ejemplo:
+     <link rel="preload" href="https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff2" as="font" type="font/woff2" crossorigin> -->
 
 <style id="imr-campus-fonts">
-
-@font-face {
-    font-family: 'VAGRoundedStd';
-    src: url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff2') format('woff2'),
-         url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
 
 @font-face {
     font-family: 'Neue Montreal';

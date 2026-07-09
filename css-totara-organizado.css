@@ -97,7 +97,7 @@
 }
 
 /* --- 1.2 Tipografías --- */
-/* VAGRoundedStd se carga en additional-html-head.html (URL depende del entorno) */
+/* IVI Glance (títulos) se carga en additional-html-head.html; Noto Sans es el fallback */
 
 /* --- 1.3 Utilidades generales --- */
 .oculto {
@@ -127,7 +127,7 @@ html body .block_slickslider .elslide .conttext .titol,
 html body .block_slickslider[class] .elslide[class] .conttext[class] .titol[class],
 html body .path-totara-program .descprograma h2,
 html body .ascoursetitle {
-  font-family: "VAGRoundedStd" !important;
+  font-family: "IVI Glance", "Noto Sans" !important;
 }
 
 .block_slickslider .slick-prev:before,
@@ -485,7 +485,7 @@ a[href*="/message/edit.php"] {
 #page-login-index .signuppanel .login-top h3 {
   text-align: center !important;
   color: var(--color-primary) !important;
-  font-family: "VAGRoundedStd" !important;
+  font-family: "IVI Glance", "Noto Sans" !important;
   font-weight: Bold;
   font-size: 2.2em !important;
 }
@@ -668,7 +668,7 @@ a[href*="/message/edit.php"] {
 }
 
 .cta_lfe .no-overflow .izq h3 {
-  font-family: "VAGRoundedStd" !important;
+  font-family: "IVI Glance", "Noto Sans" !important;
   font-size: 26px !important;
   color: white !important;
 }
@@ -820,7 +820,7 @@ a[href*="/message/edit.php"] {
 .block_slickslider.lfe_hero h4.lfe-banner-tipo {
   color: white !important;
   text-align: center !important;
-  font-family: "VAGRoundedStd" !important;
+  font-family: "IVI Glance", "Noto Sans" !important;
   font-size: 2em !important;
 }
 
@@ -907,7 +907,7 @@ a[href*="/message/edit.php"] {
 }
 
 .preslfe .content.block-content .no-overflow .preslfe-izq h3 {
-  font-family: "VAGRoundedStd" !important;
+  font-family: "IVI Glance", "Noto Sans" !important;
   color: var(--color-primary) !important;
   font-weight: 400 !important;
 }
@@ -962,7 +962,7 @@ a[href*="/message/edit.php"] {
 .title_lfe .title.block-title h2,
 #inst789 .title.block-title h2,
 #inst216 .title.block-title h2 {
-  font-family: "VAGRoundedStd" !important;
+  font-family: "IVI Glance", "Noto Sans" !important;
   font-weight: bold;
   font-size: 26px !important;
 }
@@ -4151,7 +4151,7 @@ div#region-main #inst10405.block .content {
 
 #instance-11277-header,
 #inst11277 .block-title h2 {
-  font-family: 'VAG Rounded Std', 'VAG Rounded', sans-serif;
+  font-family: 'IVI Glance', 'Noto Sans', sans-serif;
   font-size: 30px !important;
   font-weight: 700 !important;
   color: #17417B !important;
@@ -4556,7 +4556,7 @@ div#region-main #inst10405.block .content {
 
 .ivirma-cyber-modal__body h3 {
   font-size: 18px;
-  font-family: 'VAG Rounded Std', 'VAG Rounded', sans-serif;
+  font-family: 'IVI Glance', 'Noto Sans', sans-serif;
   font-weight: 600;
   text-transform: none;
   letter-spacing: normal;
@@ -4865,7 +4865,7 @@ body.ivirma-cyber-modal-open { overflow: hidden; }
 #instance-11341-header,
 #inst11275 .block-title h2,
 #inst11341 .block-title h2 {
-  font-family: 'VAG Rounded Std', 'VAG Rounded', sans-serif;
+  font-family: 'IVI Glance', 'Noto Sans', sans-serif;
   font-size: 30px !important;
   font-weight: 700 !important;
   color: #17417B !important;
