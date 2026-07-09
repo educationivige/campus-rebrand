@@ -950,8 +950,7 @@ a[href*="/message/edit.php"] {
 }
 
 /* --- Presentación LFE --- */
-.preslfe .content.block-content,
-.info-puntos .content.block-content {
+.preslfe .content.block-content {
   background-color: var(--color-background) !important;
   border-radius: var(--border-radius) !important;
   box-shadow: none !important;
@@ -1005,23 +1004,37 @@ a[href*="/message/edit.php"] {
   margin-bottom: var(--spacing-small) !important;
 }
 
-/* INFO SOBRE PUNTOS LFE */
+/* INFO SOBRE PUNTOS LFE — aviso azul claro de marca (con icono i) */
+.info-puntos .content.block-content {
+  background: var(--bg-blue) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  padding: 1.15em 1.5em !important;
+}
+
 .info-puntos .content.block-content .no-overflow {
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .info-puntos .content.block-content .no-overflow .izq {
-  width: 10%;
+  flex: 0 0 auto;
+  width: auto;
+  padding-top: 2px;
 }
 
 .info-puntos .content.block-content .no-overflow .dcha {
-  width: 90%;
-  padding-right: 2em !important;
+  flex: 1;
+  width: auto;
+  padding-right: 0 !important;
+  color: var(--navy-blue);
+  line-height: 1.5;
 }
 
 .info-puntos .content.block-content .no-overflow .dcha b {
-  color: var(--color-primary) !important;
+  color: var(--navy-blue) !important;
 }
 
 /* --- Títulos y bloques --- */
