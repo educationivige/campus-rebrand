@@ -237,11 +237,15 @@ a[href*="/message/edit.php"] {
 /* --- 1.9 Iconos navegación del topbar (SVG de marca) ---
    Ajustes, mensajes y notificaciones. Los SVG están subidos a la
    plataforma (local_uploadfiles/additionalimages); se aplican como
-   máscara para poder colorearlos con la marca (--navy-blue) y en hover,
-   sustituyendo los glifos de la fuente de iconos de Totara. */
-.flex-icon.tfont-var-gear::before,
-.flex-icon.email.actua-icon::before,
-.flex-icon.notification-non-filled.actua-icon::before {
+   máscara para poder colorearlos con la marca (--navy-blue).
+   IMPORTANTE: se acotan al BOTÓN de cada sección del topbar
+   (.totara_core__QuickAccess_icon y los .popover-region-toggle), NO a la
+   clase de icono en general. Así el engranaje del sidebar y los de
+   "Preferencias" dentro de los paneles desplegables conservan el icono
+   predefinido de la plataforma. */
+.totara_core__QuickAccess_icon .flex-icon.tfont-var-gear::before,
+.popover-region-messages .popover-region-toggle .flex-icon.email.actua-icon::before,
+.popover-region-notifications .popover-region-toggle .flex-icon.notification-non-filled.actua-icon::before {
   content: "" !important;
   display: inline-block;
   width: 20px;
@@ -256,21 +260,22 @@ a[href*="/message/edit.php"] {
   mask-size: contain;
 }
 
-/* Ajustes (engranaje) — conserva la separación a la derecha del original */
-.flex-icon.tfont-var-gear::before {
+/* Ajustes (engranaje del menú de acceso rápido) — conserva la separación
+   a la derecha del original */
+.totara_core__QuickAccess_icon .flex-icon.tfont-var-gear::before {
   margin-right: 8px;
   -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
   mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
 }
 
-/* Mensajes (sobre) */
-.flex-icon.email.actua-icon::before {
+/* Mensajes (sobre del botón del topbar) */
+.popover-region-messages .popover-region-toggle .flex-icon.email.actua-icon::before {
   -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
   mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
 }
 
-/* Notificaciones (campana) */
-.flex-icon.notification-non-filled.actua-icon::before {
+/* Notificaciones (campana del botón del topbar) */
+.popover-region-notifications .popover-region-toggle .flex-icon.notification-non-filled.actua-icon::before {
   -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
   mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
 }
