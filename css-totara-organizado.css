@@ -5736,6 +5736,7 @@ div:has(> #region-main) > #block-region-side-post {
   font-family: var(--font-title);
   color: var(--navy-blue);
   font-weight: 500;
+  font-size: 2.4rem;
 }
 
 /* Fila de badges dentro de la card */
@@ -6047,7 +6048,7 @@ div:has(> #region-main) > #block-region-side-post {
 .status-chart__donut::after {
   content: "";
   position: absolute;
-  inset: 28px;
+  inset: 22px;
   background: #ffffff;
   border-radius: 50%;
 }
