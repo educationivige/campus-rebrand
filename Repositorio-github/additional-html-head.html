@@ -1,0 +1,92 @@
+<!-- ============================================================
+   NOTA: este archivo se pega directamente en el campo
+   "Additional HTML head" de Totara, no se carga desde GitHub.
+   ============================================================ -->
+
+<!-- ============================================================
+   CSS PERSONALIZADO CAMPUSNEO
+   ============================================================ -->
+<!-- PRE: <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/educationivige/campusneo-assets@main/css-totara-organizado.css"> -->
+<!-- PRO: <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/educationivige/campusneo-assets@v1.0/css-totara-organizado.css"> -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/educationivige/campusneo-assets@main/css-totara-organizado.css">
+
+<!-- ============================================================
+   FUENTES PERSONALIZADAS
+   VAGRoundedStd: servida desde el tema Actua (mismo dominio).
+   Neue Montreal y Canela son externas y se declaran aquí.
+
+   REBRANDING IVI 2026 (componentes --neo-*):
+   - IVI Glance  → tipografía principal (títulos). Subida a la plataforma;
+     PENDIENTE confirmar el nombre exacto del archivo en webfont.php
+     (mientras tanto los títulos caen a Noto Sans).
+   - Noto Sans   → tipografía secundaria (textos). De momento desde Google
+     Fonts; cambiar a la copia de la plataforma cuando se conozca su URL.
+   ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style id="neo-rebranding-fonts">
+/* TODO: sustituir IVIGlance-Regular por el nombre real del archivo subido
+   (localizarlo con el snippet de consola o preguntando a Actua). */
+@font-face {
+    font-family: 'IVI Glance';
+    src: url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff2') format('woff2'),
+         url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+</style>
+
+<!-- Preload: el navegador descarga la fuente antes de procesar el CSS -->
+<link rel="preload" href="https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff" as="font" type="font/woff" crossorigin>
+
+<style id="imr-campus-fonts">
+
+@font-face {
+    font-family: 'VAGRoundedStd';
+    src: url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff2') format('woff2'),
+         url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=VAGRoundedStd-Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Neue Montreal';
+    src: url('https://apps.ivieducationcloud.com/fonts/NeueMontreal-Medium.woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Canela';
+    src: url('https://apps.ivieducationcloud.com/fonts/Canela-Light.woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+</style>
+
+<!-- ============================================================
+   FONT AWESOME
+   ============================================================ -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- ============================================================
+   SCRIPTS EXTERNOS
+   ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script id="Cookiebot" src=https://consent.cookiebot.com/uc.js data-cbid="3161ce27-6979-4c00-961c-cb6c3cd0086a" type="text/javascript"></script>
+
+<!-- ============================================================
+   [TENANT IMR] imrcampus.com — imr/css-tenant-imr.css
+   Archivo dedicado con todos los estilos del tenant IMR.
+   PRE:  https://cdn.jsdelivr.net/gh/educationivige/campusneo-assets@main/imr/css-tenant-imr.css
+   PRO:  actualizar @main → @vX.X al publicar
+   ============================================================ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/educationivige/campusneo-assets@main/imr/css-tenant-imr.css">
