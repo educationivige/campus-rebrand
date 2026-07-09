@@ -851,6 +851,56 @@ a[href*="/message/edit.php"] {
   margin: auto !important;
 }
 
+/* --- Hero LFE (rebranding): overlay degradado de marca sobre la foto ---
+   El .nolink (transparente en el HTML) recibe un velo rosa→morado que
+   cubre la foto bg-lfe.jpg. Colores del prototipo Figma. */
+/* Contenedor del slide posicionado para anclar el overlay absoluto */
+.block_slickslider.lfe_hero .slick-slide,
+.block_slickslider.lfe_hero .slick-slide > .elslide {
+  position: relative !important;
+}
+
+.block_slickslider.lfe_hero .elslide .nolink {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  justify-content: center !important;
+  border-radius: 20px !important;
+  padding: 2.5em 1em !important;
+  background: linear-gradient(115deg,
+    rgba(176, 28, 103, 0.90) 0%,
+    rgba(122, 36, 148, 0.90) 50%,
+    rgba(91, 44, 158, 0.92) 100%) !important;
+}
+
+/* Badge circular del logo LFE (fondo blanco, como el mockup) */
+.block_slickslider.lfe_hero .conttext .text img {
+  width: 118px !important;
+  height: 118px !important;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(8, 0, 79, 0.20);
+  margin: 0 auto 18px !important;
+}
+
+/* Título grande y "tipo" (Ginecología) más pequeño */
+.block_slickslider.lfe_hero .conttext .text h2.lfe-banner-titulo {
+  font-size: 2.6em !important;
+  font-weight: 700 !important;
+  line-height: 1.12 !important;
+  margin: 0 !important;
+}
+
+.block_slickslider.lfe_hero h4.lfe-banner-tipo {
+  font-size: 1.35em !important;
+  font-weight: 400 !important;
+  margin-top: 6px !important;
+  opacity: 0.96;
+}
+
 /* --- Visor box --- */
 .visor-box .no-overflow {
   padding: 1em !important;
