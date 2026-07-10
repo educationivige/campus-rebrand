@@ -661,12 +661,17 @@ a[href*="/message/edit.php"] {
   padding-left: max(70px, calc((100vw - 1680px) / 2 + 15px)) !important;
   padding-right: 20px;
 }
+/* --- Banner "Learning for Excellence" (Home): degradado de marca LFE
+       (magenta→morado, igual que el hero LFE) + tarjeta crema con el curso
+       destacado. El botón usa el sistema .ivi-btn (ver HTML). --- */
 .cta_lfe .content.block-content {
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/bg-lfe-cta.jpg") !important;
-  background-position: center !important;
-  background-size: cover !important;
-  color: white !important;
-  padding: 1em !important;
+  background: linear-gradient(90deg,
+    #B01C67 0%,
+    #7A2494 55%,
+    #5B2C9E 100%) !important;
+  color: #fff !important;
+  padding: 20px 26px !important;
+  border-radius: var(--border-radius-large);
 }
 
 .cta_lfe .no-overflow {
@@ -674,54 +679,81 @@ a[href*="/message/edit.php"] {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-large);
 }
 
 .cta_lfe .no-overflow .izq {
   display: flex;
   align-items: center;
   gap: var(--spacing-medium);
-  margin-left: var(--spacing-large);
+  margin-left: var(--spacing-small);
+  flex: 0 1 auto;
+}
+
+/* Badge circular del logo LFE (fondo blanco, como el mockup) */
+.cta_lfe .no-overflow .izq img {
+  width: 92px !important;
+  height: 92px !important;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 6px;
+  flex: 0 0 auto;
 }
 
 .cta_lfe .no-overflow .izq h3 {
-  font-family: "IVI Glance", "Noto Sans" !important;
+  font-family: var(--font-title) !important;
   font-size: 26px !important;
-  color: white !important;
+  font-weight: 400 !important;
+  line-height: 1.15 !important;
+  color: #fff !important;
+  margin: 0 !important;
 }
 
+.cta_lfe .no-overflow .izq h3 b { font-weight: 700 !important; }
+
+/* Tarjeta crema con el curso destacado y el botón (≈52% del banner) */
 .cta_lfe .no-overflow .dcha {
-  background: rgba(255, 255, 255, 0.6);
-  padding: var(--spacing-medium) var(--spacing-large);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-large);
+  flex: 0 0 52%;
+  background: var(--warm-gray);
+  padding: 14px 16px 14px 24px;
   border-radius: var(--border-radius);
-  text-align: center;
-  color: var(--color-primary) !important;
-  min-width: 40%;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
+  text-align: left;
+  box-shadow: 0 4px 14px rgba(8, 0, 79, 0.12);
 }
 
 .cta_lfe .no-overflow .dcha p {
-  font-size: 18px;
   margin: 0;
-  color: var(--color-primary) !important;
+  line-height: 1.35;
 }
 
-.cta_lfe .no-overflow .dcha span a {
-  display: inline-block;
-  margin-top: var(--spacing-small);
-  padding: 12px var(--spacing-xl);
-  background: var(--color-primary);
-  color: white !important;
-  text-decoration: none;
-  border-radius: 25px;
-  font-size: 16px;
-  transition: all 0.3s ease;
+.cta_lfe .no-overflow .dcha .lfe-banner-titulo {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--navy-blue);
 }
 
-.cta_lfe .no-overflow .dcha span a:hover {
-  background: white !important;
-  color: var(--color-primary) !important;
-  transform: translateY(-2px);
+.cta_lfe .no-overflow .dcha .lfe-banner-tipo,
+.cta_lfe .no-overflow .dcha .lfe-banner-tipo b {
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--text-gray);
+}
+
+/* Responsive: apilar en móvil */
+@media (max-width: 767px) {
+  .cta_lfe .no-overflow,
+  .cta_lfe .no-overflow .dcha {
+    flex-direction: column;
+    text-align: center;
+  }
+  .cta_lfe .no-overflow .izq { margin-left: 0; }
+  .cta_lfe .no-overflow .dcha { padding: 18px; }
 }
 
 /* --- Ocultar dropdown del bloque current_learning --- */
