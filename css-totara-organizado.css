@@ -6386,3 +6386,252 @@ div:has(> #region-main) > #block-region-side-post {
   margin-top: 28px;
 }
 
+
+/* ============================================================
+   27. SISTEMA DE BOTONES — .ivi-btn (reutilizable)
+   ============================================================
+   Botón unificado para todo el campus. Consolida las variantes
+   que estaban repartidas y con estilos distintos (.btn-banner,
+   .cta-catalog .btn-dcha, .dai-filter-btn, .cert-btn, .btn-info,
+   .onetech-btn, .seeall, .carousel-btn...). Referencia la paleta
+   de marca de la sección 1.1.
+
+   USO — combinar la base con un color y, opcionalmente, tamaño/forma:
+     <a class="ivi-btn ivi-btn--primary">Aceptar</a>
+     <button class="ivi-btn ivi-btn--outline ivi-btn--sm">Filtrar</button>
+     <a class="ivi-btn ivi-btn--white ivi-btn--pill">Ver catálogo</a>   (sobre fondo de color)
+     <a class="ivi-btn ivi-btn--navy ivi-btn--block ivi-btn--elevated">…</a>
+     <button class="ivi-btn ivi-btn--primary ivi-btn--icon"><i class="fa fa-arrow-right"></i></button>
+
+   COLORES:   --primary  --secondary  --navy  --outline  --ghost
+              --white    --link       --success  --danger  --warning
+   TAMAÑOS:   --sm  (defecto)  --lg
+   FORMA:     --pill  --block  --icon  --elevated
+   ESTADOS:   :hover  :active  :focus-visible  :disabled / .is-disabled
+   ============================================================ */
+
+/* --- 27.1 Tokens del componente --- */
+:root {
+  --btn-radius:       8px;
+  --btn-radius-pill:  999px;
+  --btn-pad-y:        12px;
+  --btn-pad-x:        26px;
+  --btn-font-size:    15px;
+  --btn-font-weight:  600;
+  --btn-gap:          8px;
+  --btn-border:       2px;
+  --btn-transition:   background-color .2s ease, color .2s ease,
+                      border-color .2s ease, box-shadow .2s ease,
+                      transform .15s ease;
+  --btn-focus-ring:   0 0 0 3px rgba(0, 77, 240, .30);
+  /* Hover del teal (no existía como token; el teal de marca es muy claro) */
+  --teal-hover:       #0BCBB1;
+}
+
+/* --- 27.2 Base --- */
+.ivi-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-gap);
+  padding: var(--btn-pad-y) var(--btn-pad-x);
+  border: var(--btn-border) solid transparent;
+  border-radius: var(--btn-radius);
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  line-height: 1.2;
+  letter-spacing: .2px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: var(--btn-transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ivi-btn:hover,
+.ivi-btn:focus { text-decoration: none; }
+.ivi-btn:active { transform: translateY(1px); }
+.ivi-btn:focus-visible { outline: none; box-shadow: var(--btn-focus-ring); }
+
+.ivi-btn:disabled,
+.ivi-btn.is-disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Iconos dentro del botón (Font Awesome o SVG) */
+.ivi-btn i,
+.ivi-btn svg { font-size: 1em; flex: 0 0 auto; }
+
+/* --- 27.3 Variantes de color --- */
+
+/* Primario: azul de marca sólido */
+.ivi-btn--primary {
+  background: var(--light-blue);
+  color: #fff;
+  border-color: var(--light-blue);
+}
+.ivi-btn--primary:hover,
+.ivi-btn--primary:focus {
+  background: var(--blue-hover);
+  border-color: var(--blue-hover);
+  color: #fff;
+}
+
+/* Secundario: teal de marca (texto oscuro por contraste) */
+.ivi-btn--secondary {
+  background: var(--teal);
+  color: var(--deep-teal);
+  border-color: var(--teal);
+}
+.ivi-btn--secondary:hover,
+.ivi-btn--secondary:focus {
+  background: var(--teal-hover);
+  border-color: var(--teal-hover);
+  color: var(--deep-teal);
+}
+
+/* Navy: azul oscuro (acciones sobrias, footer, "Ver certificado") */
+.ivi-btn--navy {
+  background: var(--navy-blue);
+  color: #fff;
+  border-color: var(--navy-blue);
+}
+.ivi-btn--navy:hover,
+.ivi-btn--navy:focus {
+  background: var(--navy-hover);
+  border-color: var(--navy-hover);
+  color: #fff;
+}
+
+/* Outline: contorno azul sobre fondo transparente */
+.ivi-btn--outline {
+  background: transparent;
+  color: var(--light-blue);
+  border-color: var(--light-blue);
+}
+.ivi-btn--outline:hover,
+.ivi-btn--outline:focus {
+  background: var(--bg-blue);
+  color: var(--blue-hover);
+  border-color: var(--blue-hover);
+}
+
+/* Ghost: sutil, blanco con borde suave (acciones secundarias en cards) */
+.ivi-btn--ghost {
+  background: var(--white);
+  color: var(--navy-blue);
+  border-color: var(--border-soft);
+}
+.ivi-btn--ghost:hover,
+.ivi-btn--ghost:focus {
+  background: var(--bg-blue);
+  border-color: #C4D4FB;
+  color: var(--navy-blue);
+}
+
+/* White / inverso: para fondos de color u oscuros (heros, CTAs) */
+.ivi-btn--white {
+  background: #fff;
+  color: var(--light-blue);
+  border-color: #fff;
+}
+.ivi-btn--white:hover,
+.ivi-btn--white:focus {
+  background: rgba(255, 255, 255, .15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, .7);
+}
+
+/* Link: solo texto, sin fondo */
+.ivi-btn--link {
+  background: transparent;
+  color: var(--light-blue);
+  border-color: transparent;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.ivi-btn--link:hover,
+.ivi-btn--link:focus {
+  color: var(--blue-hover);
+  text-decoration: underline;
+}
+
+/* Semánticos */
+.ivi-btn--success {
+  background: var(--success);
+  color: var(--deep-teal);
+  border-color: var(--success);
+}
+.ivi-btn--success:hover,
+.ivi-btn--success:focus {
+  background: var(--teal-hover);
+  border-color: var(--teal-hover);
+  color: var(--deep-teal);
+}
+
+.ivi-btn--danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+.ivi-btn--danger:hover,
+.ivi-btn--danger:focus {
+  background: var(--deep-red);
+  border-color: var(--deep-red);
+  color: #fff;
+}
+
+.ivi-btn--warning {
+  background: var(--warning);
+  color: #fff;
+  border-color: var(--warning);
+}
+.ivi-btn--warning:hover,
+.ivi-btn--warning:focus {
+  background: var(--deep-orange);
+  border-color: var(--deep-orange);
+  color: #fff;
+}
+
+/* --- 27.4 Tamaños --- */
+.ivi-btn--sm {
+  padding: 8px 16px;
+  font-size: 13px;
+  gap: 6px;
+}
+.ivi-btn--lg {
+  padding: 15px 32px;
+  font-size: 17px;
+  gap: 10px;
+}
+
+/* --- 27.5 Forma y disposición --- */
+.ivi-btn--pill  { border-radius: var(--btn-radius-pill); }
+.ivi-btn--block { display: flex; width: 100%; }
+
+.ivi-btn--elevated { box-shadow: var(--shadow-soft); }
+.ivi-btn--elevated:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(8, 0, 79, .20);
+}
+
+/* Icono solo (redondo). Combinar con un color: .ivi-btn--primary, etc. */
+.ivi-btn--icon {
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  gap: 0;
+}
+.ivi-btn--icon.ivi-btn--sm { width: 36px; height: 36px; }
+.ivi-btn--icon.ivi-btn--lg { width: 52px; height: 52px; }
+
