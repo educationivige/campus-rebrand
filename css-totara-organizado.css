@@ -612,8 +612,9 @@ a[href*="/message/edit.php"] {
 
 
 
-.hero-principal .btn-banner,
-.vimeo-trigger-btn {
+/* .vimeo-trigger-btn ya NO se estiliza aquí: queda solo como gancho del
+   popup. Su aspecto lo da el sistema de botones (.ivi-btn, sección 27). */
+.hero-principal .btn-banner {
   padding: 12px 25px;
   background-color: white;
   border-radius: 25px;
@@ -624,8 +625,7 @@ a[href*="/message/edit.php"] {
   transition: background-color 0.3s ease-in, transform 0.3s ease-in;
 }
 
-.hero-principal .btn-banner:hover,
-.hero-principal .vimeo-trigger-btn:hover {
+.hero-principal .btn-banner:hover {
   color: white;
   background-color: #ffffff40 !important;
   transform: scale(1.03);
@@ -6470,6 +6470,25 @@ div:has(> #region-main) > #block-region-side-post {
 /* Iconos dentro del botón (Font Awesome o SVG) */
 .ivi-btn i,
 .ivi-btn svg { font-size: 1em; flex: 0 0 auto; }
+
+/* Material Symbols dentro del botón (iconografía del rebranding).
+   El helper de Google Fonts los pone a 24px; los reajustamos al botón. */
+.ivi-btn .material-symbols-outlined,
+.ivi-btn .material-symbols-rounded,
+.ivi-btn .material-symbols-sharp {
+  font-size: 20px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.ivi-btn--sm .material-symbols-outlined,
+.ivi-btn--sm .material-symbols-rounded,
+.ivi-btn--sm .material-symbols-sharp { font-size: 18px; }
+.ivi-btn--lg .material-symbols-outlined,
+.ivi-btn--lg .material-symbols-rounded,
+.ivi-btn--lg .material-symbols-sharp { font-size: 24px; }
+.ivi-btn--icon .material-symbols-outlined,
+.ivi-btn--icon .material-symbols-rounded,
+.ivi-btn--icon .material-symbols-sharp { font-size: 24px; }
 
 /* --- 27.3 Variantes de color --- */
 
