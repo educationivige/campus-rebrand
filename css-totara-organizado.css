@@ -6456,7 +6456,7 @@ div:has(> #region-main) > #block-region-side-post {
   --btn-pad-y:        12px;
   --btn-pad-x:        26px;
   --btn-font-size:    15px;
-  --btn-font-weight:  600;
+  --btn-font-weight:  400;  /* IVI Glance solo existe en regular; sin bold */
   --btn-gap:          8px;
   --btn-border:       2px;
   --btn-transition:   background-color .2s ease, color .2s ease,
@@ -6477,7 +6477,7 @@ div:has(> #region-main) > #block-region-side-post {
   border: var(--btn-border) solid transparent;
   border-radius: var(--btn-radius);
   background: none;
-  font-family: var(--font-body);
+  font-family: var(--font-title);  /* IVI Glance (regular), fallback Noto Sans */
   font-size: var(--btn-font-size);
   font-weight: var(--btn-font-weight);
   line-height: 1.2;
@@ -6505,6 +6505,12 @@ div:has(> #region-main) > #block-region-side-post {
   box-shadow: none;
   pointer-events: none;
 }
+
+/* El botón va siempre en IVI Glance regular: neutralizar <b>/<strong>
+   que cuele el editor (la fuente no tiene bold; el navegador lo
+   sintetizaría y quedaría empastado). */
+.ivi-btn b,
+.ivi-btn strong { font-weight: 400; }
 
 /* Iconos dentro del botón (Font Awesome o SVG) */
 .ivi-btn i,
