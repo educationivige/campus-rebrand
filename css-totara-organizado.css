@@ -3,6 +3,13 @@
    Organizado por secciones | Última revisión: 2026
    ============================================================ */
 
+/* Iconos Material Symbols (se usan con
+   <span class="material-symbols-outlined">nombre_icono</span>).
+   Se importa aquí porque el <link> del head se pega a mano en Totara;
+   este CSS es lo que desplegamos por jsDelivr. @import debe ir al
+   principio del archivo (solo puede haber comentarios antes). */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
 /* ============================================================
    1. ESTILOS GLOBALES
    ============================================================ */
