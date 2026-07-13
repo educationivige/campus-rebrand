@@ -2,23 +2,26 @@
    BLOQUE:   Mis PNTs (Home, sidebar)
    SLUG:     home--mis-pnts
    PÁGINA:   Home   instID: —
-   CLASE:    neo-pnts  (ponerla en la config del bloque; sustituye
-             al estilo .pnts-card actual)
-   CSS:      sección 28.1/28.2 de css-totara-organizado.css
+   CLASE:    NINGUNA — los estilos de la tarjeta van inline en el div.
+             ⚠️ NO poner la clase neo-pnts: pintaría además la tarjeta
+             navy del CSS (sección 28.1) detrás de la imagen.
+   CSS:      solo usa el sistema de botones (.ivi-btn, sección 27)
    JS:       el nº del contador lo rellena el bloque
              "JS: Recuento PNTs restantes" sustituyendo #re_sops#
              — comprobar tras pegar que se sigue sustituyendo
-   NOTAS:    traducciones tomadas del bloque actual; URL apuntada a
-             producción (dashboard id=32). Según el diseño, el botón
-             va sin icono (el actual llevaba fa-file-lines).
+   NOTAS:    imagen de fondo pnts-bg-sidebar.png con velo navy por
+             legibilidad (ajustar el 0.78 para ver más/menos la foto).
+             Traducciones del bloque actual; URL a PRO (dashboard 32).
    ------------------------------------------------------------
    Pegar TODO lo de debajo de esta cabecera en el bloque HTML de
    Totara (editor en modo código). La cabecera no se pega.
    ============================================================ -->
-{mlang es}<h3 class="neo-card__titulo">Mis PNTs</h3><p class="neo-pnts__contador">PNTs restantes: <b>#re_sops#</b></p>{mlang}
-{mlang en}<h3 class="neo-card__titulo">My SOPs</h3><p class="neo-pnts__contador">Remaining SOPs: <b>#re_sops#</b></p>{mlang}
-{mlang pt}<h3 class="neo-card__titulo">Meus SOPs</h3><p class="neo-pnts__contador">SOPs restantes: <b>#re_sops#</b></p>{mlang}
-{mlang it}<h3 class="neo-card__titulo">I miei SOPs</h3><p class="neo-pnts__contador">SOP rimanenti: <b>#re_sops#</b></p>{mlang}
-{mlang cs}<h3 class="neo-card__titulo">Moje SOPs</h3><p class="neo-pnts__contador">Zbývající SOPs: <b>#re_sops#</b></p>{mlang}
-{mlang sv}<h3 class="neo-card__titulo">Mina SOPs</h3><p class="neo-pnts__contador">Återstående SOPs: <b>#re_sops#</b></p>{mlang}
-<a href="https://ivirmacampus.com/totara/dashboard/index.php?id=32" class="ivi-btn ivi-btn--secondary" aria-label="Consultar PNTs Dashboard">{mlang es}Consultar{mlang}{mlang en}View{mlang}{mlang pt}Consultar{mlang}{mlang it}Visualizza{mlang}{mlang cs}Zobrazit{mlang}{mlang sv}Visa{mlang}</a>
+<div style="background-image: linear-gradient(rgba(8, 0, 79, 0.78), rgba(8, 0, 79, 0.78)), url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/pnts-bg-sidebar.png'); background-size: cover; background-position: center; border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; text-align: center;">
+    {mlang es}<h3 style="color:#fff; margin:0; font-size:24px; font-weight:400;">Mis PNTs</h3><p style="color:#fff; margin:0; font-size:15px;">PNTs restantes: <b style="color:#0CE3C6;">#re_sops#</b></p>{mlang}
+    {mlang en}<h3 style="color:#fff; margin:0; font-size:24px; font-weight:400;">My SOPs</h3><p style="color:#fff; margin:0; font-size:15px;">Remaining SOPs: <b style="color:#0CE3C6;">#re_sops#</b></p>{mlang}
+    {mlang pt}<h3 style="color:#fff; margin:0; font-size:24px; font-weight:400;">Meus SOPs</h3><p style="color:#fff; margin:0; font-size:15px;">SOPs restantes: <b style="color:#0CE3C6;">#re_sops#</b></p>{mlang}
+    {mlang it}<h3 style="color:#fff; margin:0; font-size:24px; font-weight:400;">I miei SOPs</h3><p style="color:#fff; margin:0; font-size:15px;">SOP rimanenti: <b style="color:#0CE3C6;">#re_sops#</b></p>{mlang}
+    {mlang cs}<h3 style="color:#fff; margin:0; font-size:24px; font-weight:400;">Moje SOPs</h3><p style="color:#fff; margin:0; font-size:15px;">Zbývající SOPs: <b style="color:#0CE3C6;">#re_sops#</b></p>{mlang}
+    {mlang sv}<h3 style="color:#fff; margin:0; font-size:24px; font-weight:400;">Mina SOPs</h3><p style="color:#fff; margin:0; font-size:15px;">Återstående SOPs: <b style="color:#0CE3C6;">#re_sops#</b></p>{mlang}
+    <a href="https://ivirmacampus.com/totara/dashboard/index.php?id=32" class="ivi-btn ivi-btn--secondary" aria-label="Consultar PNTs Dashboard">{mlang es}Consultar{mlang}{mlang en}View{mlang}{mlang pt}Consultar{mlang}{mlang it}Visualizza{mlang}{mlang cs}Zobrazit{mlang}{mlang sv}Visa{mlang}</a>
+</div>
