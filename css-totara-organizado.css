@@ -6529,179 +6529,140 @@ div:has(> #region-main) > #block-region-side-post {
 .ivi-btn--icon .material-symbols-rounded,
 .ivi-btn--icon .material-symbols-sharp { font-size: 24px; }
 
-/* --- 27.3 Variantes de color --- */
+/* --- 27.3 Variantes de color ---
+   Convención de hover: el hover INVIERTE el diseño (se intercambian relleno
+   y texto). El `color` lleva !important porque el tema de Totara colorea
+   todos los enlaces (<a>) con un selector de altísima especificidad que, si
+   no, pisaría el texto del botón. */
 
-/* Primario: azul de marca sólido */
+/* Primario: azul de marca sólido → hover blanco con texto azul */
 .ivi-btn--primary {
   background: var(--light-blue);
-  color: #fff;
+  color: #fff !important;
   border-color: var(--light-blue);
 }
 .ivi-btn--primary:hover,
 .ivi-btn--primary:focus {
-  background: var(--blue-hover);
-  border-color: var(--blue-hover);
-  color: #fff;
+  background: #fff;
+  color: var(--light-blue) !important;
+  border-color: var(--light-blue);
 }
 
-/* Secundario: teal de marca (texto oscuro por contraste) */
+/* Secundario: teal → hover teal oscuro con texto teal */
 .ivi-btn--secondary {
   background: var(--teal);
-  color: var(--deep-teal);
+  color: var(--deep-teal) !important;
   border-color: var(--teal);
 }
 .ivi-btn--secondary:hover,
 .ivi-btn--secondary:focus {
-  background: var(--teal-hover);
-  border-color: var(--teal-hover);
-  color: var(--deep-teal);
+  background: var(--deep-teal);
+  color: var(--teal) !important;
+  border-color: var(--deep-teal);
 }
 
-/* Navy: azul oscuro (acciones sobrias, footer, "Ver certificado") */
+/* Navy: azul oscuro → hover blanco con texto navy */
 .ivi-btn--navy {
   background: var(--navy-blue);
-  color: #fff;
+  color: #fff !important;
   border-color: var(--navy-blue);
 }
 .ivi-btn--navy:hover,
 .ivi-btn--navy:focus {
-  background: var(--navy-hover);
-  border-color: var(--navy-hover);
-  color: #fff;
+  background: #fff;
+  color: var(--navy-blue) !important;
+  border-color: var(--navy-blue);
 }
 
-/* Outline: contorno azul sobre fondo transparente */
+/* Outline: contorno azul, fondo transparente → hover relleno azul sólido */
 .ivi-btn--outline {
   background: transparent;
-  color: var(--light-blue);
+  color: var(--light-blue) !important;
   border-color: var(--light-blue);
 }
 .ivi-btn--outline:hover,
 .ivi-btn--outline:focus {
-  background: var(--bg-blue);
-  color: var(--blue-hover);
-  border-color: var(--blue-hover);
+  background: var(--light-blue);
+  color: #fff !important;
+  border-color: var(--light-blue);
 }
 
-/* Ghost: sutil, blanco con borde suave (acciones secundarias en cards) */
+/* Ghost: blanco con borde suave → hover relleno navy */
 .ivi-btn--ghost {
   background: var(--white);
-  color: var(--navy-blue);
+  color: var(--navy-blue) !important;
   border-color: var(--border-soft);
 }
 .ivi-btn--ghost:hover,
 .ivi-btn--ghost:focus {
-  background: var(--bg-blue);
-  border-color: #C4D4FB;
-  color: var(--navy-blue);
+  background: var(--navy-blue);
+  color: #fff !important;
+  border-color: var(--navy-blue);
 }
 
-/* White / inverso: para fondos de color u oscuros (heros, CTAs) */
+/* White / inverso (para fondos de color u oscuros) → hover relleno azul */
 .ivi-btn--white {
   background: #fff;
-  color: var(--light-blue);
+  color: var(--light-blue) !important;
   border-color: #fff;
 }
 .ivi-btn--white:hover,
 .ivi-btn--white:focus {
-  background: rgba(255, 255, 255, .15);
-  color: #fff;
-  border-color: rgba(255, 255, 255, .7);
+  background: var(--light-blue);
+  color: #fff !important;
+  border-color: var(--light-blue);
 }
 
-/* Link: solo texto, sin fondo */
+/* Link: solo texto (excepción: no invierte, solo subraya) */
 .ivi-btn--link {
   background: transparent;
-  color: var(--light-blue);
+  color: var(--light-blue) !important;
   border-color: transparent;
   padding-left: 6px;
   padding-right: 6px;
 }
 .ivi-btn--link:hover,
 .ivi-btn--link:focus {
-  color: var(--blue-hover);
+  color: var(--blue-hover) !important;
   text-decoration: underline;
 }
 
 /* Semánticos */
 .ivi-btn--success {
   background: var(--success);
-  color: var(--deep-teal);
+  color: var(--deep-teal) !important;
   border-color: var(--success);
 }
 .ivi-btn--success:hover,
 .ivi-btn--success:focus {
-  background: var(--teal-hover);
-  border-color: var(--teal-hover);
-  color: var(--deep-teal);
+  background: var(--deep-teal);
+  color: var(--success) !important;
+  border-color: var(--deep-teal);
 }
 
 .ivi-btn--danger {
   background: var(--danger);
-  color: #fff;
+  color: #fff !important;
   border-color: var(--danger);
 }
 .ivi-btn--danger:hover,
 .ivi-btn--danger:focus {
-  background: var(--deep-red);
-  border-color: var(--deep-red);
-  color: #fff;
+  background: #fff;
+  color: var(--danger) !important;
+  border-color: var(--danger);
 }
 
 .ivi-btn--warning {
   background: var(--warning);
-  color: #fff;
+  color: #fff !important;
   border-color: var(--warning);
 }
 .ivi-btn--warning:hover,
 .ivi-btn--warning:focus {
-  background: var(--deep-orange);
-  border-color: var(--deep-orange);
-  color: #fff;
+  background: #fff;
+  color: var(--warning) !important;
+  border-color: var(--warning);
 }
-
-/* --- 27.3b Blindaje del color de texto frente al tema de Totara ---
-   El tema colorea TODOS los enlaces con una regla de altísima especificidad
-   (a:not(.actua…):not(.tui-actionLink--prim)…:not(…){ color: var(--color-link-central-block) }).
-   Como los .ivi-btn suelen ser <a>, esa regla les pisaba el color del texto
-   (p. ej. el primario salía con texto oscuro en vez de blanco). No podemos
-   tocar esa regla (vive en el tema, no en este archivo), así que forzamos
-   aquí el color de cada variante con !important. Si cambias el color de una
-   variante arriba, cámbialo también aquí. */
-.ivi-btn--primary,
-.ivi-btn--primary:hover,
-.ivi-btn--primary:focus,
-.ivi-btn--navy,
-.ivi-btn--navy:hover,
-.ivi-btn--navy:focus,
-.ivi-btn--danger,
-.ivi-btn--danger:hover,
-.ivi-btn--danger:focus,
-.ivi-btn--warning,
-.ivi-btn--warning:hover,
-.ivi-btn--warning:focus,
-.ivi-btn--white:hover,
-.ivi-btn--white:focus { color: #fff !important; }
-
-.ivi-btn--secondary,
-.ivi-btn--secondary:hover,
-.ivi-btn--secondary:focus,
-.ivi-btn--success,
-.ivi-btn--success:hover,
-.ivi-btn--success:focus { color: var(--deep-teal) !important; }
-
-.ivi-btn--ghost,
-.ivi-btn--ghost:hover,
-.ivi-btn--ghost:focus { color: var(--navy-blue) !important; }
-
-.ivi-btn--outline,
-.ivi-btn--white,
-.ivi-btn--link { color: var(--light-blue) !important; }
-
-.ivi-btn--outline:hover,
-.ivi-btn--outline:focus,
-.ivi-btn--link:hover,
-.ivi-btn--link:focus { color: var(--blue-hover) !important; }
 
 /* --- 27.4 Tamaños --- */
 .ivi-btn--sm {
