@@ -111,7 +111,7 @@ Estructura real según la captura de edición (`2-actual/home-bloques.png`).
 | Slug | instID | Clase bloque | Estado | Notas |
 |---|---|---|---|---|
 | `home--onetech` | — | `neo-onetech` | Hecho, faltan URL+imagen | Cambiar clase `cta-onetech` → `neo-onetech` en la config |
-| `home--mis-pnts` | — | `neo-pnts` | Hecho, falta URL | Contador `#re_sops#` del bloque "JS: Recuento PNTs restantes"; revisar traducciones SOPs |
+| `home--mis-pnts` | — | `neo-pnts` | Hecho, pendiente verificar | Adaptado del bloque actual (URL id=32 a PRO, traducciones oficiales); comprobar que `#re_sops#` se sustituye |
 | `home--repositorio-documentos` | — | `neo-repositorio` | Hecho, falta URL | BLOQUE NUEVO: crearlo en el sidebar |
 | `home--finalizacion-inscritos` | — | `neo-kpi` | Hecho, falta URL | Naranja → banner teal con icono |
 | `home--cursos-que-imparto` | — | `neo-imparto` | Hecho, faltan cursos+URLs | Lista estática con item de ejemplo (Stem Cells) |

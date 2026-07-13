@@ -2,19 +2,23 @@
    BLOQUE:   Mis PNTs (Home, sidebar)
    SLUG:     home--mis-pnts
    PÁGINA:   Home   instID: —
-   CLASE:    neo-pnts  (ponerla en la config del bloque)
+   CLASE:    neo-pnts  (ponerla en la config del bloque; sustituye
+             al estilo .pnts-card actual)
    CSS:      sección 28.1/28.2 de css-totara-organizado.css
    JS:       el nº del contador lo rellena el bloque
              "JS: Recuento PNTs restantes" sustituyendo #re_sops#
-             — comprobar tras pegar que el token se sigue sustituyendo
-   TODO-LINK: confirmar la URL del botón "Consultar" (copiar la del
-             bloque actual antes de reemplazarlo)
-   TODO-TRAD: revisar traducciones de "PNTs/SOPs" (propuestas mías)
+             — comprobar tras pegar que se sigue sustituyendo
+   NOTAS:    traducciones tomadas del bloque actual; URL apuntada a
+             producción (dashboard id=32). Según el diseño, el botón
+             va sin icono (el actual llevaba fa-file-lines).
    ------------------------------------------------------------
    Pegar TODO lo de debajo de esta cabecera en el bloque HTML de
    Totara (editor en modo código). La cabecera no se pega.
    ============================================================ -->
-<h3 class="neo-card__titulo">{mlang es}Mis PNTs{mlang}{mlang en}My SOPs{mlang}{mlang it}I miei SOP{mlang}{mlang pt}Meus SOPs{mlang}{mlang cs}Moje SOP{mlang}{mlang sv}Mina SOP{mlang}</h3>
-<p class="neo-pnts__contador">{mlang es}PNTs restantes: <b>#re_sops#</b>{mlang}{mlang en}SOPs remaining: <b>#re_sops#</b>{mlang}{mlang it}SOP rimanenti: <b>#re_sops#</b>{mlang}{mlang pt}SOPs restantes: <b>#re_sops#</b>{mlang}{mlang cs}Zbývající SOP: <b>#re_sops#</b>{mlang}{mlang sv}Återstående SOP: <b>#re_sops#</b>{mlang}</p>
-<!-- TODO-LINK: sustituir # por la URL real del bloque actual -->
-<a class="ivi-btn ivi-btn--secondary" href="#">{mlang es}Consultar{mlang}{mlang en}View{mlang}{mlang it}Consulta{mlang}{mlang pt}Consultar{mlang}{mlang cs}Zobrazit{mlang}{mlang sv}Visa{mlang}</a>
+{mlang es}<h3 class="neo-card__titulo">Mis PNTs</h3><p class="neo-pnts__contador">PNTs restantes: <b>#re_sops#</b></p>{mlang}
+{mlang en}<h3 class="neo-card__titulo">My SOPs</h3><p class="neo-pnts__contador">Remaining SOPs: <b>#re_sops#</b></p>{mlang}
+{mlang pt}<h3 class="neo-card__titulo">Meus SOPs</h3><p class="neo-pnts__contador">SOPs restantes: <b>#re_sops#</b></p>{mlang}
+{mlang it}<h3 class="neo-card__titulo">I miei SOPs</h3><p class="neo-pnts__contador">SOP rimanenti: <b>#re_sops#</b></p>{mlang}
+{mlang cs}<h3 class="neo-card__titulo">Moje SOPs</h3><p class="neo-pnts__contador">Zbývající SOPs: <b>#re_sops#</b></p>{mlang}
+{mlang sv}<h3 class="neo-card__titulo">Mina SOPs</h3><p class="neo-pnts__contador">Återstående SOPs: <b>#re_sops#</b></p>{mlang}
+<a href="https://ivirmacampus.com/totara/dashboard/index.php?id=32" class="ivi-btn ivi-btn--secondary" aria-label="Consultar PNTs Dashboard">{mlang es}Consultar{mlang}{mlang en}View{mlang}{mlang pt}Consultar{mlang}{mlang it}Visualizza{mlang}{mlang cs}Zobrazit{mlang}{mlang sv}Visa{mlang}</a>
