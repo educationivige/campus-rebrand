@@ -114,7 +114,7 @@ Estructura real según la captura de edición (`2-actual/home-bloques.png`).
 | `home--mis-pnts` | — | `neo-pnts` | Hecho, pendiente verificar | Adaptado del bloque actual (URL id=32 a PRO, traducciones oficiales); comprobar que `#re_sops#` se sustituye |
 | `home--repositorio-documentos` | — | `neo-repositorio` | Hecho, falta URL | BLOQUE NUEVO: crearlo en el sidebar |
 | `home--finalizacion-inscritos` | — | `neo-kpi` | Hecho, falta URL | Naranja → banner teal con icono |
-| `home--cursos-que-imparto` | — | `neo-imparto` | Hecho, faltan cursos+URLs | Lista estática con item de ejemplo (Stem Cells) |
+| `home--cursos-que-imparto` | — | `neo-imparto` | Hecho, pendiente verificar | Enlace al informe de calificaciones (destino del bloque actual, a PRO); icono draftfile roto sustituido por Material Symbols |
 
 ### Bloques nativos de Totara (solo CSS, sin archivo en 4-codigo-nuevo)
 
