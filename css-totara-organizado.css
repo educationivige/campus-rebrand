@@ -134,6 +134,12 @@ h1, h2, h3, h4, h5, h6,
   font-family: var(--font-title) !important;
 }
 
+/* h2 a 22px (token del tema, con fallback); las reglas con más
+   especificidad e !important (títulos de cards, etc.) siguen mandando */
+h2 {
+  font-size: var(--font-size-22, 22px) !important;
+}
+
 /* Titulares de las secciones OneTech (Ciberseguridad / Data&AI) que
    no siempre son <h> y quedarían fuera de la regla de arriba */
 .cyber-standalone__title,
@@ -6436,11 +6442,11 @@ div:has(> #region-main) > #block-region-side-post {
 }
 
 .cert-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  justify-content: center;
-  margin-top: 10px;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin-top: 12px !important;
 }
 
 .cert-btn {
@@ -6486,6 +6492,72 @@ div:has(> #region-main) > #block-region-side-post {
   border-color: #C4D4FB;
   color: var(--navy-blue, #08004F);
   text-decoration: none;
+}
+
+/* --- Certificados rediseño 2026-07-13 (los botones los genera el
+       script "JS: Mis certificados" con el sistema .ivi-btn) --- */
+
+/* Bloque Mis Certificados de la Home: fondo crema */
+#inst237 .content.block-content {
+  background: var(--warm-gray, #FAF4EE) !important;
+}
+
+/* Botonera sin desplazamientos en hover */
+.cert-actions .ivi-btn {
+  margin: 0 !important;
+  flex: 0 1 auto;
+}
+
+.cert-actions .ivi-btn:hover,
+.cert-actions .ivi-btn:active {
+  transform: none !important;
+}
+
+/* "Descargar": estados FIJOS en reposo y hover (mismo borde de 2px
+   siempre → sin saltos), cubriendo la clase nueva (ivi-btn--ghost)
+   y la vieja (cert-btn--download) por si corre el script anterior */
+.cert-actions .ivi-btn--ghost,
+.cert-actions .cert-btn--download {
+  background: #fff !important;
+  border: 2px solid var(--border-soft, #E3E3E3) !important;
+  color: var(--navy-blue, #08004F) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.cert-actions .ivi-btn--ghost:hover,
+.cert-actions .ivi-btn--ghost:focus,
+.cert-actions .cert-btn--download:hover,
+.cert-actions .cert-btn--download:focus {
+  background: var(--bg-blue, #DCE6FF) !important;
+  border: 2px solid #C4D4FB !important; /* trazo visible sobre el azul */
+  color: var(--navy-blue, #08004F) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* "Ver todo" del bloque de certificados (a.seeall, botón NATIVO del
+   plugin, no lo genera nuestro script): look de botón primario ivi */
+.block_mycertificates a.seeall {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-title, 'IVI Glance', sans-serif) !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  background: var(--light-blue, #004DF0) !important;
+  color: #fff !important;
+  border: 2px solid var(--light-blue, #004DF0) !important;
+  border-radius: 10px !important;
+  padding: 10px 24px !important;
+  text-decoration: none !important;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.block_mycertificates a.seeall:hover {
+  background: #fff !important;
+  color: var(--light-blue, #004DF0) !important;
+  border-color: var(--light-blue, #004DF0) !important;
 }
 
 /* "Ver todo": botón azul de marca, centrado bajo el contenedor */
@@ -7124,5 +7196,28 @@ div:has(> #region-main) > #block-region-side-post {
 }
 
 /* --- 28.7 Enlaces de interés (#links-lfe) ---
-   SIN restyle (decisión 2026-07-13): los tiles del featured links
-   muestran las imágenes configuradas en el propio bloque. */
+   Los tiles muestran las imágenes configuradas en el propio bloque;
+   solo se retocan proporciones y la zona del título. */
+
+/* Aire sobre el título del bloque (el .block-title vive dentro del
+   header; ponérselo a los dos duplicaría el espacio) */
+#inst231 .block-header {
+  margin-top: 2rem;
+}
+
+/* Tiles más altos */
+#links-lfe .block-totara-featured-links-tile {
+  height: 320px !important;
+}
+
+/* Filo superior muy sutil en el velo del título */
+.block-totara-featured-links-layout .block-totara-featured-links-content::before {
+  border-top: 1px solid rgba(8, 0, 79, 0.2);
+}
+
+/* Título del tile: más pequeño y en azul corporativo */
+.block-totara-featured-links-layout .block-totara-featured-links-content h3 {
+  font-size: 16px !important;
+  color: var(--light-blue, #004DF0) !important;
+  text-shadow: none !important;
+}
