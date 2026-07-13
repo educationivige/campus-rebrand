@@ -679,6 +679,35 @@ a[href*="/message/edit.php"] {
   font-size: 0.9em;
 }
 
+/* Caja de texto más ancha (títulos en menos líneas); el título rompe
+   línea al final de "…Campus" (ajustar el 18em si cambia el texto) */
+@media (min-width: 768px) {
+  .block_slickslider .elslide div.nolink {
+    width: 60% !important;
+    max-width: 60% !important;
+  }
+
+  .block_slickslider .elslide .conttext .titol {
+    max-width: 18em;
+    margin-bottom: 0;
+  }
+}
+
+/* Fuera los <p> vacíos del bloque (metían 30px de margen que
+   descolgaba el subtítulo) */
+.block_slickslider .conttext .text p:empty { display: none; }
+
+/* Subtítulo equidistante entre título y botón */
+.block_slickslider .conttext .text > div {
+  margin: 14px 0;
+}
+
+/* Botón del slider: negrita y separado del subtítulo */
+.block_slickslider .conttext .ivi-btn {
+  font-weight: 700;
+  margin-top: 24px;
+}
+
 
 
 /* .vimeo-trigger-btn ya NO se estiliza aquí: queda solo como gancho del
@@ -700,34 +729,38 @@ a[href*="/message/edit.php"] {
   transform: scale(1.03);
 }
 
-/* --- Hero a ancho completo --- */
-/* El fullscreen.css del tema ya hace el breakout (width:calc(100vw-8px) +
-   left:calc(-50vw+50%)), pero lo limita con max-width:1650px y en pantallas
-   >=1680px lo deja pegado a la izquierda (left:0). Quitamos ese tope y
-   restauramos el centrado para que el hero ocupe el ancho completo del viewport.
-   No tocamos los anchos internos de slick (track/slide), que el plugin calcula
-   sobre el bloque ya a ancho completo al inicializarse. */
-.has-full-page-slider #block-region-top .block_slickslider.fullwidth-slider {
-  width: 100vw !important;
-  max-width: none !important;
+/* --- Hero: al ancho del contenido (decisión 2026-07-13) ---
+   Antes hacía breakout a 100vw; ahora queda alineado con el resto
+   de la página, con aire arriba y abajo. El prefijo html suma
+   especificidad para ganar al fullscreen.css del tema. */
+html .has-full-page-slider #block-region-top .block_slickslider.fullwidth-slider {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
 }
 
-@media (min-width: 1680px) {
-  .has-full-page-slider #block-region-top .block_slickslider.fullwidth-slider {
-    left: calc(-50vw + 50%) !important;
-  }
+/* Aire sobre el hero (padding en la región: los márgenes del bloque
+   los pisa el fullscreen.css del plugin) */
+html .has-full-page-slider #block-region-top {
+  padding-top: 20px !important;
+}
+
+#block-region-top #inst11487.block_slickslider {
+  padding: 1.5rem;
+}
+
+/* Espacio bajo el slider del hero (la regla general pone 50px) */
+#block-region-top .block_slickslider {
+  margin-bottom: 20px !important;
 }
 
 .block_slickslider .conttext {
   padding-left: 5em;
 }
 
-/* Texto del hero alineado con el inicio del contenido (contenedor max-width:1680px,
-   centrado). Por debajo de 1680px el margen base manda; por encima se suma el
-   centrado (100vw-1680px)/2. Ajustar el 15px si el padding base del contenedor
-   fuese distinto. */
+/* Texto del hero: margen fijo (ya sin cálculo sobre el viewport) */
 .has-full-page-slider #inst223.fullwidth-slider .conttext {
-  padding-left: max(70px, calc((100vw - 1680px) / 2 + 15px)) !important;
+  padding-left: 70px !important;
   padding-right: 20px;
 }
 /* --- Banner "Learning for Excellence" (Home): degradado de marca LFE
@@ -882,36 +915,15 @@ a[href*="/message/edit.php"] {
     max-width: 33%;
   }
 
-  /* BOTÓN PÁGINA CALIFICACIONES PROFESORES */
-  #inst8620 .content,
-  #inst9006 .content,
-  #inst9120 .content,
-  #inst10987 .content {
-    background-color: var(--color-accent) !important;
-    padding: var(--spacing-medium);
-  }
-
+  /* Bloques-informe del sidebar (Cursos que imparto, Finalización,
+     Tracking): enlaces navy en negrita (rediseño 2026-07-13; antes
+     eran botones naranjas con texto blanco) */
   #inst8620 .content a,
   #inst9006 .content a,
   #inst9120 .content a,
   #inst10987 .content a {
-    color: white !important;
-    font-weight: 500;
-    font-size: 1.1em;
-  }
-
-  #inst8620 .content a img,
-  #inst9006 .content a img,
-  #inst9120 .content a img,
-  #inst10987 .content a img {
-    margin-right: var(--spacing-medium);
-  }
-
-  #inst8620 .content:hover,
-  #inst9006 .content:hover,
-  #inst9120 .content:hover,
-  #inst10987 .content:hover {
-    background-color: #F18D7E90 !important;
+    color: var(--navy-blue) !important;
+    font-weight: 700;
   }
 }
 
@@ -1157,17 +1169,32 @@ a[href*="/message/edit.php"] {
   display: none !important;
 }
 
-/* --- .etiqueta-obligatorio --- */
+/* --- .etiqueta-obligatorio: pastilla rosa del diseño 2026-07-13
+       (antes cinta coral pegada al borde) --- */
 .etiqueta-obligatorio {
   position: absolute;
   z-index: 99;
-  background-color: #F58C7C;
+  background-color: var(--bright-red);
   color: #fff;
-  padding: 5px var(--spacing-medium);
-  border-radius: 0px var(--border-radius-large) var(--border-radius-large) 0px;
-  top: 17px;
-  font-size: 13px;
-  left: -3px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  top: 12px;
+  left: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Cards de curso (current_learning): título sin recorte de
+   descendentes y barra de progreso en el naranja nuevo */
+.block_current_learningas .block_current_learningas-tile__link_title {
+  line-height: 1.35 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.block_current_learningas .progressbar_container .progress .bar {
+  background: var(--bright-orange) !important;
 }
 
 /* --- Puntos de excelencia --- */
@@ -3829,63 +3856,10 @@ div#region-main #inst214.block .content {
    20. BLOQUES PNTs
    ============================================================ */
 
-/* --- Tarjeta "Mis PNTs" del sidebar de la Home (bloque ACTUAL) ---
-   Versión vigente con foto de fondo y VAGRoundedStd (fuente legacy
-   del tema). El rediseño de marca está preparado como .neo-pnts en
-   la sección 28; cuando se aplique, esta tarjeta puede retirarse. */
-.pnts-card {
-  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 100%), url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/pnts-bg-sidebar.png');
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
-  min-height: 180px;
-  padding: 24px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  text-align: center;
-  gap: 12px;
-}
-
-.pnts-card__title {
-  color: #fff;
-}
-
-.pnts-card__title h2 {
-  font-family: "VAGRoundedStd" !important;
-  margin: 0 0 4px;
-  font-size: 1.2em;
-  font-weight: 700;
-  padding-bottom: 10px;
-}
-
-.pnts-card__title p {
-  margin: 0;
-  font-size: 1.1em;
-  opacity: 0.9;
-  font-weight: 600;
-  padding-bottom: 10px;
-}
-
-.pnts-card__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  color: #333;
-  font-size: 1em;
-  font-weight: 600;
-  padding: 7px 18px;
-  border-radius: 20px;
-  text-decoration: none;
-}
-
-.pnts-card__cta:hover {
-  background: #f0f0f0;
-  color: #111;
-  text-decoration: none;
-}
+/* La antigua tarjeta .pnts-card (foto + VAGRoundedStd) se retiró el
+   2026-07-13: el bloque usa ahora .ivi-pnts__card (sección 28.2).
+   La clase pnts-card__title pervive en el HTML solo como gancho del
+   bloque "JS: Recuento PNTs restantes". */
 
 /* #inst10236 = bloque PNT del tenant IMR (imrcampus.com) — estilos propios en imr/css-tenant-imr.css */
 #inst291 thead,
@@ -6821,184 +6795,334 @@ div:has(> #region-main) > #block-region-side-post {
 .ivi-btn--icon.ivi-btn--lg { width: 52px; height: 52px; }
 
 /* ============================================================
-   28. HOME — BLOQUES REDISEÑADOS (sidebar y enlaces de interés)
-   HTML en bloques/4-codigo-nuevo/home--*.html. Cada bloque lleva
-   su clase neo-* en la configuración del bloque de Totara.
+   28. HOME — BLOQUES REDISEÑADOS
+   (fusionado del CSS adicional el 2026-07-13)
+   HTML en bloques/4-codigo-nuevo/home--*.html. Los componentes
+   aplican por su PROPIA clase (ivi-*__algo), sin exigir clase de
+   bloque en la config de Totara.
+   ⚠️ Los instXXXX y el informe 202 son de PRE; revisar en PRO.
    ============================================================ */
 
-/* --- 28.1 Tarjeta navy (base compartida: Mis PNTs, Repositorio) --- */
-.neo-pnts .content.block-content,
-.neo-repositorio .content.block-content {
-  background: var(--navy-blue) !important;
-  border-radius: var(--border-radius-large) !important;
-  padding: 28px 24px !important;
-  box-shadow: none !important;
-  text-align: center;
+/* --- 28.1 Sidebar: contenedor de los bloques --- */
+#block-region-side-post .block .block-content {
+  border-radius: var(--block-radius);
+  border: var(--block-border);
+  box-shadow: var(--block-shadow);
+  background: var(--block-background-color);
 }
 
-.neo-pnts .no-overflow,
-.neo-repositorio .no-overflow {
+/* Tarjetas a sangre: los bloques que contienen una tarjeta ivi-*
+   pierden el marco del contenedor (fondo blanco, borde, padding y
+   sombra); el borde redondeado y la sombra los pone la tarjeta */
+#block-region-side-post .block:has(.ivi-pnts__card) .block-content,
+#block-region-side-post .block:has(.ivi-repositorio__card) .block-content,
+#block-region-side-post .block:has(.ivi-kpi__enlace) .block-content {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* --- 28.2 Tarjetas del sidebar (Mis PNTs, Repositorio) ---
+   Fondo de color plano, texto a la izquierda y motivo floral IVI
+   asomando por la derecha. La imagen de fondo y el padding van
+   INLINE en el HTML de cada bloque (fáciles de cambiar). */
+.ivi-pnts__card,
+.ivi-repositorio__card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-medium);
+  align-items: flex-start;
+  gap: 14px;
+  text-align: left;
+  background-repeat: no-repeat;
+  background-position: right center;
+  /* auto 100%: la imagen se ajusta SIEMPRE al alto de la tarjeta
+     (el ancho sobrante se recorta por la derecha) */
+  background-size: auto 100%;
+  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05)));
 }
 
-.neo-pnts .neo-card__titulo,
-.neo-repositorio .neo-card__titulo {
-  font-family: var(--font-title) !important;
-  font-size: 24px !important;
+.ivi-pnts__card {
+  background-color: var(--light-blue, #004DF0);
+}
+
+.ivi-repositorio__card {
+  background-color: #6FDFC7; /* menta del mockup; sin token aún */
+}
+
+/* Título de tarjeta (color según fondo) */
+.ivi-card__titulo {
+  font-family: var(--font-title, 'IVI Glance', sans-serif) !important;
+  font-size: 26px !important;
   font-weight: 400 !important;
-  line-height: 1.2 !important;
-  color: #fff !important;
+  line-height: 1.15 !important;
   margin: 0 !important;
 }
 
-/* --- 28.2 Mis PNTs: contador (el nº lo rellena el bloque
-       "JS: Recuento PNTs restantes" sustituyendo #re_sops#) --- */
-.neo-pnts .neo-pnts__contador {
+.ivi-pnts__card .ivi-card__titulo { color: #fff !important; }
+.ivi-repositorio__card .ivi-card__titulo { color: var(--navy-blue, #08004F) !important; }
+
+/* Contador de PNTs (el nº lo rellena "JS: Recuento PNTs restantes";
+   el gancho del JS es la clase pnts-card__title en el div) */
+.ivi-pnts__card.pnts-card__title p,
+.ivi-pnts__card .ivi-pnts__contador {
   margin: 0;
-  font-family: var(--font-body);
+  padding: 0;
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
   font-size: 15px;
+  font-weight: 400;
+  opacity: 1;
   color: #fff;
 }
 
-.neo-pnts .neo-pnts__contador b {
-  color: var(--teal);
+.ivi-pnts__card .ivi-pnts__contador b {
+  color: var(--teal, #0CE3C6);
   font-weight: 700;
 }
 
-/* --- 28.3 OneTech Training: imagen con botón superpuesto --- */
-.neo-onetech .content.block-content {
-  background: transparent !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-}
+/* Separar un poco el botón del texto */
+.ivi-pnts__card .ivi-btn,
+.ivi-repositorio__card .ivi-btn { margin-top: 10px; }
 
-.neo-onetech .neo-onetech__card {
+/* --- 28.3 OneTech Training: imagen con botón superpuesto --- */
+.ivi-onetech__card {
   position: relative;
-  border-radius: var(--border-radius-large);
+  border-radius: 20px;
   overflow: hidden;
 }
 
-.neo-onetech .neo-onetech__card img {
+.ivi-onetech__card img {
   display: block;
   width: 100%;
   height: auto;
 }
 
-.neo-onetech .neo-onetech__card .ivi-btn {
+.ivi-onetech__card .ivi-btn {
   position: absolute;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
 }
 /* Mantener centrado también al pulsar (la base mueve 1px en Y) */
-.neo-onetech .neo-onetech__card .ivi-btn:active {
+.ivi-onetech__card .ivi-btn:active {
   transform: translateX(-50%) translateY(1px);
 }
 
-/* --- 28.4 Finalización vs Inscritos: banner-enlace teal --- */
-.neo-kpi .content.block-content {
-  background: transparent !important;
-  padding: 0 !important;
-  box-shadow: none !important;
+/* Bloque OneTech ACTUAL (aún sin rediseñar): botón en IVI Glance */
+#inst10654.one-tech-launch .content.block-content a,
+#inst9929.one-tech-launch .content.block-content a {
+  font-family: var(--font-title, 'IVI Glance', sans-serif) !important;
 }
 
-.neo-kpi .neo-kpi__enlace {
+/* --- 28.4 Finalización vs Inscritos: banner-enlace crema --- */
+.ivi-kpi__enlace {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: var(--teal);
-  border-radius: var(--border-radius);
-  padding: 14px 18px;
-  font-family: var(--font-body);
-  font-size: 15px;
+  gap: 14px;
+  background: var(--warm-gray, #FAF4EE);
+  border-radius: 10px;
+  padding: 22px 26px;
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
+  font-size: 16px;
   font-weight: 700;
-  color: var(--deep-teal) !important;
+  color: var(--navy-blue, #08004F) !important;
   text-decoration: none !important;
   transition: background-color .2s ease;
+  /* La sombra la lleva el propio banner (el contenedor va a sangre) */
+  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05)));
 }
 
-.neo-kpi .neo-kpi__enlace:hover,
-.neo-kpi .neo-kpi__enlace:focus {
-  background: var(--teal-hover);
-  color: var(--deep-teal) !important;
+.ivi-kpi__enlace:hover,
+.ivi-kpi__enlace:focus {
+  background: #F3EBE1; /* crema un punto más oscuro */
+  color: var(--navy-blue, #08004F) !important;
 }
 
-.neo-kpi .neo-kpi__enlace .material-symbols-outlined {
-  font-size: 24px;
-  color: #fff;
+.ivi-kpi__enlace .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--navy-blue, #08004F);
 }
 
 /* --- 28.5 Cursos que imparto: título + card con lista --- */
-.neo-imparto .content.block-content {
-  background: transparent !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-}
-
-.neo-imparto .neo-imparto__titulo {
-  font-family: var(--font-body) !important;
+.ivi-imparto__titulo {
+  font-family: var(--font-body, 'Noto Sans', sans-serif) !important;
   font-size: 17px !important;
   font-weight: 700 !important;
-  color: var(--navy-blue) !important;
+  color: var(--navy-blue, #08004F) !important;
   margin: 0 0 12px !important;
 }
 
-.neo-imparto .neo-imparto__lista {
+.ivi-imparto__lista {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--white);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--border-radius);
+  background: #fff;
+  border: 1px solid var(--border-soft, #E3E3E3);
+  border-radius: 12px;
   padding: 12px;
 }
 
-.neo-imparto .neo-imparto__item {
+.ivi-imparto__item {
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none !important;
-  border-radius: var(--border-radius-medium);
+  border-radius: 10px;
   padding: 6px;
   transition: background-color .2s ease;
 }
 
-.neo-imparto .neo-imparto__item:hover,
-.neo-imparto .neo-imparto__item:focus { background: var(--bg-blue); }
+.ivi-imparto__item:hover,
+.ivi-imparto__item:focus { background: var(--bg-blue, #DCE6FF); }
 
-.neo-imparto .neo-imparto__item .material-symbols-outlined {
+.ivi-imparto__item .material-symbols-outlined {
   flex: 0 0 auto;
   width: 44px;
   height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-blue);
-  border-radius: var(--border-radius-medium);
+  background: var(--bg-blue, #DCE6FF);
+  border-radius: 10px;
   font-size: 24px;
-  color: var(--light-blue);
+  color: var(--light-blue, #004DF0);
 }
 
-.neo-imparto .neo-imparto__nombre {
+.ivi-imparto__nombre {
   display: block;
-  font-family: var(--font-body);
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
   font-size: 15px;
   font-weight: 700;
-  color: var(--light-blue) !important;
+  color: var(--light-blue, #004DF0) !important;
 }
 
-.neo-imparto .neo-imparto__detalle {
+.ivi-imparto__detalle {
   display: block;
-  font-family: var(--font-body);
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
   font-size: 13px;
-  color: var(--text-gray);
+  color: var(--text-gray, #666);
 }
 
-/* --- 28.6 Enlaces de interés (#links-lfe) ---
-   RETIRADO (decisión de diseño 2026-07-13): los tiles del featured
-   links muestran las imágenes configuradas en el propio bloque, sin
-   iconos ni fondos superpuestos por CSS. */
+/* --- 28.6 Cursos en los que soy tutor (bloque NATIVO report table) ---
+   Informe 202 en la instancia 8428: el HTML lo genera Totara, así
+   que es 100% CSS con el mismo diseño que "Cursos que imparto". */
 
+/* Título del bloque, en IVI Glance */
+.block_totara_report_table_8428 .block-header h2 {
+  font-family: var(--font-title, 'IVI Glance', sans-serif) !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: var(--navy-blue, #08004F) !important;
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+}
+
+/* Card blanca, sin padding (el aire lo ponen las filas) */
+.block_totara_report_table_8428 .block-content {
+  background: #fff !important;
+  border: 1px solid var(--border-soft, #E3E3E3) !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Fuera: aviso de filtros, hueco del gráfico y cabecera de la tabla */
+.block_totara_report_table_8428 .alert-warning,
+.block_totara_report_table_8428 .rb-report-svggraph,
+.block_totara_report_table_8428 thead { display: none !important; }
+
+/* Resets de la tabla */
+.block_totara_report_table_8428 .totaratable {
+  width: 100%;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+
+.block_totara_report_table_8428 .totaratable td {
+  padding: 0;
+  border: none;
+  background: transparent !important; /* anula el rayado del tema */
+}
+
+/* Cada fila = item del diseño: grid de icono (::before) + 2 líneas.
+   Las celdas ocultas (usuario, completado) llevan display:none inline
+   y no entran en el grid. */
+.block_totara_report_table_8428 .totaratable tbody tr {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: transparent !important; /* anula el rayado del tema */
+  transition: background-color .2s ease;
+}
+
+.block_totara_report_table_8428 .totaratable tbody tr:hover {
+  background: var(--bg-blue, #DCE6FF) !important;
+}
+
+/* Icono en cuadrado azul claro (ligadura de Material Symbols) */
+.block_totara_report_table_8428 .totaratable tbody tr::before {
+  content: "school";
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-blue, #DCE6FF);
+  border-radius: 10px;
+  font-size: 24px;
+  color: var(--light-blue, #004DF0);
+}
+
+/* Nombre del curso (arriba) — se oculta el laptop coral del informe */
+.block_totara_report_table_8428 td.course_courselinkicon { grid-column: 2; grid-row: 1; }
+.block_totara_report_table_8428 td.course_courselinkicon .course_icon { display: none; }
+
+.block_totara_report_table_8428 td.course_courselinkicon a {
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--light-blue, #004DF0) !important;
+  text-decoration: none !important;
+}
+
+/* Categoría (debajo, en gris) */
+.block_totara_report_table_8428 td.course_custom_field_1 {
+  grid-column: 2;
+  grid-row: 2;
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
+  font-size: 13px;
+  color: var(--text-gray, #666);
+}
+
+/* Pie "Ver informe completo": discreto, a la derecha */
+.block_totara_report_table_8428 .footer {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.block_totara_report_table_8428 .footer a {
+  font-family: var(--font-body, 'Noto Sans', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--light-blue, #004DF0) !important;
+}
+
+/* --- 28.7 Enlaces de interés (#links-lfe) ---
+   SIN restyle (decisión 2026-07-13): los tiles del featured links
+   muestran las imágenes configuradas en el propio bloque. */
