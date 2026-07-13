@@ -699,12 +699,10 @@ a[href*="/message/edit.php"] {
 
 /* Badge circular del logo LFE (fondo blanco, como el mockup) */
 .cta_lfe .no-overflow .izq img {
-  width: 92px !important;
-  height: 92px !important;
+  width: 110px !important;
+  height: 110px !important;
   object-fit: contain;
-  background: #fff;
   border-radius: 50%;
-  padding: 6px;
   flex: 0 0 auto;
 }
 
@@ -6702,4 +6700,256 @@ div:has(> #region-main) > #block-region-side-post {
 }
 .ivi-btn--icon.ivi-btn--sm { width: 36px; height: 36px; }
 .ivi-btn--icon.ivi-btn--lg { width: 52px; height: 52px; }
+
+/* ============================================================
+   28. HOME — BLOQUES REDISEÑADOS (sidebar y enlaces de interés)
+   HTML en bloques/4-codigo-nuevo/home--*.html. Cada bloque lleva
+   su clase neo-* en la configuración del bloque de Totara.
+   ============================================================ */
+
+/* --- 28.1 Tarjeta navy (base compartida: Mis PNTs, Repositorio) --- */
+.neo-pnts .content.block-content,
+.neo-repositorio .content.block-content {
+  background: var(--navy-blue) !important;
+  border-radius: var(--border-radius-large) !important;
+  padding: 28px 24px !important;
+  box-shadow: none !important;
+  text-align: center;
+}
+
+.neo-pnts .no-overflow,
+.neo-repositorio .no-overflow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-medium);
+}
+
+.neo-pnts .neo-card__titulo,
+.neo-repositorio .neo-card__titulo {
+  font-family: var(--font-title) !important;
+  font-size: 24px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  color: #fff !important;
+  margin: 0 !important;
+}
+
+/* --- 28.2 Mis PNTs: contador (el nº lo rellena el bloque
+       "JS: Recuento PNTs restantes" sustituyendo #re_sops#) --- */
+.neo-pnts .neo-pnts__contador {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #fff;
+}
+
+.neo-pnts .neo-pnts__contador b {
+  color: var(--teal);
+  font-weight: 700;
+}
+
+/* --- 28.3 OneTech Training: imagen con botón superpuesto --- */
+.neo-onetech .content.block-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.neo-onetech .neo-onetech__card {
+  position: relative;
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
+}
+
+.neo-onetech .neo-onetech__card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.neo-onetech .neo-onetech__card .ivi-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+}
+/* Mantener centrado también al pulsar (la base mueve 1px en Y) */
+.neo-onetech .neo-onetech__card .ivi-btn:active {
+  transform: translateX(-50%) translateY(1px);
+}
+
+/* --- 28.4 Finalización vs Inscritos: banner-enlace teal --- */
+.neo-kpi .content.block-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.neo-kpi .neo-kpi__enlace {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--teal);
+  border-radius: var(--border-radius);
+  padding: 14px 18px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--deep-teal) !important;
+  text-decoration: none !important;
+  transition: background-color .2s ease;
+}
+
+.neo-kpi .neo-kpi__enlace:hover,
+.neo-kpi .neo-kpi__enlace:focus {
+  background: var(--teal-hover);
+  color: var(--deep-teal) !important;
+}
+
+.neo-kpi .neo-kpi__enlace .material-symbols-outlined {
+  font-size: 24px;
+  color: #fff;
+}
+
+/* --- 28.5 Cursos que imparto: título + card con lista --- */
+.neo-imparto .content.block-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.neo-imparto .neo-imparto__titulo {
+  font-family: var(--font-body) !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: var(--navy-blue) !important;
+  margin: 0 0 12px !important;
+}
+
+.neo-imparto .neo-imparto__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius);
+  padding: 12px;
+}
+
+.neo-imparto .neo-imparto__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none !important;
+  border-radius: var(--border-radius-medium);
+  padding: 6px;
+  transition: background-color .2s ease;
+}
+
+.neo-imparto .neo-imparto__item:hover,
+.neo-imparto .neo-imparto__item:focus { background: var(--bg-blue); }
+
+.neo-imparto .neo-imparto__item .material-symbols-outlined {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-blue);
+  border-radius: var(--border-radius-medium);
+  font-size: 24px;
+  color: var(--light-blue);
+}
+
+.neo-imparto .neo-imparto__nombre {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--light-blue) !important;
+}
+
+.neo-imparto .neo-imparto__detalle {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-gray);
+}
+
+/* --- 28.6 Enlaces de interés (#links-lfe) ---
+   Bloque NATIVO block_totara_featured_links: el HTML lo genera
+   Totara, así que el rediseño es 100% CSS. Se anula la imagen de
+   fondo de cada tile y se pinta la card del diseño: zona superior
+   con degradado suave + icono (inyectado con ::before usando la
+   ligadura de Material Symbols) y título azul abajo.
+   ⚠️ Los iconos se asignan por ID de tile (tile-4/5/6, de PRE);
+   si en PRO cambian los IDs, actualizar los selectores de abajo. */
+#links-lfe .block-totara-featured-links-tile {
+  position: relative;                  /* ancla del enlace-overlay */
+  background-image: none !important;   /* mata el inline style */
+  background-color: var(--white) !important;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+#links-lfe .block-totara-featured-links-tile:hover,
+#links-lfe .block-totara-featured-links-tile:focus-within {
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+}
+
+/* Zona superior: degradado + icono por ligadura de Material Symbols */
+#links-lfe .block-totara-featured-links-tile::before {
+  content: "link";                      /* fallback; se pisa por tile */
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 120px;
+  font-size: 44px;
+  color: var(--light-blue);
+  background: linear-gradient(135deg, var(--bg-blue) 0%, var(--bg-mint) 100%);
+}
+
+/* Icono por tile (IDs de PRE; ver aviso arriba) */
+#block-totara-featured-links-tile-4::before { content: "photo_library"; } /* Image Bank */
+#block-totara-featured-links-tile-5::before { content: "hub"; }           /* WSOK */
+#block-totara-featured-links-tile-6::before { content: "groups"; }        /* People */
+
+/* Título: quitar el overlay oscuro del plugin y pintarlo azul abajo */
+#links-lfe .block-totara-featured-links-content-container { position: static; }
+
+#links-lfe .block-totara-featured-links-content {
+  position: static !important;
+  background: none !important;
+  padding: 14px 12px !important;
+  text-align: center;
+}
+
+#links-lfe .block-totara-featured-links-content h3 {
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--light-blue) !important;
+  margin: 0 !important;
+  text-shadow: none !important;
+}
+
+/* El enlace invisible del plugin debe seguir cubriendo toda la card */
+#links-lfe .block-totara-featured-links-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
 

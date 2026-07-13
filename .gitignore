@@ -7,10 +7,19 @@
 
 # Material de trabajo / referencia (no se versiona)
 Pages-structure/
+Pages-structure (no se puede editar)/
 Secciones PNG/
 Code/
+Code (no se puede editar)/
 assets/
 iconos-home/
+
+# Proceso bloque a bloque: capturas de diseño y estado actual
+# (el código de 3-codigo-actual/ y 4-codigo-nuevo/ SÍ se versiona)
+bloques/1-diseno/*
+bloques/2-actual/*
+!bloques/1-diseno/.gitkeep
+!bloques/2-actual/.gitkeep
 
 # Scripts del Expediente (se gestionan en Totara, no en el repo)
 expediente/

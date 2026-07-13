@@ -1,0 +1,11 @@
+<p style="margin-bottom:30px;"></p><div>{mlang es}Conoce todo lo que necesitas saber sobre el nuevo Campus de IVI Institute Education.{mlang}{mlang en}Explore everything you need to know about the new IVI Institute Education Campus.{mlang}{mlang it}Scopri tutto quello che devi sapere sul nuovo Campus di IVI Institute Education.{mlang}{mlang cs}Objevte vše, co potřebujete vědět o novém kampusu IVI Institute Education.{mlang}{mlang pt}Saiba tudo o que você precisa saber sobre o novo Campus da IVI Institute Education.{mlang}{mlang sv}Lär dig allt du behöver veta om det nya IVI Institute Education Campus.{mlang}</div><p></p>
+
+  <a class="ivi-btn ivi-btn--secondary ivi-btn--pill vimeo-trigger-btn" href="%7Bmlang%20es%7D#popup-campus-es%7Bmlang%7D%7Bmlang%20en%7D%23popup-campus-en%7Bmlang%7D%7Bmlang%20pt%7D%23popup-campus-en%7Bmlang%7D%7Bmlang%20it%7D%23popup-campus-en%7Bmlang%7D%7Bmlang%20cs%7D%23popup-campus-en%7Bmlang%7D%7Bmlang%20sv%7D%23popup-campus-en%7Bmlang%7D">
+      <span class="material-symbols-outlined">play_circle</span>
+      {mlang es}Ver video{mlang}
+      {mlang en}Watch video{mlang}
+      {mlang pt}Ver vídeo{mlang}
+      {mlang it}Guarda il video{mlang}
+      {mlang cs}Zobrazit video{mlang}
+      {mlang sv}Se video{mlang}
+  </a>
