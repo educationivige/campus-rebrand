@@ -697,10 +697,9 @@ a[href*="/message/edit.php"] {
   flex: 0 1 auto;
 }
 
-/* Badge circular del logo LFE (fondo blanco, como el mockup) */
+/* Badge circular del logo LFE (el SVG trae su propio fondo) */
 .cta_lfe .no-overflow .izq img {
   width: 110px !important;
-  height: 110px !important;
   object-fit: contain;
   border-radius: 50%;
   flex: 0 0 auto;
