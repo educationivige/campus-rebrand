@@ -6660,6 +6660,49 @@ div:has(> #region-main) > #block-region-side-post {
   color: #fff;
 }
 
+/* --- 27.3b Blindaje del color de texto frente al tema de Totara ---
+   El tema colorea TODOS los enlaces con una regla de altísima especificidad
+   (a:not(.actua…):not(.tui-actionLink--prim)…:not(…){ color: var(--color-link-central-block) }).
+   Como los .ivi-btn suelen ser <a>, esa regla les pisaba el color del texto
+   (p. ej. el primario salía con texto oscuro en vez de blanco). No podemos
+   tocar esa regla (vive en el tema, no en este archivo), así que forzamos
+   aquí el color de cada variante con !important. Si cambias el color de una
+   variante arriba, cámbialo también aquí. */
+.ivi-btn--primary,
+.ivi-btn--primary:hover,
+.ivi-btn--primary:focus,
+.ivi-btn--navy,
+.ivi-btn--navy:hover,
+.ivi-btn--navy:focus,
+.ivi-btn--danger,
+.ivi-btn--danger:hover,
+.ivi-btn--danger:focus,
+.ivi-btn--warning,
+.ivi-btn--warning:hover,
+.ivi-btn--warning:focus,
+.ivi-btn--white:hover,
+.ivi-btn--white:focus { color: #fff !important; }
+
+.ivi-btn--secondary,
+.ivi-btn--secondary:hover,
+.ivi-btn--secondary:focus,
+.ivi-btn--success,
+.ivi-btn--success:hover,
+.ivi-btn--success:focus { color: var(--deep-teal) !important; }
+
+.ivi-btn--ghost,
+.ivi-btn--ghost:hover,
+.ivi-btn--ghost:focus { color: var(--navy-blue) !important; }
+
+.ivi-btn--outline,
+.ivi-btn--white,
+.ivi-btn--link { color: var(--light-blue) !important; }
+
+.ivi-btn--outline:hover,
+.ivi-btn--outline:focus,
+.ivi-btn--link:hover,
+.ivi-btn--link:focus { color: var(--blue-hover) !important; }
+
 /* --- 27.4 Tamaños --- */
 .ivi-btn--sm {
   padding: 8px 16px;
