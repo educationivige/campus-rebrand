@@ -5,22 +5,27 @@
              "Finalización vs Inscritos adhoc")
    CLASE:    neo-imparto  (ponerla en la config del bloque)
    CSS:      sección 28.5 de css-totara-organizado.css
-   JS:       no (lista estática; si debe ser dinámica, hablarlo)
-   TODO-LINK: URLs de cada curso
-   TODO:     el item "Stem Cells" es el EJEMPLO del diseño —
-             sustituir por los cursos reales (duplicar el <a> por curso)
+   JS:       no
+   NOTAS:    el bloque actual era un único enlace al informe de
+             calificaciones (grade/report/overview); se mantiene ese
+             destino con el patrón del diseño (título + card).
+             El icono viejo usaba draftfile.php (borrador ligado a un
+             usuario: roto para el resto) → sustituido por Material
+             Symbols. Traducciones del título: las del bloque actual.
+             Si se quiere listar cursos concretos como en el mockup
+             (p. ej. "Stem Cells"), duplicar el <a> por curso.
+   TODO-TRAD: revisar las traducciones del texto del item (propuestas)
    ------------------------------------------------------------
    Pegar TODO lo de debajo de esta cabecera en el bloque HTML de
    Totara (editor en modo código). La cabecera no se pega.
    ============================================================ -->
-<h4 class="neo-imparto__titulo">{mlang es}Cursos que imparto{mlang}{mlang en}Courses I teach{mlang}{mlang it}Corsi che insegno{mlang}{mlang pt}Cursos que ministro{mlang}{mlang cs}Kurzy, které vyučuji{mlang}{mlang sv}Kurser jag undervisar{mlang}</h4>
+<h4 class="neo-imparto__titulo">{mlang es}Cursos que imparto{mlang}{mlang en}Courses I teach{mlang}{mlang it}Corsi che insegno{mlang}{mlang pt}Cursos que leciono{mlang}{mlang cs}Kurzy, které vyučuji{mlang}{mlang sv}Kurser jag undervisar i{mlang}</h4>
 <div class="neo-imparto__lista">
-    <!-- TODO-LINK: un <a> por curso; sustituir # y los textos -->
-    <a class="neo-imparto__item" href="#">
+    <a class="neo-imparto__item" href="https://ivirmacampus.com/grade/report/overview/index.php">
         <span class="material-symbols-outlined">school</span>
         <span>
-            <span class="neo-imparto__nombre">Stem Cells</span>
-            <span class="neo-imparto__detalle">General Adicional Curso</span>
+            <span class="neo-imparto__nombre">{mlang es}Ver mis cursos{mlang}{mlang en}View my courses{mlang}{mlang it}Vedi i miei corsi{mlang}{mlang pt}Ver meus cursos{mlang}{mlang cs}Zobrazit mé kurzy{mlang}{mlang sv}Visa mina kurser{mlang}</span>
+            <span class="neo-imparto__detalle">{mlang es}Informe de calificaciones{mlang}{mlang en}Grades report{mlang}{mlang it}Report delle valutazioni{mlang}{mlang pt}Relatório de notas{mlang}{mlang cs}Přehled známek{mlang}{mlang sv}Betygsrapport{mlang}</span>
         </span>
     </a>
 </div>
