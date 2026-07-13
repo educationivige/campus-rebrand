@@ -34,9 +34,13 @@ en `additional-html-footer.js` si hace falta) y se estiliza desde
 2. **Bea** pide: *"Adapta el bloque `<slug>`"* (+ notas si las hay: enlaces,
    textos, idiomas, comportamiento).
 3. **Claude** entrega:
-   - `4-codigo-nuevo/<slug>.html` — contenido para pegar en el bloque, con
-     cabecera de metadatos (clase del bloque, sección CSS, TODOs).
-   - Sección nueva o ampliada en `css-totara-organizado.css`.
+   - `4-codigo-nuevo/<slug>.html` — SOLO el contenido para pegar en el
+     bloque, sin cabeceras (los metadatos y TODOs van en este tablero;
+     los `TODO-IMG`/`TODO-LINK` puntuales, como comentario en el cuerpo).
+   - CSS del bloque en `bloques/css-adicional.css` → Bea lo pega ENTERO
+     en el campo "CSS adicional" del tema para probar al momento (sin
+     esperar a jsDelivr). Al verificar la sección, se fusiona en
+     `css-totara-organizado.css` y se vacía el adicional.
    - Si hace falta JS: función en `additional-html-footer.js` siguiendo el
      patrón `config` + `instancias` existente.
    - Commit + push (el push publica el CSS en jsDelivr).
@@ -104,26 +108,27 @@ Estructura real según la captura de edición (`2-actual/home-bloques.png`).
 | `home--hero` | — | (slider tema) | Hecho, pendiente verificar | ⚠️ href del popup URL-encoded (ver TODO en el archivo) |
 | `home--banner-lfe` | — | `cta_lfe` | Hecho, pendiente verificar | Botón con guarda inline; badge apunta a PRO |
 | `home--cta-catalogo` | inst234 | `cta-catalog` | Hecho, pendiente verificar | Marcado del botón corregido (`.ivi-btn--white`) |
-| `home--enlaces-interes` | — | `#links-lfe` (nativo) | Hecho, pendiente verificar | Featured Links: rediseño 100% CSS, sin HTML que pegar; iconos por ID de tile (revisar en PRO) |
+| `home--enlaces-interes` | — | `#links-lfe` (nativo) | Verificado (sin restyle) | Decisión 2026-07-13: tiles con las imágenes del bloque, sin CSS encima (28.6 retirada del organizado) |
 
 ### Bloques HTML personalizados (sidebar)
 
 | Slug | instID | Clase bloque | Estado | Notas |
 |---|---|---|---|---|
-| `home--onetech` | — | `neo-onetech` | Hecho, faltan URL+imagen | Cambiar clase `cta-onetech` → `neo-onetech` en la config |
-| `home--mis-pnts` | — | `neo-pnts` | Hecho, pendiente verificar | Adaptado del bloque actual (URL id=32 a PRO, traducciones oficiales); comprobar que `#re_sops#` se sustituye |
-| `home--repositorio-documentos` | — | `neo-repositorio` | Hecho, falta URL | BLOQUE NUEVO: crearlo en el sidebar |
-| `home--informe-finalizacion` | — | `neo-kpi` | Hecho, pendiente verificar | Banner teal; ⚠️ misma URL que "Cursos que imparto" (confirmar informe adhoc) |
-| `home--cursos-que-imparto` | — | `neo-imparto` | Hecho, pendiente verificar | Enlace al informe de calificaciones (destino del bloque actual, a PRO); icono draftfile roto sustituido por Material Symbols |
+| `home--onetech` | — | `ivi-onetech` | Hecho, faltan URL+imagen | Cambiar clase `cta-onetech` → `ivi-onetech` en la config |
+| `home--mis-pnts` | inst10603 | ninguna (`.ivi-pnts__card`) | Hecho, pendiente verificar | ⚠️ Borrar duplicado inst11485. El div lleva `pnts-card__title` (gancho del JS del contador, no quitar); falta subir motivo-flor-azul.svg |
+| `home--repositorio-documentos` | — | `ivi-repositorio` | Hecho, falta URL | BLOQUE NUEVO: crearlo en el sidebar |
+| `home--informe-finalizacion` | — | `ivi-kpi` | Hecho, pendiente verificar | Banner teal; ⚠️ misma URL que "Cursos que imparto" (confirmar informe adhoc) |
+| `home--cursos-que-imparto` | — | `ivi-imparto` | Hecho, pendiente verificar | Enlace al informe de calificaciones (destino del bloque actual, a PRO); icono draftfile roto sustituido por Material Symbols |
 
 ### Bloques nativos de Totara (solo CSS, sin archivo en 4-codigo-nuevo)
 
 | Bloque | Estado | Notas |
 |---|---|---|
-| Formación Obligatoria / PNTs Globales / PNTs Requeridos | Pendiente | Cards de curso: badge rosa, imagen suave con icono, barra teal |
-| Formación adicional | Pendiente | Igual que la obligatoria |
+| Formación Obligatoria / PNTs Globales / PNTs Requeridos | En curso | Badge rosa (pastilla) y barra naranja nueva: hecho en css-adicional; falta imagen suave con icono |
+| Formación adicional | En curso | Igual que la obligatoria |
 | Mis Certificados | Pendiente verificar | Estructura ya similar al diseño |
 | Mis últimas insignias | Decidir | No aparece en el diseño |
+| Cursos en los que soy tutor (`inst8428`, informe 202) | Hecho, pendiente verificar | 100% CSS, patrón "Cursos que imparto"; filas→grid con icono `::before`; IDs de PRE |
 
 ### Bloques del sidebar SIN equivalente en el diseño (decidir: ocultar o mantener)
 
@@ -132,6 +137,8 @@ Cursos en los que soy tutor · Notificaciones
 
 ### Bloques técnicos "JS:" (contenedores de script — NO tocar sin revisar)
 
-JS: Video Tutorial Pop ups · JS: Recuento PNTs restantes · JS: Título LFE
+JS: Video Tutorial Pop ups · JS: Recuento PNTs restantes (versión
+corregida en `4-codigo-nuevo/home--js-recuento-pnts.html`: innerHTML
+para no romper el `<b>` teal del contador) · JS: Título LFE
 
 Estados: `Pendiente` → `En curso` → `Hecho, pendiente verificar` → `Verificado`.

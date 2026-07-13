@@ -1,33 +1,10 @@
 <!-- ============================================================
    BLOQUE:   Enlaces de interés (Home)
-   SLUG:     home--enlaces-interes
-   PÁGINA:   Home   instID: layout #links-lfe (tiles 4, 5 y 6)
-   CLASE:    (ninguna que añadir: el CSS engancha por #links-lfe)
-   CSS:      sección 28.6 de css-totara-organizado.css
-   JS:       no
-   ------------------------------------------------------------
-   ⚠️ NO HAY HTML QUE PEGAR. Es un bloque NATIVO de Totara
-   (block_totara_featured_links): los tiles se configuran en la UI
-   y el marcado lo genera Totara (ver 3-codigo-actual/…). El
-   rediseño es 100% CSS:
-   - Se anula la imagen de fondo de cada tile (el GIF del Image
-     Bank, wsok3.jpg, ivirma-people.jpg) → card blanca del diseño.
-   - El icono se inyecta por CSS (::before con Material Symbols):
-       tile-4 Image Bank → photo_library
-       tile-5 WSOK       → hub
-       tile-6 People     → groups
-   - Título azul centrado abajo, hover con sombra.
-   Los enlaces/URLs quedan como están en la config del bloque.
+   Bloque NATIVO block_totara_featured_links (#links-lfe): no hay
+   HTML que pegar; los tiles se configuran en la UI del bloque.
 
-   PARA APLICAR: nada en el bloque; solo publicar el CSS
-   (push + purga de jsDelivr).
-
-   AVISOS:
-   - Los IDs de tile (4/5/6) son de PRE; si en PRO son otros,
-     actualizar los 3 selectores de iconos en la sección 28.6.
-   - Si se añade un tile nuevo en el futuro, saldrá con el icono
-     genérico "link" hasta asignarle uno en el CSS.
-   - Los 2 tiles ocultos (Solicitar curso online, Communication
-     Request) no se tocan: si se muestran algún día, heredan la
-     card blanca con icono genérico.
+   DECISIÓN (2026-07-13): sin restyle CSS. Los tiles muestran las
+   imágenes seleccionadas en el propio bloque, sin iconos ni fondos
+   superpuestos (la sección 28.6 del organizado quedó retirada).
+   Para cambiar una imagen: editar el tile en el bloque de Totara.
    ============================================================ -->

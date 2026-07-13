@@ -1,0 +1,23 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cuenta las filas del informe oculto de PNTs y lo esconde
+    var block = document.getElementById('inst10655');
+    if (!block) return;
+    var count = block.querySelectorAll('tbody tr').length;
+    block.style.display = 'none';
+
+    // Tarjeta "Mis PNTs": el gancho es la clase pnts-card__title
+    var card = document.querySelector('.pnts-card__title');
+    if (!card) return;
+    var p = card.querySelector('p');
+    if (!p) return;
+
+    if (count === 0) {
+        p.remove();
+    } else {
+        // innerHTML (no textContent) para conservar el <b> del número
+        // y que se pinte en teal
+        p.innerHTML = p.innerHTML.replace('#re_sops#', count);
+    }
+});
+</script>
