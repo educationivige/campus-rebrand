@@ -125,6 +125,36 @@
 }
 
 /* --- 1.4 Fuentes generales --- */
+
+/* Titulares: todos los <h1>–<h6> (y las clases .h1–.h6 de Bootstrap)
+   en IVI Glance. La fuente solo existe en regular; el peso que se vea
+   en negritas es sintético del navegador. */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-title) !important;
+}
+
+/* Titulares de las secciones OneTech (Ciberseguridad / Data&AI) que
+   no siempre son <h> y quedarían fuera de la regla de arriba */
+.cyber-standalone__title,
+.cyber-card__overlay-title,
+.ivirma-cyber-modal__title,
+.ivirma-cyber-modal__footer-title,
+.dai-section-title {
+  font-family: var(--font-title) !important;
+}
+
+/* Botones nativos de Totara/Bootstrap también en IVI Glance.
+   (.ivi-btn ya lo hace desde su regla base, sección 27) */
+button,
+.btn,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.tui-formBtn {
+  font-family: var(--font-title) !important;
+}
+
 /* Selectores con [class] para subir especificidad sin usar IDs (cada [class] suma 0,1,0) */
 html body .slickslider .titol,
 html body .slickslider[class] .titol[class],
@@ -290,6 +320,27 @@ a[href*="/message/edit.php"] {
 /* --- 1.11 Breadcrumbs --- */
 .breadcrumb li:nth-child(2):has(a[href*="reports"]) {
     display: none;
+}
+
+.breadcrumb {
+  color: var(--light-blue);
+}
+
+/* --- 1.11b Navegación superior (subnav blanca, selección en azul) --- */
+.totaraNav nav.totaraNav_sub {
+  background-color: white;
+}
+
+.totaraNav_sub--list_item_selected {
+  border-bottom-color: var(--light-blue, #004DF0);
+}
+
+.totaraNav_sub--list_item_selected .totaraNav_sub--list_item_link:after {
+  color: var(--light-blue);
+}
+
+.totaraNav_prim--list_item_selected .totaraNav_prim--list_item_label::after {
+  border-width: medium;
 }
 
 /* --- 1.12 Responsive general --- */
@@ -600,21 +651,32 @@ a[href*="/message/edit.php"] {
    3. DASHBOARD PRINCIPAL
    ============================================================ */
 
+/* Fondo crema de la Home (dashboard 1) */
+#page-totara-dashboard-1 {
+  background-color: #faf4ee !important;
+}
+
 /* --- Slider principal --- */
 .block_slickslider .elslide div.nolink {
   margin: auto auto auto 0px;
   max-height: 80% !important;
   border-radius: 0px 20px 20px 0px !important;
   padding-right: 50px;
+  background: none !important;
 }
 
 .block_slickslider {
   margin-bottom: 50px !important;
 }
 
+.block_slickslider .elslide .conttext .titol {
+  font-weight: 400 !important;
+}
 
 .block_slickslider .conttext .text {
   color: #ffffffdc;
+  font-weight: normal;
+  font-size: 0.9em;
 }
 
 
@@ -2961,7 +3023,7 @@ width:95%;
 }
 
 #page-course-view-visualgrid.format-visualgrid #section-0 .activityinstancezero h2 {
-  font-family: 'Gotham' !important;
+  font-family: var(--font-title) !important;  /* antes 'Gotham' (legacy) */
   color: #3b8596;
   letter-spacing: 0;
 }
@@ -3766,6 +3828,64 @@ div#region-main #inst214.block .content {
 /* ============================================================
    20. BLOQUES PNTs
    ============================================================ */
+
+/* --- Tarjeta "Mis PNTs" del sidebar de la Home (bloque ACTUAL) ---
+   Versión vigente con foto de fondo y VAGRoundedStd (fuente legacy
+   del tema). El rediseño de marca está preparado como .neo-pnts en
+   la sección 28; cuando se aplique, esta tarjeta puede retirarse. */
+.pnts-card {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 100%), url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/pnts-bg-sidebar.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  min-height: 180px;
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  gap: 12px;
+}
+
+.pnts-card__title {
+  color: #fff;
+}
+
+.pnts-card__title h2 {
+  font-family: "VAGRoundedStd" !important;
+  margin: 0 0 4px;
+  font-size: 1.2em;
+  font-weight: 700;
+  padding-bottom: 10px;
+}
+
+.pnts-card__title p {
+  margin: 0;
+  font-size: 1.1em;
+  opacity: 0.9;
+  font-weight: 600;
+  padding-bottom: 10px;
+}
+
+.pnts-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #333;
+  font-size: 1em;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 20px;
+  text-decoration: none;
+}
+
+.pnts-card__cta:hover {
+  background: #f0f0f0;
+  color: #111;
+  text-decoration: none;
+}
 
 /* #inst10236 = bloque PNT del tenant IMR (imrcampus.com) — estilos propios en imr/css-tenant-imr.css */
 #inst291 thead,
@@ -5968,9 +6088,9 @@ div:has(> #region-main) > #block-region-side-post {
 .exp-progress--done .exp-progress__fill { background: var(--teal, #0CE3C6); }
 .exp-progress--done .exp-progress__label { color: var(--navy-blue, #08004F); }
 
-/* No superada: barra y texto en rosa */
-.exp-progress--failed .exp-progress__fill { background: var(--bright-red, #E23B7B); }
-.exp-progress--failed .exp-progress__label { color: var(--bright-red, #E23B7B); }
+/* No superada: barra y texto en rojo */
+.exp-progress--failed .exp-progress__fill { background: #c0392b; }
+.exp-progress--failed .exp-progress__label { color: #c0392b; }
 
 /* Pantallas grandes: 4 columnas.
    Acotado a #exp-grid para no afectar al grid de one-tech. */
@@ -6080,7 +6200,7 @@ div:has(> #region-main) > #block-region-side-post {
 .exp-status i { font-size: 11px; }
 .exp-status--done { background: var(--teal, #0CE3C6); color: var(--navy-blue, #08004F); }
 .exp-status--pending { background: #ffffff; color: var(--navy-blue, #08004F); }
-.exp-status--failed { background: var(--bright-red, #E23B7B); color: #ffffff; }
+.exp-status--failed { background: #c0392b; color: #ffffff; }
 
 /* Aviso "sin formaciones" en azul de marca */
 .dai-empty-notice--corp {

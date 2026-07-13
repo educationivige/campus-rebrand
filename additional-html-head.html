@@ -38,6 +38,20 @@
     font-style: normal;
     font-display: swap;
 }
+
+/* Titulares y botones en IVI Glance (duplicado del CSS del CDN para
+   que aplique aunque la caché de jsDelivr vaya con retraso). */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+button,
+.btn,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.tui-formBtn,
+.ivi-btn {
+    font-family: 'IVI Glance', 'Noto Sans', -apple-system, sans-serif !important;
+}
 </style>
 
 <!-- Preload de la fuente principal (IVI Glance): añadir aquí cuando se
