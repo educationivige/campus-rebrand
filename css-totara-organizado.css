@@ -947,6 +947,27 @@ html .has-full-page-slider #block-region-top {
    4. DASHBOARD LFE
    ============================================================ */
 
+/* Fondo warm gray de las páginas LFE: dashboard 10 (LFE), 11 (Monthly
+   Seminars), 12 (Must-Read) y edición de certificados (mod/data) */
+#page-totara-dashboard-10,
+#page-totara-dashboard-11,
+#page-totara-dashboard-12,
+#page-mod-data-edit {
+  background-color: var(--warm-gray, #faf4ee) !important;
+}
+
+/* Espaciado de bloques de la columna lateral en Monthly: visor
+   (#inst295) y botón "Volver a mi LFE" (#inst351) */
+#inst295 .content.block-content {
+  padding-top: 10px !important;
+}
+
+#inst295,
+#inst351 {
+  margin-top: 16px !important;
+  margin-bottom: 15px !important;
+}
+
 /* --- Slider LFE --- */
 .block_slickslider.lfe_hero .elslide div.nolink,
 .block_slickslider.lfe_hero .elslide div.nolink .conttext {
@@ -999,10 +1020,10 @@ html .has-full-page-slider #block-region-top {
 
 /* Logo LFE: solo tamaño y centrado (sin círculo blanco) */
 .block_slickslider.lfe_hero .conttext .text img {
-  width: 118px !important;
-  height: 118px !important;
+  width: 160px !important;
+  height: 160px !important;
   object-fit: contain;
-  margin: 0 auto 18px !important;
+  margin: 0 auto 0px !important;
 }
 
 /* Título grande y "tipo" (Ginecología) más pequeño */
@@ -1020,39 +1041,68 @@ html .has-full-page-slider #block-region-top {
   opacity: 0.96;
 }
 
-/* --- Visor box --- */
+/* --- Visor box (rebranding): tarjeta blanca a 10px con badge
+   centrado; "puntuación actual" en navy y hover de elevación de la
+   tarjeta. El título "Visor de puntos LFE" va en IVI Glance dentro de
+   la card (Monthly); el botón "Volver a mi LFE" (.ivi-btn) queda bajo
+   la tarjeta. --- */
 .visor-box .no-overflow {
-  padding: 1em !important;
+  padding: 0 !important;
 }
 
 .visor-box a.btn.lfe {
   width: 100%;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: white;
-  color: var(--color-text-gray);
-  border-radius: var(--border-radius-large);
-  padding: 1em;
+  gap: 14px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1.5em 1.25em;
+  text-align: center;
+  color: var(--text-gray);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.visor-box a.btn.lfe:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(8, 0, 79, 0.12);
+  text-decoration: none;
 }
 
 .visor-box a.btn.lfe b {
-  color: var(--color-secondary) !important;
+  color: var(--navy-blue) !important;
 }
 
 .visor-box a.btn.lfe img {
-  margin-bottom: var(--spacing-small);
+  margin-bottom: 0;
 }
 
 .visor-box a.btn.lfe img:hover {
-  opacity: 0.7 !important;
+  opacity: 1 !important;
 }
 
-/* --- .no-obligatorio --- */
+.visor-box a.btn.lfe .lfe-visor-title {
+  font-family: var(--font-title) !important;
+  color: var(--navy-blue) !important;
+  font-weight: 400 !important;
+  font-size: 1.35em;
+  text-align: center;
+  margin: 0;
+}
+
+.visor-box .ivi-btn {
+  margin-top: 12px;
+}
+
+/* --- .no-obligatorio: aviso salmón con icono Material naranja
+   (relleno) en vez de info_orange.svg; el gap sustituye al
+   margin-right del <img> retirado. --- */
 .no-obligatorio {
   display: flex;
   align-items: flex-start;
+  gap: 16px;
   background: #FFF0EE70 !important;
   padding: var(--spacing-medium) var(--spacing-medium) 5px var(--spacing-small);
   border-radius: var(--border-radius);
@@ -1060,30 +1110,39 @@ html .has-full-page-slider #block-region-top {
   font-size: 1.1em;
 }
 
-.no-obligatorio img {
-  margin-right: var(--spacing-xl);
+.no-obligatorio .izq .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--bright-orange);
+  font-variation-settings: 'FILL' 1;
 }
 
 .no-obligatorio b {
-  color: #e39282;
+  color: var(--orange);
 }
 
-/* --- Presentación LFE --- */
+/* --- Presentación LFE (#inst209 .preslfe): dos tarjetas blancas —
+   bienvenida (izq) y card de la presentación (dcha, clicable vía JS
+   del tema) con panel azul claro para la ilustración. --- */
 .preslfe .content.block-content {
-  background-color: var(--color-background) !important;
-  border-radius: var(--border-radius) !important;
+  background: transparent !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .preslfe .content.block-content .no-overflow {
   display: flex;
   flex-direction: row;
+  align-items: stretch;
+  gap: 24px;
   overflow: visible !important;
 }
 
 .preslfe .content.block-content .no-overflow .preslfe-izq {
-  width: 70% !important;
-  padding: 1em 2em 1em 1em !important;
+  width: calc(60% - 12px) !important;
+  padding: 2em 4em !important;
+  background: #ffffff;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1091,36 +1150,76 @@ html .has-full-page-slider #block-region-top {
 }
 
 .preslfe .content.block-content .no-overflow .preslfe-izq h3 {
-  font-family: "IVI Glance", "Noto Sans" !important;
-  color: var(--color-primary) !important;
+  font-family: var(--font-title) !important;
+  color: var(--navy-blue) !important;
   font-weight: 400 !important;
+  font-size: 2em;
+  margin: 0 0 1em;
+}
+
+.preslfe .content.block-content .no-overflow .preslfe-izq p {
+  margin: 0 0 0.9em;
+}
+
+.preslfe .content.block-content .no-overflow .preslfe-izq p:last-child {
+  margin-bottom: 0;
 }
 
 .preslfe .content.block-content .no-overflow .preslfe-dcha {
-  width: 30% !important;
+  width: calc(40% - 12px) !important;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1.25em;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: white;
-  padding: 1em;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  justify-content: space-between;
+  gap: 18px;
+  box-shadow: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .preslfe .content.block-content .no-overflow .preslfe-dcha:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.10);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(8, 0, 79, 0.12);
 }
 
-.preslfe .content.block-content .no-overflow .preslfe-dcha span {
-  color: var(--color-primary) !important;
-  font-weight: bold;
+/* Panel azul claro con la ilustración */
+.preslfe .content.block-content .no-overflow .preslfe-ilus {
+  width: 100%;
+  flex: 1;
+  background: var(--bg-blue);
+  border-radius: 10px;
+  padding: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .preslfe .content.block-content .no-overflow .preslfe-dcha img {
-  margin-bottom: var(--spacing-small) !important;
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  margin-bottom: 0 !important;
+}
+
+.preslfe .content.block-content .no-overflow .preslfe-dcha span {
+  color: var(--light-blue) !important;
+  font-weight: 700;
+  font-size: 1.05em;
+  text-align: center;
+  padding: 0 0.5em 0.35em;
+}
+
+@media (max-width: 767px) {
+  .preslfe .content.block-content .no-overflow {
+    flex-direction: column;
+  }
+
+  .preslfe .content.block-content .no-overflow .preslfe-izq,
+  .preslfe .content.block-content .no-overflow .preslfe-dcha {
+    width: 100% !important;
+  }
 }
 
 /* INFO SOBRE PUNTOS LFE — aviso azul claro de marca (con icono i) */
@@ -1154,6 +1253,18 @@ html .has-full-page-slider #block-region-top {
 
 .info-puntos .content.block-content .no-overflow .dcha b {
   color: var(--navy-blue) !important;
+}
+
+/* Icono Material (info relleno) en vez del info.svg */
+.info-puntos .izq .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--light-blue);
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Título de bloques chromeless: aire vertical uniforme */
+.block.chromeless .title.block-title {
+  padding: 20px 0px !important;
 }
 
 /* --- Títulos y bloques --- */
@@ -1206,11 +1317,111 @@ html .has-full-page-slider #block-region-top {
   background: var(--bright-orange) !important;
 }
 
-/* --- Puntos de excelencia --- */
+/* --- Cards de curso Monthly Seminars (#inst287) ---
+   Imagen: la altura la fija el ::before con padding-top (el % se
+   calcula sobre el ancho, así siempre da altura; con aspect-ratio en
+   el div de la foto se colapsaba a 0 por no tener contenido). La foto
+   encaja al ancho y la ventana mide justo su alto → sin blanco arriba
+   ni abajo. Título sin line-clamp y etiqueta de vencimiento en rojo. */
+#inst287 .block_current_learningas-tile__image,
+#inst287 #current_learningas .block_current_learningas-tile__image {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+#inst287 .block_current_learningas-tile__image_ratio,
+#inst287 #current_learningas .block_current_learningas-tile__image_ratio {
+  position: relative !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Proporción del banner: padding-top = 100 / ratio. 38.2% ≈ 2.62:1.
+   Franja blanca abajo → subir el %; recorte por abajo → bajarlo. */
+#inst287 .block_current_learningas-tile__image_ratio::before,
+#inst287 #current_learningas .block_current_learningas-tile__image_ratio::before {
+  content: "" !important;
+  display: block !important;
+  width: 100% !important;
+  padding-top: 38.2% !important;
+}
+
+#inst287 .block_current_learningas-tile__image_ratio_img,
+#inst287 #current_learningas .block_current_learningas-tile__image_ratio_img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: 100% auto !important;
+  background-position: center top !important;
+  background-repeat: no-repeat !important;
+}
+
+#inst287 .block_current_learningas-tile,
+#inst287 .block_current_learningas-tile__content,
+#inst287 .block_current_learningas-tile__link,
+#inst287 .block_current_learningas-tile__maincontent {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+#inst287 .block_current_learningas-tile__content_duedate,
+#inst287 .block_current_learningas-tile__content {
+  position: static !important;
+}
+
+#inst287 .block_current_learningas-tile__link_title,
+#inst287 #current_learningas .block_current_learningas-tile__link_title {
+  display: block !important;
+  -webkit-line-clamp: none !important;
+  line-clamp: none !important;
+  -webkit-box-orient: initial !important;
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+#inst287 .block_current_learningas-tile__content_duedate_text,
+#inst287 #current_learningas .block_current_learningas-tile__content_duedate_text {
+  background: var(--red) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+/* --- Puntos de excelencia (#inst216, Formación de Excelencia): banda
+   del título/subtítulo de cada card con su color de marca translúcido
+   y letra blanca (tile 1 Must Read #AC1D6B 80%, tile 2 Monthly #7B2594
+   80%, tile 3 Asistencia #622A9C 90%). Sin velo blanco del tema
+   (::before) ni backdrop-filter. --- */
+#inst216 .block-totara-featured-links-tile .block-totara-featured-links-content-container {
+  background: none;
+}
+
 #inst216 .block-totara-featured-links-layout .block-totara-featured-links-content {
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  width: 100%;
+  padding: 12px 16px 14px;
   margin-bottom: -5px;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#inst216 .block-totara-featured-links-layout .block-totara-featured-links-content::before {
+  background: rgba(255, 255, 255, 0) !important;
+}
+
+#inst216 .block-totara-featured-links-layout .block-totara-featured-links-content h3,
+#inst216 .block-totara-featured-links-layout .block-totara-featured-links-content p {
+  color: #ffffff !important;
 }
 
 #inst216 .block-totara-featured-links-layout .block-totara-featured-links-content h3 {
@@ -1219,6 +1430,19 @@ html .has-full-page-slider #block-region-top {
 
 #inst216 .block-totara-featured-links-layout .block-totara-featured-links-content p {
   margin-bottom: var(--spacing-small) !important;
+  font-size: 13px;
+}
+
+#inst216 .block-totara-featured-links-tile-1 .block-totara-featured-links-content {
+  background: rgba(172, 29, 107, 0.8);
+}
+
+#inst216 .block-totara-featured-links-tile-2 .block-totara-featured-links-content {
+  background: rgba(123, 37, 148, 0.8);
+}
+
+#inst216 .block-totara-featured-links-tile-3 .block-totara-featured-links-content {
+  background: rgba(98, 42, 156, 0.9);
 }
 
 #inst216 .block-totara-featured-links-layout .block-totara-featured-links-tile.background-cover {
