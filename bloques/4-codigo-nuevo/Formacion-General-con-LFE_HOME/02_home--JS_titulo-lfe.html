@@ -1,0 +1,31 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const targetDiv = document.getElementById('inst11192');
+    
+    if (targetDiv) {
+        const courseLink = targetDiv.querySelector('td.course_courselink a');
+        
+        if (courseLink) {
+            const linkText = courseLink.textContent.trim();
+            const textParts = linkText.split('-');
+            
+            if (textParts.length >= 2) {
+                const firstPart = textParts[0].trim();
+                const secondPart = textParts.slice(1).join('-').trim();
+                
+                const titleSpan = document.querySelector('span.lfe-banner-titulo');
+                if (titleSpan) {
+                    titleSpan.textContent = firstPart;
+                }
+                
+                const typeSpan = document.querySelector('span.lfe-banner-tipo');
+                if (typeSpan) {
+                    typeSpan.innerHTML = '<strong>' + secondPart + '</strong>';
+                }
+                
+                targetDiv.style.display = 'none';
+            }
+        }
+    }
+});
+</script>

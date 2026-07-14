@@ -1,0 +1,111 @@
+<script>
+// Mapeo de href a IDs de Vimeo
+const VIMEO_VIDEOS = {
+    'popup-campus-es': '1084530577',  // Reemplazar con ID de video en inglés
+    'popup-campus-en': '1084530536',  // Reemplazar con ID de video en español
+    'onetech-en': '1166636308',  
+
+    // Añadir más mapeos según sea necesario
+    // 'popup-pt': 'PORTUGUESE_VIDEO_ID',
+};
+// Función para crear modales de Vimeo
+function createVimeoModal() {
+    // Crear contenedor principal del modal
+    const modal = document.createElement('div');
+    modal.id = 'vimeo-custom-modal';
+    modal.className = 'vimeo-modal-container';
+
+    // Contenido del modal
+    const modalContent = document.createElement('div');
+    modalContent.className = 'vimeo-modal-content';
+
+    // Botón de cierre
+    const closeBtn = document.createElement('span');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.className = 'vimeo-modal-close-btn';
+
+    // Contenedor del iframe
+    const iframeContainer = document.createElement('div');
+    iframeContainer.className = 'vimeo-iframe-container';
+
+    // Iframe para el video
+    const iframe = document.createElement('iframe');
+    iframe.className = 'vimeo-iframe';
+    iframe.allow = "autoplay; fullscreen; picture-in-picture";
+    iframe.allowFullscreen = true;
+
+    // Ensamblar el modal
+    iframeContainer.appendChild(iframe);
+    modalContent.appendChild(closeBtn);
+    modalContent.appendChild(iframeContainer);
+    modal.appendChild(modalContent);
+
+    // Añadir modal al cuerpo del documento
+    document.body.appendChild(modal);
+
+    // Función para pausar el video
+    const pauseVideo = () => {
+        if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage('{"method":"pause"}', '*');
+        }
+    };
+
+    // Función para cerrar el modal
+    const closeModal = () => {
+        pauseVideo();
+        modal.style.display = 'none';
+    };
+
+    // Eventos de cierre
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Método para abrir el modal con un video específico
+    const openModal = (videoId) => {
+        if (videoId) {
+            iframe.src = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+        }
+        modal.style.display = 'flex';
+    };
+
+    // Inicializar eventos de los botones
+    const initializeVideoButtons = () => {
+        const videoBtns = document.querySelectorAll('.vimeo-trigger-btn');
+        
+        videoBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Extraer el ID del modal del atributo href
+                const modalId = btn.getAttribute('href').replace('#', '');
+                
+                // Obtener el ID del video correspondiente
+                const videoId = VIMEO_VIDEOS[modalId] || VIMEO_VIDEOS['popup-en'];
+                
+                // Abrir el modal con el video
+                openModal(videoId);
+            });
+        });
+    };
+
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeVideoButtons);
+    } else {
+        initializeVideoButtons();
+    }
+
+    // Devolver métodos públicos
+    return {
+        open: openModal,
+        close: closeModal
+    };
+}
+
+// Crear el modal al cargar la página
+const vimeoModal = createVimeoModal();
+</script>
