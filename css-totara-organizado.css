@@ -1243,7 +1243,7 @@ html .has-full-page-slider #block-region-top {
 .cta-catalog .content.block-content {
   background: linear-gradient(100deg,
     var(--light-blue) 0%, #1E7FE0 48%, var(--teal) 100%) !important;
-  border-radius: 16px !important;
+  border-radius: 10px !important;
   color: #ffffff !important;
   padding: 2em 2.5em !important;
   box-shadow: none !important;
