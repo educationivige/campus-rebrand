@@ -976,10 +976,11 @@ html .has-full-page-slider #block-region-top {
   margin: auto !important;
 }
 
-/* --- Hero LFE (rebranding): overlay degradado de marca sobre la foto ---
-   El .nolink (transparente en el HTML) recibe un velo rosa→morado que
-   cubre la foto bg-lfe.jpg. Colores del prototipo Figma. */
-/* Contenedor del slide posicionado para anclar el overlay absoluto */
+/* --- Hero LFE (rebranding): el degradado rosa→morado y el círculo
+   blanco del logo van INCRUSTADOS en la imagen de fondo que sube
+   Beatriz (decisión 2026-07-14); el CSS ya no los pinta. El .nolink
+   queda como capa transparente que centra el texto sobre la foto. */
+/* Contenedor del slide posicionado para anclar la capa absoluta */
 .block_slickslider.lfe_hero .slick-slide,
 .block_slickslider.lfe_hero .slick-slide > .elslide {
   position: relative !important;
@@ -993,21 +994,14 @@ html .has-full-page-slider #block-region-top {
   justify-content: center !important;
   border-radius: 20px !important;
   padding: 2.5em 1em !important;
-  background: linear-gradient(115deg,
-    rgba(176, 28, 103, 0.90) 0%,
-    rgba(122, 36, 148, 0.90) 50%,
-    rgba(91, 44, 158, 0.92) 100%) !important;
+  background: none !important;
 }
 
-/* Badge circular del logo LFE (fondo blanco, como el mockup) */
+/* Logo LFE: solo tamaño y centrado (sin círculo blanco) */
 .block_slickslider.lfe_hero .conttext .text img {
   width: 118px !important;
   height: 118px !important;
   object-fit: contain;
-  background: #ffffff;
-  border-radius: 50%;
-  padding: 16px;
-  box-shadow: 0 6px 20px rgba(8, 0, 79, 0.20);
   margin: 0 auto 18px !important;
 }
 
