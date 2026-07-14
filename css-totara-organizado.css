@@ -31,7 +31,7 @@
   --color-secondary-quiz: var(--light-blue);     /* antes #006d7c (teal quiz) */
   --color-gray-light:     var(--warm-gray);      /* antes #f9f9f9 */
   --color-gray-border:    var(--border-soft);    /* antes #dddddd */
-  --color-background:     var(--bg-mint);        /* antes #EFF5F6 */
+  --color-background:     #f1f5fc;               /* azul muy claro (antes var(--bg-mint) menta) */
   --color-white:          var(--white);          /* antes #ffffff (idéntico) */
   --color-text-gray:      var(--text-gray);      /* antes #666666 — REVISAR contraste */
   --color-text-light:     var(--text-gray);      /* antes #999999 */
