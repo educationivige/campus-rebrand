@@ -328,6 +328,13 @@ a[href*="/message/edit.php"] {
     display: none;
 }
 
+/* Sin migas de pan en la Home (dashboard 9). Se oculta solo la lista,
+   no .breadcrumb-container entero, para no perder los botones de
+   edición que el tema pinta ahí (Personalizar esta página). */
+#page-totara-dashboard-9 .breadcrumb-container .breadcrumb-nav {
+  display: none;
+}
+
 .breadcrumb {
   color: var(--light-blue);
 }
@@ -751,8 +758,10 @@ html .has-full-page-slider #block-region-top {
   padding-top: 20px !important;
 }
 
+/* Sin padding lateral: el slider apura la columna, alineado con los
+   bloques de abajo (verificado 2026-07-14) */
 #block-region-top #inst11487.block_slickslider {
-  padding: 1.5rem;
+  padding: 1.5rem 0;
 }
 
 /* Espacio bajo el slider del hero (la regla general pone 50px) */
