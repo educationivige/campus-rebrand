@@ -1,0 +1,79 @@
+/* REGISTRO DE CERTIFICADOS LfE — LISTADO
+   PEGAR ESTE CODIGO (tal cual, sin <script>) en la plantilla
+   "Javascript" de la base de datos (templates.php?d=3).
+   Totara lo envuelve en <script> al mostrarlo. */
+
+(function () {
+  'use strict';
+
+  var I18N = {
+    es: { ver:'Ver', down:'Descargar' },
+    en: { ver:'View', down:'Download' },
+    it: { ver:'Visualizza', down:'Scarica' },
+    pt: { ver:'Ver', down:'Descarregar' },
+    cs: { ver:'Zobrazit', down:'Stáhnout' },
+    sv: { ver:'Visa', down:'Ladda ner' }
+  };
+  function currentLang() {
+    var l = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+    if (!l && window.M && window.M.cfg && window.M.cfg.language) l = String(window.M.cfg.language).toLowerCase();
+    return l.slice(0, 2) || 'es';
+  }
+  var L = I18N[currentLang()] || I18N.es;
+  function icon(n) { return '<span class="material-symbols-outlined">' + n + '</span>'; }
+
+  function enhance(entry) {
+    if (entry.dataset.iviList) return;
+    entry.dataset.iviList = '1';
+    entry.classList.add('ivi-cert-list__card');
+
+    var right = entry.querySelector('.ividb_right');
+
+    // Enlace real al archivo del certificado
+    var link = entry.querySelector('.ividb_certificatelink a[href]') ||
+               entry.querySelector('.ividb_right a[href]') ||
+               entry.querySelector('.ividb_certificatelink img[src]');
+    var url = link ? (link.getAttribute('href') || link.getAttribute('src') || '') : '';
+    var isPdf = /\.pdf(\?|$)/i.test(url);
+    var fileIcon = isPdf ? 'picture_as_pdf' : (url ? 'description' : 'draft');
+
+    // Caja: icono de archivo + botones Ver/Descargar
+    var box = document.createElement('div');
+    box.className = 'ivi-cert-list__file';
+    var html = '<span class="ivi-cert-list__fileicon' + (isPdf ? ' is-pdf' : '') + '">' + icon(fileIcon) + '</span>';
+    if (url) {
+      html += '<div class="ivi-cert-list__actions">' +
+        '<a class="ivi-btn ivi-btn--ghost ivi-btn--sm" href="' + url + '" target="_blank" rel="noopener">' + icon('visibility') + ' ' + L.ver + '</a>' +
+        '<a class="ivi-btn ivi-btn--primary ivi-btn--sm" href="' + url + '" download>' + icon('download') + ' ' + L.down + '</a>' +
+      '</div>';
+    }
+    box.innerHTML = html;
+
+    if (right) {
+      // Oculta la previa (pdf.js / imagen / enlace crudo) y coloca la caja
+      Array.prototype.forEach.call(
+        right.querySelectorAll('.ividb_certificatelink, canvas, img, #pdf-container, [id="pdf-container"]'),
+        function (n) { n.style.display = 'none'; }
+      );
+      right.appendChild(box);
+    } else {
+      entry.appendChild(box);
+    }
+  }
+
+  function init() {
+    var entries = document.querySelectorAll('.ividb_cert');
+    if (!entries.length) return;
+    Array.prototype.forEach.call(entries, enhance);
+    // Contenedores de previa sueltos fuera de las cards
+    Array.prototype.forEach.call(document.querySelectorAll('#pdf-container, [id="pdf-container"]'),
+      function (n) { n.style.display = 'none'; });
+  }
+
+  function boot() { init(); setTimeout(init, 600); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();

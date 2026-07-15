@@ -1,0 +1,228 @@
+<!-- ============================================================
+     REGISTRO DE CERTIFICADOS LfE — rediseño del formulario
+     (mod-data edit, cmid-20259). Reorganiza el contenido de
+     div[role="main"] siguiendo el ejemplo de diseño, con colores
+     corporativos, MOVIENDO los inputs reales (el form sigue posteando
+     a edit.php sin cambios). CSS: clases ivi-cert-* en css-adicional /
+     css-totara-organizado.css.
+
+     i18n en los 6 idiomas del campus (es/en/it/pt/cs/sv) por JS —
+     inyección en cliente, {mlang} no aplica. Las traducciones viven en
+     anadir-certificados--i18n.html (window.IVI_CERT_I18N): PEGAR ESE
+     BLOQUE ANTES que este.
+
+     Pegar este bloque en el "HTML adicional" del dashboard/página o en
+     un bloque HTML de la misma página. Idempotente.
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---------------- i18n ---------------- */
+  var I18N = window.IVI_CERT_I18N || { es: {} };
+
+  function currentLang() {
+    var l = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+    if (!l && window.M && window.M.cfg && window.M.cfg.language) l = String(window.M.cfg.language).toLowerCase();
+    return l.slice(0, 2) || 'es';
+  }
+  var L = I18N[currentLang()] || I18N.es;
+  function t(k) { return (L && L[k] != null) ? L[k] : (I18N.es[k] != null ? I18N.es[k] : k); }
+  function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function icon(name) { return '<span class="material-symbols-outlined">' + name + '</span>'; }
+
+  /* ---------------- construcción de bloques HTML ---------------- */
+  function bannerHtml() {
+    return '<div class="ivi-cert-intro">' +
+      '<h3 class="ivi-cert-intro__title">' + esc(t('title')) + '</h3>' +
+      '<p class="ivi-cert-intro__desc">' + esc(t('desc')) + '</p>' +
+    '</div>';
+  }
+
+  function guideHtml() {
+    var pill = function (p, h) { return '<div class="ivi-cert-pill"><b>' + p + ' ' + esc(t('pts')) + '</b><span>' + h + '</span></div>'; };
+    var rule = function (variant, pts, txt, star) {
+      return '<div class="ivi-cert-rule"><span class="ivi-cert-rule__pts">' + pts + '</span>' +
+             '<span>' + esc(txt) + (star ? ' <span class="ivi-cert-star">*</span>' : '') + '</span></div>';
+    };
+    return '<div class="ivi-cert-guide">' +
+      // Externos
+      '<div class="ivi-cert-card ivi-cert-card--externos">' +
+        '<div class="ivi-cert-card__head"><span class="ivi-cert-card__icon">' + icon('school') + '</span>' +
+          '<h3 class="ivi-cert-card__title">' + esc(t('ext_title')) + '</h3></div>' +
+        '<p class="ivi-cert-card__desc">' + esc(t('ext_desc')) + '</p>' +
+        '<div class="ivi-cert-pills">' + pill('100','4 – 10h') + pill('200','11 – 50h') + pill('300','&gt; 50h') + '</div>' +
+        '<div class="ivi-cert-exclude"><p class="ivi-cert-exclude__t">' + esc(t('exclude')) + '</p><ul>' +
+          '<li>' + esc(t('ex1')) + '</li><li>' + esc(t('ex2')) + '</li><li>' + esc(t('ex3')) + '</li></ul></div>' +
+      '</div>' +
+      // Attending
+      '<div class="ivi-cert-card ivi-cert-card--attending">' +
+        '<div class="ivi-cert-card__head"><span class="ivi-cert-card__icon">' + icon('groups') + '</span>' +
+          '<h3 class="ivi-cert-card__title">' + esc(t('att_title')) + '</h3></div>' +
+        rule('att','100', t('att1'), false) + rule('att','200', t('att2'), false) + rule('att','300', t('att3'), false) +
+      '</div>' +
+      // Delivery
+      '<div class="ivi-cert-card ivi-cert-card--delivery">' +
+        '<div class="ivi-cert-card__head"><span class="ivi-cert-card__icon">' + icon('campaign') + '</span>' +
+          '<h3 class="ivi-cert-card__title">' + esc(t('del_title')) + '</h3></div>' +
+        rule('del','300', t('del1'), true) + rule('del','200', t('del2'), true) + rule('del','400', t('del3'), false) +
+      '</div>' +
+    '</div>';
+  }
+
+  function noteHtml(listUrl) {
+    return '<div class="ivi-cert-note">' + icon('info') +
+      '<div><span class="ivi-cert-star">*</span> ' + esc(t('note')) +
+      (listUrl ? ' · <a href="' + listUrl + '" target="_blank" rel="noopener">' + esc(t('note_link')) + '</a>' : '') +
+      '</div></div>';
+  }
+
+  /* ---------------- helpers de campos (mueven inputs reales) ---------------- */
+  function moveField(inputEl, labelKey, required, full) {
+    if (!inputEl) return null;
+    var f = el('div', 'ivi-cert-field' + (full ? ' ivi-cert-field--full' : ''));
+    f.appendChild(el('label', 'ivi-cert-field__label', esc(t(labelKey)) + (required ? ' <span class="req">*</span>' : '')));
+    var ctl = el('div', 'ivi-cert-field__control');
+    ctl.appendChild(inputEl);           // MOVE el input real
+    f.appendChild(ctl);
+    return f;
+  }
+
+  function certField(form) {
+    var hidden = form.querySelector('input[name="field_26_file"]');
+    var fs = hidden ? hidden.closest('fieldset') : null;
+    var fm = fs || (hidden ? hidden.parentNode : null);
+    if (!fm) return null;
+    var f = el('div', 'ivi-cert-field ivi-cert-field--full');
+    f.appendChild(el('label', 'ivi-cert-field__label', esc(t('f_cert')) + ' <span class="req">*</span>'));
+    var drop = el('div', 'ivi-cert-drop');
+    var header = el('div', 'ivi-cert-drop__header',
+      '<div class="ivi-cert-drop__icon">' + icon('upload_file') + '</div>' +
+      '<p class="ivi-cert-drop__title">' + esc(t('drop_title')) + '</p>' +
+      '<p class="ivi-cert-drop__hint"><a class="ivi-cert-drop__browse" role="button" tabindex="0">' +
+        esc(t('drop_or')) + '</a> · ' + esc(t('drop_hint')) + '</p>');
+    drop.appendChild(header);
+    // Mueve el filemanager real (con su input hidden) dentro del dropzone
+    if (hidden && !fs) drop.appendChild(hidden);
+    drop.appendChild(fm);
+    f.appendChild(drop);
+    // "o búscalo en tu equipo" dispara el botón "Añadir archivo" del filemanager
+    var browse = header.querySelector('.ivi-cert-drop__browse');
+    browse.addEventListener('click', function (e) {
+      e.preventDefault();
+      var add = drop.querySelector('.fp-btn-add a, .fp-btn-add button');
+      if (add) add.click();
+    });
+    return f;
+  }
+
+  /* ---------------- toolbar desde .tabtree ---------------- */
+  function buildTabs(main) {
+    var tabs = el('div', 'ivi-cert-tabs');
+    var srcTabs = main.querySelectorAll('.tabtree .nav-tabs > li');
+    var iconsByText = { 'listado':'list', 'ver individual':'article', 'buscar':'search', 'subir certificado':'upload' };
+    srcTabs.forEach(function (li) {
+      var a = li.querySelector('a');
+      var txt = (a ? a.textContent : (li.textContent || '')).trim();
+      var href = a ? a.getAttribute('href') : null;
+      var isActive = li.classList.contains('active') || !href;
+      var ic = iconsByText[txt.toLowerCase()] || 'chevron_right';
+      var cls = 'ivi-btn ivi-btn--sm ' + (isActive ? 'ivi-btn--secondary' : 'ivi-btn--ghost');
+      var node = el(href && !isActive ? 'a' : 'span', cls, icon(ic) + ' ' + esc(txt));
+      if (href && !isActive) node.setAttribute('href', href);
+      tabs.appendChild(node);
+    });
+    return tabs;
+  }
+
+  /* ---------------- init ---------------- */
+  function init() {
+    var main = document.querySelector('div[role="main"]');
+    if (!main) return;
+    var form = main.querySelector('form[action="edit.php"], form[action*="edit.php"]');
+    if (!form) return;
+    var table = form.querySelector('table.mod-data-default-template, table.ividb-entry');
+    if (!table) return;
+    if (main.querySelector('.ivi-cert-form')) return;      // idempotente
+
+    // URL del listado de congresos (enlace del intro) y del listado (primera tab)
+    var introLink = main.querySelector('#intro a[href*="/mod/page/"]');
+    var listUrl = introLink ? introLink.getAttribute('href') : null;
+    var firstTab = main.querySelector('.tabtree .nav-tabs a[href]');
+    var cancelUrl = firstTab ? firstTab.getAttribute('href') : '#';
+
+    var wrap = el('div', 'ivi-cert-wrap');
+    wrap.insertAdjacentHTML('beforeend', bannerHtml());
+    wrap.insertAdjacentHTML('beforeend', guideHtml());
+    wrap.insertAdjacentHTML('beforeend', noteHtml(listUrl));
+    wrap.appendChild(buildTabs(main));
+
+    // ---- Tarjeta del formulario ----
+    var card = el('div', 'ivi-cert-form');
+    card.appendChild(el('h3', 'ivi-cert-form__title', esc(t('form_title'))));
+    card.appendChild(el('p', 'ivi-cert-form__req', t('form_req').replace('*', '<span class="req">*</span>')));
+
+    // Sección Datos de la actividad
+    var secD = el('div', 'ivi-cert-section ivi-cert-section--datos');
+    secD.appendChild(el('div', 'ivi-cert-section__head',
+      '<span class="ivi-cert-section__bar"></span><h4 class="ivi-cert-section__title">' + esc(t('sec_datos')) + '</h4>'));
+    var gridD = el('div', 'ivi-cert-grid');
+    gridD.appendChild(moveField(document.getElementById('field_23'), 'f_tipo', true, false));
+    gridD.appendChild(moveField(document.getElementById('field_25'), 'f_duracion', true, false));
+    gridD.appendChild(moveField(document.getElementById('field_24'), 'f_nombre', true, true));
+    var cert = certField(form); if (cert) gridD.appendChild(cert);
+    secD.appendChild(gridD);
+    card.appendChild(secD);
+
+    // Sección Validación (uso interno) — solo si las filas adminvisible existen
+    var adminRow = table.querySelector('tr.ividb_adminvisible');
+    if (document.getElementById('field_27')) {
+      var secV = el('div', 'ivi-cert-section ivi-cert-section--validacion ividb_adminvisible');
+      secV.appendChild(el('div', 'ivi-cert-section__head',
+        '<span class="ivi-cert-section__bar"></span><h4 class="ivi-cert-section__title">' + esc(t('sec_valid')) + '</h4>' +
+        '<span class="ivi-cert-badge-int">' + esc(t('interno')) + '</span>'));
+      secV.appendChild(el('p', 'ivi-cert-section__note', esc(t('valid_note'))));
+      var gridV = el('div', 'ivi-cert-grid');
+      gridV.appendChild(moveField(document.getElementById('field_27'), 'f_estado', false, false));
+      gridV.appendChild(moveField(document.getElementById('field_28'), 'f_puntos', false, false));
+      gridV.appendChild(moveField(document.getElementById('field_30'), 'f_motivo', false, false));
+      gridV.appendChild(moveField(document.getElementById('field_31'), 'f_otro', false, false));
+      gridV.appendChild(moveField(document.getElementById('field_29'), 'f_coment', false, true));
+      secV.appendChild(gridV);
+      // Respeta la visibilidad admin del template original
+      if (adminRow && getComputedStyle(adminRow).display === 'none') secV.style.display = 'none';
+      card.appendChild(secV);
+    }
+
+    // Botones (mueve los submit reales, reetiquetados/reestilizados)
+    var actions = el('div', 'ivi-cert-actions');
+    var save = form.querySelector('input[name="saveandview"]');
+    var add = form.querySelector('input[name="saveandadd"]');
+    if (add) { add.className = 'ivi-cert-btn ivi-cert-btn--outline'; add.value = t('btn_add'); actions.appendChild(add); }
+    if (save) { save.className = 'ivi-cert-btn ivi-cert-btn--primary'; save.value = t('btn_save'); actions.appendChild(save); }
+    card.appendChild(actions);
+
+    wrap.appendChild(card);
+
+    // ---- Insertar y ocultar lo original ----
+    // El wrap va dentro del form para que los submits sigan enviando el form
+    form.insertBefore(wrap, form.firstChild);
+    // Oculta el chrome original que ya no se usa
+    var h2 = main.querySelector('h2');
+    var intro = main.querySelector('#intro');
+    var tabtree = main.querySelector('.tabtree');
+    [h2, intro, tabtree].forEach(function (n) { if (n) n.style.display = 'none'; });
+    var oldBox = form.querySelector('.box.generalbox');   // "Nueva entrada" original
+    if (oldBox) oldBox.style.display = 'none';
+
+    document.body.classList.add('ivi-cert-active');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 300); });
+  } else {
+    setTimeout(init, 300);
+  }
+})();
+</script>
