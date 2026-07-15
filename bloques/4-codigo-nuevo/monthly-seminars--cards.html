@@ -1,0 +1,295 @@
+<!-- ============================================================
+     MONTHLY SEMINARS COMPLETADOS — cards estilo Expediente
+     (rebranding IVI 2026)
+
+     Qué hace:
+     - Lee la tabla de reportbuilder del bloque #inst8174
+       ("Monthly Seminars Completados", rb_source_course_completion).
+     - Por cada seminario genera una .exp-card con la imagen del curso
+       (fetch a la página del curso, .asimage) a sangre completa, badge
+       "Finalizado: <fecha>" sobre la imagen y, en el cuerpo: título,
+       badge de categoría, fecha de inscripción y barra de progreso.
+       Si el curso no tiene imagen queda el gradiente de marca con icono.
+     - Oculta la tabla original (queda como fallback si el JS no corre).
+
+     Estilos: reutiliza .exp-card* / .exp-badge* / .exp-status* /
+     .exp-progress* y .cyber-standalone__grid de css-totara-organizado.css.
+     Solo añade #ms-grid (columnas auto-fill) en el CSS.
+
+     Datos: el informe debe exponer, además de Nombre/Progreso/Fecha de
+     finalización, las columnas "Categoría del curso" y "Fecha de
+     inscripción" para que salgan esos dos badges. El script los omite
+     con elegancia si el informe no los trae.
+
+     Pegar este bloque en el "HTML adicional" del dashboard de Monthly
+     Seminars (o en un bloque HTML de la misma página). Idempotente.
+     ============================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var CONFIG = {
+        blockId: 'inst8174',
+        gridId:  'ms-grid',
+        debug:   true
+    };
+
+    var imageCache = {};
+
+    // Etiqueta "Calificación obtenida" en los 6 idiomas del campus.
+    // El JS inyecta contenido en cliente, así que {mlang} (filtro de
+    // servidor) no aplica: se elige la cadena según el idioma actual.
+    var GRADE_LABEL = {
+        es: 'Calificación obtenida',
+        en: 'Grade achieved',
+        it: 'Voto ottenuto',
+        pt: 'Nota obtida',
+        cs: 'Získané hodnocení',
+        sv: 'Uppnått betyg'
+    };
+
+    function currentLang() {
+        var l = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+        if (!l && window.M && window.M.cfg && window.M.cfg.language) {
+            l = String(window.M.cfg.language).toLowerCase();
+        }
+        return l.slice(0, 2) || 'es';
+    }
+
+    function gradeLabel() {
+        return GRADE_LABEL[currentLang()] || GRADE_LABEL.en || GRADE_LABEL.es;
+    }
+
+    function log(msg, data) {
+        if (CONFIG.debug) console.log('[MonthlySeminars] ' + msg, data || '');
+    }
+
+    function escapeHtml(s) {
+        return (s || '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Texto de una celda por su clase de columna (normaliza &nbsp;)
+    function cellText(row, columnClass) {
+        var cell = row.querySelector('td.' + columnClass);
+        if (!cell) return '';
+        return (cell.textContent || '').replace(/ /g, ' ').trim();
+    }
+
+    // Fecha de finalización: prueba varias columnas del informe
+    function completionDate(row) {
+        var candidates = [
+            'course_completion_completeddate',
+            'course_completion_timecompleted',
+            'course_completion_datefinished',
+            'course_enddate'
+        ];
+        for (var i = 0; i < candidates.length; i++) {
+            var t = cellText(row, candidates[i]);
+            if (t && t !== '-') return t;
+        }
+        return '';
+    }
+
+    // Fecha de inscripción (varias variantes de nombre de columna)
+    function enrolDate(row) {
+        var candidates = [
+            'course_completion_enrolleddate',
+            'course_completion_enroldate',
+            'user_enrolment_enroldate'
+        ];
+        for (var i = 0; i < candidates.length; i++) {
+            var t = cellText(row, candidates[i]);
+            if (t && t !== '-') return t;
+        }
+        return '';
+    }
+
+    // Categoría / tipo del curso
+    function category(row) {
+        var candidates = ['course_category_name', 'course_category_namelink', 'course_type'];
+        for (var i = 0; i < candidates.length; i++) {
+            var t = cellText(row, candidates[i]);
+            if (t && t !== '-') return t;
+        }
+        return '';
+    }
+
+    function extractProgress(row) {
+        var cell = row.querySelector('td.course_completion_progresspercent');
+        if (!cell) return null;
+        var bar = cell.querySelector('.bar[aria-valuenow]');
+        if (bar) {
+            var v = parseInt(bar.getAttribute('aria-valuenow'), 10);
+            if (!isNaN(v)) return v;
+        }
+        var txt = cell.querySelector('.progressbar__text');
+        if (txt) {
+            var m = (txt.textContent || '').match(/(\d+)/);
+            if (m) return parseInt(m[1], 10);
+        }
+        return null;
+    }
+
+    function extractCourses(block) {
+        var table = block.querySelector('table.reportbuilder-table');
+        if (!table) return [];
+        var courses = [];
+        table.querySelectorAll('tbody > tr').forEach(function (row) {
+            // El nombre puede venir con icono (course_courselinkicon) o sin él
+            var link = row.querySelector('td.course_courselinkicon a, td.course_courselink a');
+            if (!link) return;
+            var progress = extractProgress(row);
+            // Informe de "Completados" → 100%
+            if (progress === null) progress = 100;
+            courses.push({
+                url:          link.getAttribute('href') || '#',
+                titulo:       (link.textContent || '').replace(/ /g, ' ').trim(),
+                tipo:         category(row),
+                inscripcion:  enrolDate(row),
+                finalizacion: completionDate(row),
+                calificacion: cellText(row, 'course_completion_grade'),
+                progress:     progress,
+                imagen:       ''
+            });
+        });
+        return courses;
+    }
+
+    // Imagen del curso desde su página (.asimage background-image / og:image)
+    function fetchCourseImage(url) {
+        if (!url || url === '#') return Promise.resolve('');
+        if (imageCache[url] !== undefined) return Promise.resolve(imageCache[url]);
+        return fetch(url, { credentials: 'same-origin' })
+            .then(function (res) {
+                if (!res.ok) { imageCache[url] = ''; return ''; }
+                return res.text().then(function (html) {
+                    var doc = new DOMParser().parseFromString(html, 'text/html');
+                    var img = '';
+                    var asimage = doc.querySelector('.asimage');
+                    if (asimage) {
+                        var m = (asimage.getAttribute('style') || '')
+                            .match(/background-image\s*:\s*url\(["']?([^"')]+)["']?\)/);
+                        if (m) img = m[1];
+                    }
+                    if (!img) {
+                        var og = doc.querySelector('meta[property="og:image"]');
+                        if (og) img = og.getAttribute('content') || '';
+                    }
+                    imageCache[url] = img;
+                    return img;
+                });
+            })
+            .catch(function (err) {
+                log('Error al obtener imagen de ' + url, err);
+                imageCache[url] = '';
+                return '';
+            });
+    }
+
+    function badge(variant, iconClass, text) {
+        return '<span class="exp-badge exp-badge--' + variant + '">' +
+               '<i class="' + iconClass + '"></i> ' + escapeHtml(text) + '</span>';
+    }
+
+    function buildCard(course) {
+        var card = document.createElement('a');
+        card.className = 'exp-card';
+        card.href = course.url;
+        card.target = '_blank';
+        card.rel = 'noopener';
+
+        var badges = [];
+        if (course.tipo) badges.push(badge('type', 'fa-regular fa-folder-open', course.tipo));
+        if (course.inscripcion) {
+            badges.push(badge('enrol', 'fa-regular fa-calendar-plus',
+                'Inscripción: ' + course.inscripcion));
+        }
+
+        var statusText = 'Finalizado' + (course.finalizacion ? ': ' + course.finalizacion : '');
+        var statusBadge =
+            '<span class="exp-status exp-status--done">' +
+                '<i class="fa-regular fa-circle-check"></i> ' + escapeHtml(statusText) +
+            '</span>';
+
+        var bgStyle = course.imagen
+            ? ' style="background-image:url(\'' + course.imagen + '\')"' : '';
+        if (course.imagen) card.classList.add('exp-card--has-image');
+
+        // Badge de calificación obtenida, justo debajo del título
+        var gradeRow = course.calificacion
+            ? '<div class="exp-badges">' +
+                  '<span class="exp-badge exp-badge--grade">' +
+                      '<i class="fa-solid fa-medal"></i> ' +
+                      escapeHtml(gradeLabel() + ': ' + course.calificacion) +
+                  '</span>' +
+              '</div>'
+            : '';
+
+        card.innerHTML =
+            '<div class="exp-card__image">' +
+                '<div class="exp-card__bg"' + bgStyle + '></div>' +
+                '<span class="exp-card__icon"><i class="fa-regular fa-file-lines" aria-hidden="true"></i></span>' +
+                statusBadge +
+            '</div>' +
+            '<div class="exp-card__body">' +
+                '<strong class="exp-card__title">' + escapeHtml(course.titulo) + '</strong>' +
+                gradeRow +
+                (badges.length ? '<div class="exp-badges">' + badges.join('') + '</div>' : '') +
+                '<div class="exp-progress exp-progress--done">' +
+                    '<div class="exp-progress__track">' +
+                        '<div class="exp-progress__fill" style="width:' + course.progress + '%"></div>' +
+                    '</div>' +
+                    '<span class="exp-progress__label">' + course.progress + '%</span>' +
+                '</div>' +
+            '</div>';
+
+        return card;
+    }
+
+    function init() {
+        var block = document.getElementById(CONFIG.blockId);
+        if (!block) { log('Bloque ' + CONFIG.blockId + ' ausente, omitiendo'); return; }
+
+        var content = block.querySelector('.content.block-content') || block.querySelector('.content');
+        if (!content) { log('Sin .content en el bloque'); return; }
+
+        // Idempotente
+        if (content.querySelector('#' + CONFIG.gridId)) return;
+
+        var courses = extractCourses(block);
+        if (!courses.length) { log('Sin filas en el informe'); return; }
+
+        var grid = document.createElement('ul');
+        grid.className = 'cyber-standalone__grid';
+        grid.id = CONFIG.gridId;
+
+        courses.forEach(function (course) {
+            var li = document.createElement('li');
+            var card = buildCard(course);
+            li.appendChild(card);
+            grid.appendChild(li);
+            fetchCourseImage(course.url).then(function (img) {
+                if (!img) return;
+                var bg = card.querySelector('.exp-card__bg');
+                if (bg) bg.style.backgroundImage = "url('" + img + "')";
+                card.classList.add('exp-card--has-image');
+            });
+        });
+
+        // Ocultar contenido original (tabla + avisos) e inyectar el grid
+        Array.prototype.forEach.call(content.children, function (ch) { ch.style.display = 'none'; });
+        content.appendChild(grid);
+        document.body.classList.add('ms-cards-active');
+
+        log('Inicializado. Seminarios: ' + courses.length);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 300); });
+    } else {
+        setTimeout(init, 300);
+    }
+})();
+</script>
