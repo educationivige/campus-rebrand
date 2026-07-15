@@ -5369,7 +5369,12 @@ body.ivirma-cyber-modal-open { overflow: hidden; }
 
 #region-main .block .content:has(.dai-wrap),
 #region-main .block:has(.dai-wrap) > .content,
-#region-main .block:has(.dai-wrap) {
+#region-main .block:has(.dai-wrap),
+#region-main .block:has(#ms-grid),
+#region-main .block:has(#ms-grid) > .content,
+#inst8174,
+#inst8174 > .content,
+#inst8174 .content.block-content {
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -7447,4 +7452,322 @@ div:has(> #region-main) > #block-region-side-post {
   font-size: 16px !important;
   color: var(--light-blue, #004DF0) !important;
   text-shadow: none !important;
+}
+
+/* ============================================================
+   MONTHLY SEMINARS COMPLETADOS (#inst8174) — cards estilo
+   Expediente (JS) + tabla estilizada de fallback (IVI 2026)
+   El script monthly-seminars--cards.html oculta la tabla e inyecta
+   .exp-card en #ms-grid. Si el JS no corre, queda la tabla estilizada.
+   El fondo transparente del bloque se añadió a la regla .dai-wrap.
+   ============================================================ */
+
+/* --- A) Tabla estilizada de fallback. La <table> del reportbuilder se
+   maqueta con flex por fila. Acotado a #inst8174 (inst8190 conserva el
+   look antiguo); .totaratable sube la especificidad para ganar a las
+   reglas #inst8174/#inst8190 con !important de la sección de informes. */
+
+/* Card blanca contenedora */
+#inst8174 .totara-table-container {
+  background: #fff;
+  border: 1px solid rgba(8, 0, 79, 0.06);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+/* Deshacer el layout de <table> para maquetar cada fila con flex */
+#inst8174 .totaratable,
+#inst8174 .totaratable thead,
+#inst8174 .totaratable tbody {
+  display: block;
+  width: 100%;
+  border: none;
+}
+
+#inst8174 .totaratable thead tr,
+#inst8174 .totaratable tbody tr {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 0;
+}
+
+/* Columnas: mismos flex en cabecera y cuerpo para que alineen */
+#inst8174 th.course_courselinkicon,
+#inst8174 td.course_courselinkicon {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#inst8174 th.course_completion_progresspercent,
+#inst8174 td.course_completion_progresspercent {
+  flex: 0 0 260px;
+  display: flex;
+  justify-content: center;
+}
+#inst8174 th.course_completion_grade,
+#inst8174 td.course_completion_grade {
+  flex: 0 0 auto;
+}
+/* La fecha de finalización queda oculta (ya viene con display:none) */
+#inst8174 th.course_completion_completeddate,
+#inst8174 td.course_completion_completeddate {
+  display: none !important;
+}
+
+/* --- Cabecera limpia: etiquetas navy en mayúsculas, sin barra azul --- */
+#inst8174 thead tr {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border-soft);
+}
+#inst8174 .totaratable thead tr th {
+  background: transparent !important;
+  color: var(--navy-blue) !important;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+#inst8174 .totaratable thead tr th a {
+  color: var(--navy-blue) !important;
+  padding: 0 !important;
+  text-decoration: none;
+}
+#inst8174 thead .iconsort,
+#inst8174 thead .commands,
+#inst8174 thead .accesshide,
+#inst8174 thead .sr-only {
+  display: none !important;
+}
+
+/* --- Filas del cuerpo --- */
+#inst8174 tbody tr {
+  padding: 18px 22px;
+  border-top: 1px solid var(--border-soft);
+}
+#inst8174 tbody tr:first-child { border-top: none; }
+#inst8174 td {
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Columna Nombre: icono + título navy y badge "Completado" debajo */
+#inst8174 td.course_courselinkicon {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+#inst8174 td.course_courselinkicon a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--navy-blue);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-decoration: none;
+}
+#inst8174 td.course_courselinkicon a:hover { color: var(--light-blue); }
+#inst8174 td.course_courselinkicon img.course_icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Badge "Completado" (turquesa con check) */
+#inst8174 td.course_courselinkicon::after {
+  content: "\2714  Completado";
+  display: inline-flex;
+  align-items: center;
+  margin-left: 52px;            /* alinea bajo el título, tras el icono (38+14) */
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: var(--teal);
+  color: var(--navy-blue);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* --- Columna Progreso: barra teal + % navy a la derecha --- */
+#inst8174 .progressbar_container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 150px;
+}
+/* Elementos auxiliares del bloque de progreso que no deben ocupar espacio */
+#inst8174 .progressbar_container > h2,
+#inst8174 .progressbar_container > p,
+#inst8174 .progressbar_container > .popover__wrapper {
+  display: none !important;
+}
+#inst8174 .progress {
+  position: relative;
+  flex: 1;
+  height: 8px !important;
+  background: var(--track-beige) !important;
+  background-image: none !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  border: none !important;
+  margin: 0 !important;
+  overflow: visible;
+}
+#inst8174 .progress .bar {
+  position: relative;
+  height: 8px !important;
+  background: var(--teal) !important;
+  background-image: none !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+#inst8174 .progressbar__text {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--navy-blue) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  white-space: nowrap;
+}
+
+/* --- Columna Calificación: pastilla lima con icono de medalla --- */
+#inst8174 td.course_completion_grade {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: rgba(213, 231, 76, 0.28);   /* bright-lime translúcido */
+  color: var(--deep-lime);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+#inst8174 td.course_completion_grade::before {
+  content: "workspace_premium";
+  font-family: 'Material Symbols Outlined';
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--lime);
+}
+
+/* Título del bloque en IVI Glance navy (por si el dashboard no lo cubre) */
+#inst8174 .block-title h2,
+#inst8174 .header .title h2 {
+  font-family: var(--font-title);
+  color: var(--navy-blue);
+  font-weight: 500;
+}
+
+/* --- B) Soporte de las cards (.exp-card*) que inyecta el script.
+   Reutiliza .exp-card/.exp-badge/.exp-status/.exp-progress. --- */
+#ms-grid.cyber-standalone__grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+/* Radio de la caja de las cards de Monthly a 10px (Expediente sigue en 14px) */
+#ms-grid .exp-card {
+  border-radius: 10px;
+}
+/* Con las cards activas, la cabecera del bloque queda como título */
+body.ms-cards-active #inst8174 .header.block-header {
+  margin-bottom: 6px;
+}
+
+/* Badge "Calificación obtenida: X" bajo el título (pastilla lima).
+   Va después de .exp-badge base para ganar el font-weight. */
+.exp-badge--grade {
+  background: rgba(213, 231, 76, 0.28);   /* bright-lime translúcido */
+  color: var(--deep-lime);
+  font-weight: 700;
+}
+.exp-badge--grade i { color: var(--lime); }
+
+/* ============================================================
+   LFE — AÑADIR CERTIFICADOS · Hero estático (.ivi-cert-hero)
+   Banner de 260px con imagen de fondo (inline en el HTML) + velo navy
+   para legibilidad. La imagen ya trae el degradado azul→morado
+   incrustado (como el hero LFE), por eso el CSS no lo pinta.
+   HTML en bloques/4-codigo-nuevo/anadir-certificados--hero.html.
+   !important en todo: las reglas del tema para h2/p dentro de bloques
+   tienen más especificidad y pisaban estas.
+   ============================================================ */
+.ivi-cert-hero {
+  position: relative !important;
+  height: 260px !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  background-size: cover !important;
+  background-position: center right !important;
+}
+.ivi-cert-hero::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(90deg,
+    rgba(8, 0, 79, 0.45) 0%,
+    rgba(8, 0, 79, 0.12) 45%,
+    transparent 70%) !important;
+}
+.ivi-cert-hero__content {
+  position: relative !important;
+  z-index: 1 !important;
+  max-width: 56% !important;
+  /* Más aire por la izquierda, como el slider (.conttext padding-left) */
+  padding: 0 20px 0 70px !important;
+  color: #ffffff !important;
+}
+.ivi-cert-hero__title {
+  margin: 0 !important;
+  font-family: var(--font-title, 'IVI Glance', 'Noto Sans', sans-serif) !important;
+  font-weight: 400 !important;
+  /* Mismo tamaño que el título del slider (tema Actua) */
+  font-size: var(--font-size-40, 40px) !important;
+  line-height: 1.1 !important;
+  color: #ffffff !important;
+}
+.ivi-cert-hero__text {
+  margin: 14px 0 0 !important;
+  max-width: 34em !important;
+  font-family: var(--font-body, 'Noto Sans', sans-serif) !important;
+  font-size: 0.9em !important;
+  line-height: 1.5 !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Responsive: el texto se adapta y ocupa más ancho en pantallas pequeñas */
+@media (max-width: 768px) {
+  .ivi-cert-hero {
+    height: auto !important;
+    min-height: 220px !important;
+  }
+  .ivi-cert-hero::before {
+    background: linear-gradient(90deg,
+      rgba(8, 0, 79, 0.55) 0%,
+      rgba(8, 0, 79, 0.35) 100%) !important;
+  }
+  .ivi-cert-hero__content {
+    max-width: 100% !important;
+    padding: 28px 24px !important;
+  }
+  .ivi-cert-hero__title { font-size: 30px !important; }
+  .ivi-cert-hero__text { max-width: 100% !important; }
 }
