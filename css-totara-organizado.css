@@ -3811,8 +3811,9 @@ p.ividb_certificatelink {
   margin-bottom: var(--spacing-large);
 }
 
-.ividb-entry .inline-req .form-required.flex-icon {
-  color: var(--color-secondary) !important;
+.ividb-entry .inline-req .form-required.flex-icon,
+.ividb-entry .inline-req .form-required.flex-icon::before {
+  color: var(--red, #B4084A) !important;
 }
 
 /* --- Database Certificados IVIRMA --- */
@@ -7748,7 +7749,7 @@ body.ms-cards-active #inst8174 .header.block-header {
   margin: 14px 0 0 !important;
   max-width: 34em !important;
   font-family: var(--font-body, 'Noto Sans', sans-serif) !important;
-  font-size: 0.9em !important;
+  font-size: 1.1em !important;
   line-height: 1.5 !important;
   color: rgba(255, 255, 255, 0.92) !important;
 }
@@ -7770,4 +7771,489 @@ body.ms-cards-active #inst8174 .header.block-header {
   }
   .ivi-cert-hero__title { font-size: 30px !important; }
   .ivi-cert-hero__text { max-width: 100% !important; }
+}
+
+
+/* ============================================================
+   FUSIONADO DESDE css-adicional.css (2026-07-20)
+   Certificados LfE (cmid-20259): fondo warm-gray, toolbar de
+   pestanas, paginacion, buscador, formulario (ivi-cert-*) y vista
+   LISTADO (.ividb_cert / .ivi-cert-list__*). Visor: badges de
+   Formacion Obligatoria (.title_lfe.visor). La barra PRE se queda
+   solo en el CSS adicional (no debe ir a PRO).
+   ============================================================ */
+/* Fondo warm gray en TODAS las páginas de esta base de datos (listado,
+   individual, edición, búsqueda). La clase de body cmid-20259 está en
+   todas ellas (id del módulo; en PRO puede cambiar el número). */
+body.cmid-20259 {
+  background-color: var(--warm-gray, #FAF4EE) !important;
+}
+/* El main transparente para que se vea el fondo warm gray del body */
+body.cmid-20259 div[role="main"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Fondo warm gray + esquinas redondeadas en los listados del nav expandible */
+body.cmid-20259 .navExpand--list,
+body.cmid-20259 .navExpand--listSecond {
+  background-color: var(--warm-gray, #FAF4EE) !important;
+  border-radius: 10px !important;
+}
+
+/* Barra de pestañas (LISTADO / VER INDIVIDUAL / BUSCAR…) integrada con la
+   página: sin caja blanca, pill teal en la activa, letra más pequeña.
+   Scope cmid-20259 para no tocar el resto de tabtrees de la plataforma;
+   selector específico + !important para ganar al .nav.nav-tabs global del
+   organizado (que carga después). */
+body.cmid-20259 .tabtree .nav.nav-tabs {
+  display: flex !important;          /* necesario para que gap/row-gap apliquen */
+  flex-wrap: wrap !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--navy-blue, #08004F) !important;
+  border-radius: 0 !important;
+  gap: 14px 10px !important;         /* row-gap 14 · column-gap 10 */
+  padding-bottom: 18px;
+  margin: 12px 0 22px;
+}
+
+body.cmid-20259 .tabtree .nav-tabs > li > a {
+  font-family: 'IVI Glance', 'Noto Sans', -apple-system, sans-serif !important;
+  font-size: 12.5px !important;
+  letter-spacing: 0.02em;
+  padding: 11px 22px !important;
+  border-radius: 999px !important;
+  color: var(--text-gray, #8A8A9E) !important;
+  font-weight: 600;
+  background: transparent !important;   /* sin fondo blanco en las inactivas */
+  border: 0 !important;
+  box-shadow: none !important;
+}
+body.cmid-20259 .tabtree .nav-tabs > li > a:hover,
+body.cmid-20259 .tabtree .nav-tabs > li > a:focus {
+  background: var(--bg-blue, #DCE6FF) !important;
+  color: var(--navy-blue, #08004F) !important;
+}
+body.cmid-20259 .tabtree .nav-tabs > li.active > a,
+body.cmid-20259 .tabtree .nav-tabs > li.active > a:hover,
+body.cmid-20259 .tabtree .nav-tabs > li.active > a:focus {
+  background: var(--teal, #0CE3C6) !important;
+  color: var(--navy-blue, #08004F) !important;
+  border-radius: 999px !important;
+}
+
+/* Paginación de la LISTADO (mod-data). Cubre los dos markups posibles:
+   <ul class="pagination"><li[.active|.disabled]><a data-page="…"> y el
+   legacy .paging ("Página: 1 2 3 …").
+   Diseño: números como pill; página ACTIVA = recuadro AZUL; Anterior/
+   Siguiente como TEXTO, sin caja. */
+
+/* Contenedor */
+body.cmid-20259 ul.pagination,
+body.cmid-20259 .paging {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+  border: 0 !important;
+  font-size: 0;                 /* oculta "Página:" y los "( )" (texto suelto) */
+}
+body.cmid-20259 ul.pagination > li { margin: 0 !important; }
+
+/* Números → pill */
+body.cmid-20259 ul.pagination > li > a,
+body.cmid-20259 .paging a,
+body.cmid-20259 .paging .current-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  color: var(--navy-blue, #08004F) !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all .15s ease;
+}
+body.cmid-20259 ul.pagination > li > a:hover,
+body.cmid-20259 .paging a:hover {
+  border-color: var(--light-blue, #004DF0) !important;
+  color: var(--light-blue, #004DF0) !important;
+  background: var(--bg-blue, #DCE6FF) !important;
+}
+
+/* Página ACTIVA → recuadro azul */
+body.cmid-20259 ul.pagination > li.active > a,
+body.cmid-20259 .paging .current-page {
+  background: var(--light-blue, #004DF0) !important;
+  border-color: var(--light-blue, #004DF0) !important;
+  color: #fff !important;
+}
+
+/* Anterior / Siguiente → SOLO texto, sin caja
+   (ul.pagination: por data-page; .paging: primer/último enlace) */
+body.cmid-20259 ul.pagination > li > a[data-page="prev"],
+body.cmid-20259 ul.pagination > li > a[data-page="next"],
+body.cmid-20259 .paging a.previous,
+body.cmid-20259 .paging a.next {
+  min-width: 0;
+  padding: 0 8px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--navy-blue, #08004F) !important;
+  font-size: 14px;
+}
+body.cmid-20259 ul.pagination > li > a[data-page="prev"]:hover,
+body.cmid-20259 ul.pagination > li > a[data-page="next"]:hover,
+body.cmid-20259 .paging a.previous:hover,
+body.cmid-20259 .paging a.next:hover {
+  background: transparent !important;
+  color: var(--light-blue, #004DF0) !important;
+}
+/* Anterior deshabilitado (en página 1) */
+body.cmid-20259 ul.pagination > li.disabled > a {
+  opacity: .4;
+  pointer-events: none;
+  background: transparent !important;
+  border: 0 !important;
+}
+/* Flechas «/» un pelín más grandes */
+body.cmid-20259 ul.pagination > li > a span[aria-hidden] { font-size: 17px; line-height: 1; }
+
+/* Más espacio vertical entre los campos de la barra de preferencias
+   (Entradas por página / Buscar / Ordenar por / Búsqueda avanzada) y de
+   las filas del buscador avanzado. */
+body.cmid-20259 .datapreferences #options > div > label,
+body.cmid-20259 .datapreferences #options > div > select,
+body.cmid-20259 .datapreferences #options > div > input,
+body.cmid-20259 .datapreferences #options > div > .search_inline {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  vertical-align: middle;
+}
+/* Filas de campos del buscador avanzado (tabla) */
+body.cmid-20259 .datapreferences .mod-data-default-template td {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+/* Badges de estado de Formación Obligatoria (Visor, .title_lfe.visor):
+   verde = COMPLETA, rojo = INCOMPLETA. Especificidad + !important para
+   ganar a posibles estilos del tema sobre los <span>. */
+.title_lfe.visor .ivi-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1.5;
+}
+.title_lfe.visor .ivi-status-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.title_lfe.visor .ivi-status-badge--complete   { background: #D6F6EF !important; color: #00514A !important; }
+.title_lfe.visor .ivi-status-badge--incomplete { background: #FBE0EA !important; color: var(--red, #B4084A) !important; }
+
+/* ============================================================
+   REGISTRO DE CERTIFICADOS LfE (mod-data edit, cmid-20259) —
+   rediseño del formulario estilo del ejemplo, con colores
+   corporativos. Estructura la inyecta anadir-certificados--form.html
+   (mueve los inputs reales). Clases ivi-cert-*.
+
+   El código/contenido (bloque de presentación con clases ivi-cert-*)
+   se añade desde la página de ajustes del módulo:
+   https://ivirma.actuatxp.com/course/modedit.php?update=20259&return=1
+   ============================================================ */
+
+/* Contenedor general */
+.ivi-cert-wrap { max-width: 1120px; margin: 0 auto; font-family: var(--font-body); }
+
+/* --- Guía de puntos: 3 tarjetas --- */
+.ivi-cert-guide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin: 22px 0;
+}
+.ivi-cert-card {
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: var(--shadow-soft);
+}
+.ivi-cert-card--externos,
+.ivi-cert-card--attending,
+.ivi-cert-card--delivery  { background: #fff; }
+.ivi-cert-card__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.ivi-cert-card__icon {
+  width: 40px; height: 40px; flex: 0 0 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 11px; color: #fff;
+}
+.ivi-cert-card__icon .material-symbols-outlined { font-size: 22px; }
+.ivi-cert-card--externos  .ivi-cert-card__icon { background: var(--light-blue); }
+.ivi-cert-card--attending .ivi-cert-card__icon { background: var(--teal); color: var(--navy-blue); }
+.ivi-cert-card--delivery  .ivi-cert-card__icon { background: var(--purple); }
+.ivi-cert-card__title { font-family: var(--font-title); font-weight: 500; font-size: 18px; color: var(--navy-blue); margin: 0; }
+.ivi-cert-card__desc { font-size: 13px; line-height: 1.5; color: var(--text-gray); margin: 0 0 12px; }
+
+/* Píldoras de puntos (externos) */
+.ivi-cert-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.ivi-cert-pill {
+  background: #fff; border: 1px solid var(--border-soft); border-radius: 10px;
+  padding: 7px 12px; text-align: center; line-height: 1.15;
+}
+.ivi-cert-pill b { display: block; color: var(--light-blue); font-size: 15px; font-weight: 700; }
+.ivi-cert-pill span { font-size: 11px; color: var(--text-gray); }
+
+/* Filas de regla con badge de puntos (attending / delivery) */
+.ivi-cert-rule { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 9px; font-size: 12.5px; line-height: 1.45; color: #3A3A55; }
+.ivi-cert-rule__pts {
+  flex: 0 0 auto; color: #fff; font-weight: 700; font-size: 11px;
+  padding: 3px 9px; border-radius: 999px; margin-top: 1px; white-space: nowrap;
+}
+.ivi-cert-card--externos  .ivi-cert-rule__pts { background: var(--light-blue); }
+.ivi-cert-card--attending .ivi-cert-rule__pts { background: var(--teal); color: var(--navy-blue); }
+.ivi-cert-card--delivery  .ivi-cert-rule__pts { background: var(--purple); }
+.ivi-cert-star { color: var(--red); font-weight: 700; }
+
+/* Lista "No se incluyen" */
+.ivi-cert-exclude { border-top: 1px dashed var(--border-soft); margin-top: 4px; padding-top: 10px; }
+.ivi-cert-exclude__t { font-size: 11px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--red); margin: 0 0 6px; }
+.ivi-cert-exclude ul { margin: 0; padding-left: 16px; }
+.ivi-cert-exclude li { font-size: 12px; line-height: 1.5; color: #3A3A55; }
+
+/* Todo el texto de las 3 tarjetas en negro (los badges de puntos y los
+   iconos conservan su color) */
+.ivi-cert-card__title,
+.ivi-cert-card__desc,
+.ivi-cert-rule,
+.ivi-cert-pill b,
+.ivi-cert-pill span,
+.ivi-cert-exclude__t,
+.ivi-cert-exclude li,
+.ivi-cert-card .ivi-cert-star { color: #000; }
+
+/* --- Aviso ámbar --- */
+.ivi-cert-note {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: #FFF6E6; border: 1px solid #F3DFB0; border-radius: 12px;
+  padding: 14px 18px; margin: 8px 0 22px; font-size: 13px; line-height: 1.5; color: #6B5628;
+}
+.ivi-cert-note .material-symbols-outlined { color: #E0952B; font-size: 22px; flex: 0 0 auto; }
+.ivi-cert-note a { color: var(--light-blue); font-weight: 700; text-decoration: underline; }
+
+/* --- Toolbar (tabs de mod-data): los botones usan el sistema .ivi-btn
+   (variantes --secondary activo / --ghost inactivo, en el organizado) --- */
+.ivi-cert-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 22px; }
+
+/* --- Tarjeta del formulario "Nueva entrada" --- */
+.ivi-cert-form { background: #fff; border: 1px solid var(--border-soft); border-radius: 16px; box-shadow: var(--shadow-soft); padding: 28px 30px; }
+.ivi-cert-form__title { font-family: var(--font-title); font-weight: 500; font-size: 24px; color: var(--navy-blue); margin: 0 0 4px; }
+.ivi-cert-form__req { font-size: 12.5px; color: var(--text-gray); margin: 0 0 22px; }
+.ivi-cert-form__req .req { color: var(--red); }
+
+/* Secciones (Datos / Validación) */
+.ivi-cert-section { border-top: 1px solid var(--border-soft); padding-top: 20px; margin-top: 20px; }
+.ivi-cert-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+.ivi-cert-section__head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ivi-cert-section__bar { display: none; }   /* sin línea azul/morada */
+.ivi-cert-section__title { font-family: var(--font-title); font-weight: 500; font-size: 18px; color: var(--navy-blue); margin: 0; }
+.ivi-cert-badge-int { background: #EFE6FB; color: var(--purple); font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+.ivi-cert-section__note { font-size: 12.5px; color: var(--text-gray); margin: -8px 0 16px; }
+
+/* Grid de campos */
+.ivi-cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+.ivi-cert-field--full { grid-column: 1 / -1; }
+.ivi-cert-field__label { display: block; font-size: 13px; font-weight: 700; color: var(--navy-blue); margin: 0 0 4px; padding: 0; }
+.ivi-cert-field__label .req { color: var(--red); }
+
+/* Inputs/selects reales reestilizados */
+.ivi-cert-form .mod-data-input select,
+.ivi-cert-form select.mod-data-input,
+.ivi-cert-form input.mod-data-input[type="text"],
+.ivi-cert-form .basefieldinput {
+  display: block !important;   /* anula el d-inline de Moodle (espacio a la izq.) */
+  width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  min-height: 50px !important;
+  height: auto !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: 10px !important;
+  padding: 13px 16px !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-family: var(--font-body) !important;
+  color: var(--navy-blue) !important;
+  background-color: #fff !important;
+}
+.ivi-cert-form input.mod-data-input[type="text"]:focus,
+.ivi-cert-form select.mod-data-input:focus {
+  outline: none !important;
+  border-color: var(--light-blue) !important;
+  box-shadow: 0 0 0 3px rgba(0,77,240,0.12) !important;
+}
+
+/* Zona de subida (envuelve el filemanager real) */
+.ivi-cert-drop {
+  border: 2px dashed #B9C6E8; border-radius: 14px; background: #F7FAFF;
+  padding: 22px; text-align: center;
+}
+.ivi-cert-drop__icon { width: 52px; height: 52px; margin: 0 auto 10px; border-radius: 14px; background: var(--bg-blue); color: var(--light-blue); display: flex; align-items: center; justify-content: center; }
+.ivi-cert-drop__icon .material-symbols-outlined { font-size: 26px; }
+.ivi-cert-drop__title { font-size: 15px; font-weight: 700; color: var(--navy-blue); margin: 0 0 2px; }
+.ivi-cert-drop__hint { font-size: 12.5px; color: var(--text-gray); margin: 0; }
+.ivi-cert-drop__hint a { color: var(--light-blue); font-weight: 700; text-decoration: underline; cursor: pointer; }
+.ivi-cert-drop .fp-restrictions { font-size: 11px; color: var(--text-gray); margin-top: 10px; }
+
+/* Barra de acciones */
+.ivi-cert-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border-soft); margin-top: 24px; padding-top: 22px; }
+.ivi-cert-actions .ivi-cert-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 700;
+  font-family: var(--font-body); cursor: pointer; border: 1.5px solid transparent; text-decoration: none;
+}
+.ivi-cert-btn--ghost { background: transparent; color: var(--text-gray); border-color: transparent; }
+.ivi-cert-btn--ghost:hover { color: var(--navy-blue); }
+.ivi-cert-btn--outline { background: #fff; color: var(--light-blue); border-color: var(--light-blue); }
+.ivi-cert-btn--outline:hover { background: var(--bg-blue); }
+.ivi-cert-btn--primary { background: var(--light-blue); color: #fff !important; border-color: var(--light-blue); }
+.ivi-cert-btn--primary:hover { background: var(--blue-hover, #0038C4); }
+.ivi-cert-actions .material-symbols-outlined { font-size: 19px; }
+
+@media (max-width: 640px) {
+  .ivi-cert-grid { grid-template-columns: 1fr; }
+  .ivi-cert-actions { justify-content: stretch; }
+  .ivi-cert-actions .ivi-cert-btn { flex: 1; justify-content: center; }
+}
+
+/* --- Encabezado de la sección (sin fondo): título h3 + subtítulo --- */
+.ivi-cert-intro { margin: 4px 0 6px; }
+.ivi-cert-intro__title {
+  font-family: var(--font-title, 'IVI Glance','Noto Sans',sans-serif);
+  font-weight: 500; font-size: 26px; line-height: 1.15;
+  margin: 0 0 8px; color: var(--navy-blue);
+}
+.ivi-cert-intro__desc {
+  margin: 0; max-width: 78ch; font-size: 15px; line-height: 1.55;
+  color: #3A3A55;
+}
+
+/* --- Limpieza del filemanager real dentro del dropzone --- */
+.ivi-cert-drop__header { margin-bottom: 6px; }
+.ivi-cert-drop__browse { color: var(--light-blue); font-weight: 700; text-decoration: underline; cursor: pointer; }
+.ivi-cert-drop fieldset { border: none !important; margin: 0 !important; padding: 0 !important; }
+.ivi-cert-drop fieldset > legend { display: none !important; }
+.ivi-cert-drop .inline-req { display: none !important; }
+/* Se ocultan solo elementos que NO intervienen en el drag & drop.
+   OJO: NO ocultar .fm-empty-container ni .dndupload-target — Moodle los
+   usa como zona de soltado; ocultarlos rompe el arrastrar y soltar. */
+.ivi-cert-drop .fp-restrictions,
+.ivi-cert-drop .filemanager-loading,
+.ivi-cert-drop .fp-navbar,
+.ivi-cert-drop .filemanager-updating,
+.ivi-cert-drop .dndupload-uploadinprogress,
+.ivi-cert-drop .fp-img-downloading { display: none !important; }
+
+/* Filemanager y contenedores: transparentes y sin borde PERO conservando
+   área de soltado (min-height) para que el drag & drop siga funcionando.
+   overflow visible + height auto para que el cuadro se vea ENTERO (no cortado). */
+.ivi-cert-drop,
+.ivi-cert-drop .mod-data-input,
+.ivi-cert-drop .filemanager,
+.ivi-cert-drop .filemanager-container,
+.ivi-cert-drop .fm-content-wrapper,
+.ivi-cert-drop .fm-empty-container {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+.ivi-cert-drop .filemanager,
+.ivi-cert-drop .filemanager-container,
+.ivi-cert-drop .fm-content-wrapper {
+  border: none !important; background: transparent !important;
+  box-shadow: none !important; padding: 0 !important;
+  min-height: 84px !important;
+}
+/* El texto del estado vacío se oculta con visibility (mi cabecera ya lo
+   dice) pero el contenedor sigue ocupando espacio = zona de soltado */
+.ivi-cert-drop .dndupload-message { visibility: hidden !important; }
+.ivi-cert-drop .dndupload-target { border-radius: 12px; }
+.ivi-cert-drop .fp-content { background: transparent !important; border: none !important; }
+
+/* Bloque #inst11494: sin borde ni fondo, margen inferior 0 y superior 45px
+   (el mismo trato que .block de #block-region-side-post, pero acotado a
+   ese bloque). Especificidad + !important para ganar a la regla del tema. */
+#inst11494,
+#block-region-side-post #inst11494 {
+  border: 0 !important;
+  background: transparent !important;
+  margin-bottom: 20 !important;
+  margin-top: 45px !important;
+}
+
+/* ============================================================
+   REGISTRO DE CERTIFICADOS LfE — vista LISTADO (.ividb_cert)
+   Cada entrada como card estilo "Mis certificados": datos +
+   icono de archivo con Ver/Descargar (sin previa). El script
+   anadir-certificados--listado.html añade .ivi-cert-list__*.
+   ============================================================ */
+.ividb_cert.ivi-cert-list__card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.ividb_cert .ividb_left_1 { display: flex; gap: 32px; flex: 1; flex-wrap: wrap; }
+.ividb_cert .ividb_uservisible_1 { flex: 1 1 220px; min-width: 200px; }
+.ividb_cert .ividb_text_1 { font-size: 13.5px; line-height: 1.55; color: #3A3A55; margin: 0 0 6px; }
+.ividb_cert .ividb_text_1 b { color: var(--navy-blue); font-weight: 700; }
+.ividb_cert .ividb_name { color: var(--light-blue); font-weight: 700; }
+.ividb_cert .ividb_bold_1 { color: var(--navy-blue); font-weight: 700; }
+.ividb_cert .ividb_adminvisible { color: var(--text-gray); font-size: 12.5px; }
+.ividb_cert .ividb_actionbtn { margin-top: 10px; display: flex; gap: 8px; align-items: center; }
+.ividb_cert .ividb_right { flex: 0 0 auto; }
+
+/* Icono de archivo + botones (a la derecha) */
+.ivi-cert-list__file { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 160px; flex: 0 0 160px; min-width: 0; }
+.ivi-cert-list__fileicon {
+  width: 76px; height: 76px; border-radius: 16px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-blue); color: var(--light-blue);
+}
+.ivi-cert-list__fileicon.is-pdf { background: #FDE7E1; color: #E9482A; }
+.ivi-cert-list__fileicon .material-symbols-outlined { font-size: 42px; }
+.ivi-cert-list__actions { display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 0; }
+.ivi-cert-list__actions .ivi-btn {
+  width: 100%; justify-content: center; min-width: 0;
+  padding: 9px 12px !important; font-size: 13px !important;
+}
+
+@media (max-width: 640px) {
+  .ividb_cert.ivi-cert-list__card { flex-direction: column; }
+  .ivi-cert-list__file { flex-direction: row; align-items: center; width: 100%; flex: 0 0 auto; }
+  .ivi-cert-list__actions { flex-direction: row; }
 }
