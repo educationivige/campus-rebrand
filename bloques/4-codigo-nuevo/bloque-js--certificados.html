@@ -1,0 +1,144 @@
+<!-- ============================================================
+     REGISTRO DE CERTIFICADOS LfE — BLOQUE JS
+     Pegar en un bloque HTML de la página del listado/individual
+     (alternativa a la pestaña PLANTILLA JAVASCRIPT si esa no se
+     ejecuta). Hace 3 cosas sobre cada .ividb_cert:
+       1) Previa del PDF con pdf.js dentro de #pdf-container.
+       2) Badge de color en ##approvalstatus## (pendiente/validado/no).
+       3) Oculta los campos de validación/admin que no tienen valor.
+     Idempotente. Autocarga pdf.js si no está.
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  var PDFJS_SRC  = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js";
+  var WORKER_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+
+  function ready(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
+  }
+  function ensurePdfjs(cb) {
+    if (typeof pdfjsLib !== "undefined") return cb();
+    var s = document.createElement("script");
+    s.src = PDFJS_SRC;
+    s.onload = cb;
+    s.onerror = function () { console.error("No se pudo cargar pdf.js"); };
+    document.head.appendChild(s);
+  }
+
+  /* --- Badge de estado --- */
+  function tagStatus(cert) {
+    var cols = cert.querySelectorAll(".ividb_left_1 > .ividb_uservisible_1");
+    if (cols.length < 2) return;
+    var b = cols[1].querySelector(".ividb_text_1 b");
+    if (!b || b.dataset.iviStatus) return;
+    b.dataset.iviStatus = "1";
+    var t = (b.textContent || "").toLowerCase();
+    var cls = "is-neutral";
+    if (/pend/.test(t)) cls = "is-pending";
+    else if (/no\s*valid|rechaz|deneg|no\s*aprob/.test(t)) cls = "is-rejected";
+    else if (/valid|aprob/.test(t)) cls = "is-approved";
+    b.classList.add("ivi-cert-status", cls);
+  }
+
+  /* --- Ocultar campos sin valor (solo columna de validación/admin) --- */
+  function hideEmpty(cert) {
+    var cols = cert.querySelectorAll(".ividb_left_1 > .ividb_uservisible_1");
+    if (!cols[1]) return;
+    var nodes = cols[1].querySelectorAll(".ividb_text_1, .ividb_adminvisible");
+    Array.prototype.forEach.call(nodes, function (p) {
+      if (p.querySelector(".ivi-cert-status")) return;      // no tocar el badge
+      var txt = (p.textContent || "").replace(/ /g, " ").trim();
+      var i = txt.lastIndexOf(":");
+      if (txt === "" || (i !== -1 && txt.slice(i + 1).trim() === "")) p.classList.add("ivi-empty");
+    });
+  }
+
+  /* --- Previa del PDF --- */
+  function findCertLink(container) {
+    var link = container.querySelector(".ividb_certificatelink a[href]");
+    if (link) return link;
+    var node = (container.closest(".ividb_right") || container).previousElementSibling;
+    while (node) {
+      var l = node.querySelector && node.querySelector(".ividb_certificatelink a[href]");
+      if (l) return l;
+      node = node.previousElementSibling;
+    }
+    return null;
+  }
+  function renderPdf(container, url) {
+    return pdfjsLib.getDocument(url).promise.then(function (pdf) {
+      var chain = Promise.resolve();
+      for (var n = 1; n <= pdf.numPages; n++) {
+        (function (pageNumber) {
+          chain = chain.then(function () {
+            return pdf.getPage(pageNumber).then(function (page) {
+              var vp = page.getViewport({ scale: 1.5 });
+              var c = document.createElement("canvas");
+              c.width = vp.width; c.height = vp.height;
+              container.appendChild(c);
+              return page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+            });
+          });
+        })(n);
+      }
+      return chain;
+    }).catch(function (e) { console.error("Error cargando el PDF:", e); });
+  }
+  function renderAll() {
+    if (pdfjsLib.GlobalWorkerOptions && !pdfjsLib.GlobalWorkerOptions.workerSrc)
+      pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_SRC;
+    Array.prototype.forEach.call(document.querySelectorAll("#pdf-container, .pdf-container"), function (container) {
+      if (container.dataset.pdfDone) return;
+      var link = findCertLink(container);
+      if (!link) return;
+      var url = link.href || link.getAttribute("href");
+      if (!url) return;
+      container.dataset.pdfDone = "1";
+      renderPdf(container, url);
+    });
+  }
+
+  /* --- Aviso "no hay certificados" cuando la LISTADO está vacía --- */
+  function isListView() {
+    // LISTADO (sin mode) y VER INDIVIDUAL (mode=single); NO en BUSCAR (asearch)
+    var u = location.href;
+    return /\/mod\/data\/view\.php/.test(u) && !/[?&]mode=asearch/.test(u);
+  }
+  function emptyState() {
+    if (!isListView()) return;                              // solo en la LISTADO
+    if (document.querySelector(".ividb_cert")) return;      // hay certificados
+    if (document.querySelector(".ivi-cert-empty")) return;  // ya inyectado
+    var box = document.createElement("div");
+    box.className = "ivi-cert-empty";
+    box.style.cssText = "display:flex;align-items:center;gap:14px;background:#E8ECFB;" +
+      "border:1px solid #D5DCF7;border-radius:14px;padding:16px 20px;margin:18px 0;" +
+      "color:#08004F;font-weight:700;font-size:16px;";
+    box.innerHTML =
+      '<span style="flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:#004DF0;' +
+        'color:#fff;display:inline-flex;align-items:center;justify-content:center;">' +
+        '<span class="material-symbols-outlined" style="font-size:19px;">info</span></span>' +
+      '<span>No hay certificados disponibles para mostrar.</span>';
+    // Debajo de la barra de pestañas (.tabtree)
+    var anchor = document.querySelector(".tabtree");
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(box, anchor.nextSibling);
+    else {
+      var main = document.querySelector('[role="main"] .no-overflow') || document.querySelector('[role="main"]');
+      if (main) main.appendChild(box);
+    }
+  }
+
+  function enhance() {
+    Array.prototype.forEach.call(document.querySelectorAll(".ividb_cert"), function (cert) {
+      tagStatus(cert);
+      hideEmpty(cert);
+    });
+    emptyState();
+    ensurePdfjs(renderAll);
+  }
+
+  ready(function () { enhance(); setTimeout(enhance, 700); });
+})();
+</script>

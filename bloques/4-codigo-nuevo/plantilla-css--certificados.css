@@ -1,0 +1,110 @@
+/* ============================================================
+   REGISTRO DE CERTIFICADOS LfE — PLANTILLA CSS (lista + individual)
+   Pegar en: Plantillas -> PLANTILLA CSS de la base de datos.
+   Card blanca, moderna, con badge de estado. Autocontenido (tokens
+   con fallback).
+
+   OJO cascada: css-totara-organizado.css define .ividb_cert con fondo
+   gris #f0f0f0 y carga DESPUES que este CSS -> en empate de
+   especificidad ganaria el gris. Como esa regla vieja NO es !important,
+   ponemos !important en la card para ganarle. El resto de reglas usan
+   selectores mas especificos (.ividb_cert .xxx) y ya ganan por eso.
+   ============================================================ */
+
+/* --- Card --- */
+.ividb_cert {
+  width: 100%;
+  background-color: #fff !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 6px 22px rgba(8, 0, 79, 0.06) !important;
+  padding: 24px 28px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;          /* centra verticalmente el bloque de datos y el PDF */
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+/* --- Columnas: datos | estado de validación --- */
+.ividb_cert .ividb_left_1 { display: flex; flex-wrap: wrap; gap: 36px; flex: 1; align-items: center; }
+.ividb_cert .ividb_uservisible_1 { flex: 1 1 240px; min-width: 210px; margin-right: 0; }
+.ividb_cert .ividb_uservisible_1 + .ividb_uservisible_1 {
+  border-left: 1px solid var(--border-soft, #E4E2EE);
+  padding-left: 36px;
+}
+
+/* --- Textos --- */
+.ividb_cert .ividb_text_1 { margin-bottom: 8px; font-size: 14px; line-height: 1.55; color: #3A3A55; }
+.ividb_cert .ividb_text_1 b { color: var(--navy-blue, #08004F); font-weight: 700; }
+.ividb_cert .ividb_name    { color: var(--light-blue, #004DF0); font-weight: 700; }
+.ividb_cert .ividb_bold_1  { color: var(--navy-blue, #08004F); font-weight: 700; }
+.ividb_cert .ividb_adminvisible { color: var(--text-gray, #8A8A9E); font-size: 13px; }
+
+/* --- Badge de estado (##approvalstatus##): la clase is-* la pone el JS --- */
+.ividb_cert .ivi-cert-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 13px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 700; line-height: 1.5;
+}
+.ividb_cert .ivi-cert-status::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor;
+}
+.ividb_cert .ivi-cert-status.is-pending  { background: #FDEBD7; color: #A2521A; }
+.ividb_cert .ivi-cert-status.is-approved { background: #D6F6EF; color: #00514A; }
+.ividb_cert .ivi-cert-status.is-rejected { background: #FBE0EA; color: var(--red, #B4084A); }
+.ividb_cert .ivi-cert-status.is-neutral  { background: var(--bg-blue, #DCE6FF); color: var(--navy-blue, #08004F); }
+
+/* --- Botonera de acciones (editar / aprobar / eliminar…) --- */
+.ividb_cert .ividb_actionbtn { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.ividb_cert .ividb_actionbtn a,
+.ividb_cert .ividb_actionbtn > * { display: inline-flex; align-items: center; justify-content: center; color: var(--navy-blue, #08004F); }
+
+/* --- Enlace/icono del certificado (arriba dcha): botón limpio con
+       icono Material en vez del download-pdf.svg roto --- */
+.ividb_cert .ividb_right { width: auto; flex: 0 0 auto; }
+.ividb_cert .ividb_certificatelink { position: static; width: auto; height: auto; margin: 0; text-align: right; }
+.ividb_cert .ividb_certificatelink img,
+.ividb_cert .ividb_certificatelink [class*="flex-icon"] { display: none !important; }
+.ividb_cert .ividb_certificatelink a {
+  position: static; width: auto; height: auto; max-width: none;
+  background-image: none;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 15px; border-radius: 10px;
+  background-color: var(--bg-blue, #DCE6FF);
+  color: var(--navy-blue, #08004F);
+  font-size: 0 !important;                 /* oculta el nombre de archivo */
+  text-decoration: none;
+}
+.ividb_cert .ividb_certificatelink a::before {
+  content: "picture_as_pdf"; font-family: "Material Symbols Outlined"; font-size: 22px; line-height: 1;
+}
+.ividb_cert .ividb_certificatelink a::after {
+  content: "PDF"; font-size: 13px; font-weight: 700;
+}
+.ividb_cert .ividb_certificatelink a:hover { background-color: #C4D4FB; }
+
+/* --- Campos sin valor: el JS les pone .ivi-empty --- */
+.ividb_cert .ivi-empty { display: none !important; }
+
+/* --- Previa del PDF (pdf.js pinta cada página como <canvas> en #pdf-container) --- */
+.ividb_right:has(#pdf-container) { width: 100%; margin-top: 18px; }
+#pdf-container { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+#pdf-container canvas {
+  max-width: 100%; height: auto;
+  border: 1px solid var(--border-soft, #E4E2EE);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(8, 0, 79, 0.08);
+}
+
+/* --- Móvil --- */
+@media (max-width: 640px) {
+  .ividb_cert { flex-direction: column; padding: 20px !important; }
+  .ividb_cert .ividb_uservisible_1 + .ividb_uservisible_1 {
+    border-left: 0; padding-left: 0;
+    border-top: 1px solid var(--border-soft, #E4E2EE); padding-top: 16px;
+  }
+  .ividb_cert .ividb_certificatelink { text-align: left; }
+}
