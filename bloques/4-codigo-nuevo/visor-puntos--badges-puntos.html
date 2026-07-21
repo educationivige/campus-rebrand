@@ -1,0 +1,153 @@
+<!-- ============================================================
+     VISOR — Puntos / estado como BADGE dentro de la tabla original
+     (rebranding IVI 2026)
+
+     Qué hace:
+     - Mantiene la tabla de reportbuilder de cada informe del visor
+       (NO la convierte en cards).
+     - En cada fila envuelve el valor de la ÚLTIMA columna en un
+       <span class="lfe-score-badge">, para que el CSS lo pinte como
+       pastilla:
+         · Excelencia (#inst278-280): "LFE puntos" → pastilla del
+           color del bloque (definido en css-adicional.css).
+         · Formación Obligatoria (#inst277): "Realizado" → pastilla
+           por estado, añadiendo --done (verde) / --pending (rojo).
+     - Si la "Fecha de superación" está vacía (curso no superado),
+       escribe "Pendiente" en esa celda, junto al icono de calendario
+       que pinta el CSS, traducido a los 6 idiomas del campus.
+     - Idempotente: no vuelve a envolver/etiquetar una celda ya procesada.
+     - Observa la tabla: si reportbuilder la re-renderiza, vuelve a
+       aplicar badges y etiquetas. (La ordenación por cabecera se
+       desactiva en css-adicional para #inst277, así que en la práctica
+       la tabla ya no se re-renderiza.)
+
+     Estilos: .lfe-score-badge / --done / --pending en
+     css-adicional.css (sección "VISOR — PUNTOS / ESTADO como badge").
+
+     ⚠️ Los IDs (inst277-280) son los de PRE. Cambiar a los IDs reales
+     en PRO cuando se despliegue.
+
+     Pegar este bloque en un bloque HTML de la página del visor.
+     Sustituye a los bloques de cards (visor-puntos--cursos-formacion-
+     obligatoria.html y visor-puntos--bloques-cards.html): NO usar
+     esos a la vez que este.
+     ============================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var CONFIG = {
+        // type: 'points' → número (color del bloque, vía CSS)
+        //       'status' → Realizado (añade --done / --pending)
+        blocks: [
+            { id: 'inst277', type: 'status' },  // Formación Obligatoria (Realizado)
+            { id: 'inst278', type: 'points' },  // Monthly Seminars (LFE puntos)
+            { id: 'inst279', type: 'points' },  // Must Read Papers (LFE puntos)
+            { id: 'inst280', type: 'points' }   // Certificados (LFE puntos)
+        ],
+        debug: true
+    };
+
+    function log(msg, data) {
+        if (CONFIG.debug) console.log('[VisorBadges] ' + msg, data || '');
+    }
+
+    // Texto "Pendiente" inyectado en cliente → {mlang} (filtro de servidor)
+    // no aplica; se elige la cadena por el idioma actual del campus.
+    var LANG = {
+        pending: { es: 'Pendiente', en: 'Pending', it: 'In sospeso', pt: 'Pendente', cs: 'Nevyřízeno', sv: 'Väntar' }
+    };
+    function currentLang() {
+        var l = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+        if (!l && window.M && window.M.cfg && window.M.cfg.language) l = String(window.M.cfg.language).toLowerCase();
+        return l.slice(0, 2) || 'es';
+    }
+    function i18n(key) {
+        var d = LANG[key] || {};
+        return d[currentLang()] || d.en || d.es || '';
+    }
+
+    // ¿Celda de fecha vacía? (–, —, -, &nbsp; o en blanco)
+    function isEmptyDate(text) {
+        return !text || text === '-' || text === '–' || text === '—';
+    }
+
+    // Normaliza texto de celda (quita &nbsp; y espacios sobrantes)
+    function norm(s) {
+        return (s || '').replace(/ /g, ' ').trim();
+    }
+
+    // ¿La celda de estado indica "realizado"? (Sí / check / completado…)
+    function isDone(cell) {
+        if (cell.querySelector('.fa-check, .fa-circle-check, [data-flex-icon*="check"], img')) {
+            return true;
+        }
+        var t = norm(cell.textContent).toLowerCase();
+        return /^(s[ií]|yes|sim|ja|ano|complet|conclu|realiz|hecho|done|godk|slutf)/.test(t);
+    }
+
+    function wrapCell(cell, type) {
+        if (!cell || cell.querySelector('.lfe-score-badge')) return;   // idempotente
+        var text = norm(cell.textContent);
+        if (!text || text === '-' || text === '–' || text === '—') return;  // celda vacía → sin badge
+        var cls = 'lfe-score-badge';
+        if (type === 'status') {
+            cls += ' lfe-score-badge--' + (isDone(cell) ? 'done' : 'pending');
+        }
+        cell.innerHTML = '<span class="' + cls + '">' + cell.innerHTML.trim() + '</span>';
+    }
+
+    // Sin fecha de superación → "Pendiente" (junto al icono de calendario,
+    // que lo pinta el CSS ::before de la celda course_completion_completeddate).
+    function markPendingDate(row) {
+        var cell = row.querySelector('td.course_completion_completeddate');
+        if (!cell || cell.querySelector('.lfe-pending-label')) return;   // idempotente
+        if (!isEmptyDate(norm(cell.textContent))) return;                // hay fecha → nada
+        cell.innerHTML = '<span class="lfe-pending-label">' + i18n('pending') + '</span>';
+    }
+
+    function process(cfg) {
+        var block = document.getElementById(cfg.id);
+        if (!block) { log('Bloque ' + cfg.id + ' ausente, omitiendo'); return; }
+        var table = block.querySelector('table.reportbuilder-table');
+        if (!table) { log('Sin tabla en ' + cfg.id); return; }
+
+        var n = 0;
+        table.querySelectorAll('tbody > tr').forEach(function (row) {
+            var cells = row.querySelectorAll('td');
+            if (!cells.length) return;
+            wrapCell(cells[cells.length - 1], cfg.type);  // última columna = puntos / estado
+            markPendingDate(row);                          // fecha vacía → "Pendiente"
+            n++;
+        });
+        log(cfg.id + ': filas procesadas = ' + n);
+    }
+
+    // Re-aplica los badges si reportbuilder re-renderiza la tabla
+    // (se desconecta mientras envuelve para no entrar en bucle).
+    function observe(cfg) {
+        var block = document.getElementById(cfg.id);
+        if (!block || !window.MutationObserver) return;
+        var target = block.querySelector('.content') || block;
+        var obs = new MutationObserver(function () {
+            obs.disconnect();
+            process(cfg);
+            obs.observe(target, { childList: true, subtree: true });
+        });
+        obs.observe(target, { childList: true, subtree: true });
+    }
+
+    function init() {
+        CONFIG.blocks.forEach(function (cfg) {
+            process(cfg);   // primero pinta (con el observer aún sin conectar)
+            observe(cfg);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 300); });
+    } else {
+        setTimeout(init, 300);
+    }
+})();
+</script>

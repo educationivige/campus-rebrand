@@ -1104,7 +1104,9 @@ html .has-full-page-slider #block-region-top {
   align-items: flex-start;
   gap: 16px;
   background: #FFF0EE70 !important;
-  padding: var(--spacing-medium) var(--spacing-medium) 5px var(--spacing-small);
+  /* Aire bajo el texto (antes 5px) + borde naranja de marca */
+  padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-medium) var(--spacing-small);
+  border: 1.5px solid var(--bright-orange);
   border-radius: var(--border-radius);
   margin-bottom: var(--spacing-large);
   font-size: 1.1em;
@@ -1668,14 +1670,37 @@ div#region-main #inst286.block .content {
   align-items: center;
 }
 
+/* Etiqueta "Puntuación:" + badge en línea y centrados verticalmente */
+.title_lfe.visor .lfe-puntuacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* El marcador (0/1500) como pastilla tipo "COMPLETA" (verde pastel + punto),
+   para combinar con los badges de Formación Obligatoria. */
 .title_lfe.visor .lfe-visor-puntuacion {
-  padding: 0.5em 1em !important;
-  background-color: #85C99C;
-  font-weight: bold;
-  color: white !important;
-  border-radius: 8px;
-  margin-left: var(--spacing-large);
-  display: inline-block;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px !important;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1.5;
+  margin-left: 0;
+  background-color: #D6F6EF !important;
+  color: #00514A !important;
+}
+
+/* Punto de color a la izquierda del marcador (como en los badges) */
+.title_lfe.visor .lfe-visor-puntuacion::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 /* --- Bloques de contenido LFE (#inst277-#inst281, #inst9478-#inst9482) --- */
@@ -1794,26 +1819,27 @@ div#region-main #inst280.block .content tbody td:last-child {
   text-align: center !important;
 }
 
-/* Colores de cabecera por sección */
+/* Colores de cabecera por sección (rebranding 2026-07-21: Monthly morado,
+   Must Read magenta, Certificados violeta, Catálogo navy) */
 div#region-main #inst278 .header.block-header,
 div#region-main #inst9479 .header.block-header{
-  background-color: var(--color-primary) !important;
+  background-color: #7B2594 !important;
 }
 
 div#region-main #inst279 .header.block-header,
 div#region-main #inst9480 .header.block-header{
-  background-color: #008897 !important;
+  background-color: #AC1D6B !important;
 }
 
 div#region-main #inst280 .header.block-header,
 div#region-main #inst9481 .header.block-header
 {
-  background-color: #66a9b3 !important;
+  background-color: #622A9C !important;
 }
 
 div#region-main #inst281 .header.block-header,
 div#region-main #inst9482 .header.block-header{
-  background-color: #8cbfc6 !important;
+  background-color: var(--navy-blue, #08004F) !important;
 }
 
 div#region-main #inst278 .header.block-header h2,
@@ -7438,9 +7464,22 @@ div:has(> #region-main) > #block-region-side-post {
   margin-top: 2rem;
 }
 
-/* Tiles más altos */
+/* Altura de los tiles */
 #links-lfe .block-totara-featured-links-tile {
-  height: 320px !important;
+  height: 200px !important;
+}
+
+/* Imagen (background del tile) ajustada al ANCHO y centrada, sin recorte
+   `cover` ni repetición */
+#links-lfe .block-totara-featured-links-tile.background-cover {
+  background-size: 100% auto !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Sin margen superior cuando el bloque va sin marco (chromeless) */
+.block.chromeless .block-totara-featured-links-layout {
+  margin-top: 0px !important;
 }
 
 /* Filo superior muy sutil en el velo del título */
@@ -8256,4 +8295,146 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
   .ividb_cert.ivi-cert-list__card { flex-direction: column; }
   .ivi-cert-list__file { flex-direction: row; align-items: center; width: 100%; flex: 0 0 auto; }
   .ivi-cert-list__actions { flex-direction: row; }
+}
+
+
+/* ============================================================
+   VISOR DE PUNTOS — tabla original con badges e iconos (fusionado
+   2026-07-21 desde css-adicional). La tabla de cada informe se
+   mantiene (estilo de arriba, #inst277-281); aquí solo: badge en la
+   última columna, iconos Material por módulo, y ajustes de Formación
+   Obligatoria (#inst277). Colores por bloque = su cabecera.
+   El texto de los badges y el "Pendiente" los inyecta el bloque JS
+   bloques/4-codigo-nuevo/visor-puntos--badges-puntos.html.
+   ⚠️ IDs de PRE (inst277-281): cambiar en PRO.
+   ============================================================ */
+
+/* --- Badge de puntos/estado (última columna) --- */
+/* Pastilla base (compartida por todos los bloques) */
+#inst277 .lfe-score-badge,
+#inst278 .lfe-score-badge,
+#inst279 .lfe-score-badge,
+#inst280 .lfe-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 2.5em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+/* Excelencia: color de cada bloque (mismo tono que su cabecera) */
+#inst278 .lfe-score-badge { background-color: #7B2594; color: #fff; }
+#inst279 .lfe-score-badge { background-color: #AC1D6B; color: #fff; }
+#inst280 .lfe-score-badge { background-color: #622A9C; color: #fff; }
+/* Formación Obligatoria: azul corporativo (un único azul) */
+#inst277 .lfe-score-badge { background-color: var(--light-blue, #004DF0); color: #fff; }
+
+/* --- Iconos Material por módulo (curso + calendario en la fecha) --- */
+/* Usa 'Material Symbols Outlined' (importada arriba, :11) y sus ligaduras. */
+#inst278 tbody td:first-child::before,
+#inst279 tbody td:first-child::before,
+#inst280 tbody td:first-child::before,
+#inst281 tbody td:first-child::before,
+#inst278 tbody td.course_completion_completeddate::before,
+#inst279 tbody td.course_completion_completeddate::before,
+#inst280 tbody td.course_completion_completeddate::before,
+#inst281 tbody td.course_completion_completeddate::before,
+#inst277 tbody td:first-child::before,
+#inst277 tbody td.course_completion_completeddate::before {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+/* Oculta el icono-imagen original del curso (lo sustituye el glifo) */
+#inst277 tbody td:first-child img,
+#inst278 tbody td:first-child img,
+#inst279 tbody td:first-child img,
+#inst280 tbody td:first-child img,
+#inst281 tbody td:first-child img { display: none !important; }
+/* Glifos: curso (school) vs. calendario (calendar_month). Para cambiar el
+   icono del curso, edita el `content` (p.ej. 'menu_book'/'workspace_premium'). */
+#inst277 tbody td:first-child::before,
+#inst278 tbody td:first-child::before,
+#inst279 tbody td:first-child::before,
+#inst280 tbody td:first-child::before,
+#inst281 tbody td:first-child::before { content: 'school'; }
+#inst277 tbody td.course_completion_completeddate::before,
+#inst278 tbody td.course_completion_completeddate::before,
+#inst279 tbody td.course_completion_completeddate::before,
+#inst280 tbody td.course_completion_completeddate::before,
+#inst281 tbody td.course_completion_completeddate::before { content: 'calendar_month'; }
+/* Color por módulo (icono de curso + calendario); FO en azul corporativo */
+#inst278 tbody td:first-child::before,
+#inst278 tbody td.course_completion_completeddate::before { color: #7B2594; }
+#inst279 tbody td:first-child::before,
+#inst279 tbody td.course_completion_completeddate::before { color: #AC1D6B; }
+#inst280 tbody td:first-child::before,
+#inst280 tbody td.course_completion_completeddate::before { color: #622A9C; }
+#inst281 tbody td:first-child::before,
+#inst281 tbody td.course_completion_completeddate::before { color: var(--navy-blue, #08004F); }
+#inst277 tbody td:first-child::before,
+#inst277 tbody td.course_completion_completeddate::before { color: var(--light-blue, #004DF0); }
+
+/* --- Formación Obligatoria (#inst277): ajustes de tabla --- */
+/* Sin fondo blanco (transparente sobre el fondo de página). Override del
+   `white !important` del tbody/filas impares de arriba. */
+div#region-main #inst277.block .content.block-content,
+div#region-main #inst277.block .content.block-content tbody,
+div#region-main #inst277.block .content.block-content tbody > tr,
+div#region-main #inst277.block .content.block-content tbody > tr:nth-of-type(odd) {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+/* Cabecera (th) y celdas (td) centradas verticalmente */
+div#region-main #inst277.block .content.block-content thead > tr > th,
+div#region-main #inst277.block .content.block-content tbody > tr > td {
+  vertical-align: middle !important;
+}
+/* Columna "Realizado" alineada a la izquierda (override del center de arriba) */
+div#region-main #inst277.block .content.block-content thead > tr > th:last-child,
+div#region-main #inst277.block .content.block-content tbody > tr > td:last-child,
+div#region-main #inst277.block .content.block-content tbody > tr > td.course_completion_iscomplete {
+  text-align: left !important;
+}
+/* Cabecera sin ordenación (evita el re-render de reportbuilder que
+   descolocaba/filtraba las filas). Títulos visibles, sin clic ni flecha. */
+#inst277 thead th { pointer-events: none !important; }
+#inst277 thead th a {
+  pointer-events: none !important;
+  cursor: default !important;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+#inst277 thead th .commands,
+#inst277 thead th .iconsort,
+#inst277 thead th [data-flex-icon*="sort"] { display: none !important; }
+
+/* "Pendiente" en la columna de fecha (lo inserta el JS cuando no hay fecha
+   de superación; el calendario lo pinta el ::before). Tenue en cursiva. */
+#inst277 .lfe-pending-label,
+#inst278 .lfe-pending-label,
+#inst279 .lfe-pending-label,
+#inst280 .lfe-pending-label {
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* Navegación principal: etiqueta de ítem (tamaño/peso/color) */
+.totaraNav_prim--list_item_label {
+  font-size: var(--font-size-14) !important;
+  font-weight: 400 !important;
+  color: var(--navy-blue);
 }
