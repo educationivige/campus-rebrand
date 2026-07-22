@@ -1,0 +1,11 @@
+<div class="izq">
+    <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/BADGE-LFE-color.svg" alt="" width="92" height="92" role="presentation">
+    <h3><b>Learning</b> <br>for Excellence</h3>
+</div>
+<div class="dcha">
+    <p>
+        <span class="lfe-banner-titulo">Learning for Excellence: </span><br>
+        <span class="lfe-banner-tipo"><b>Embriólogos Técnicos</b></span>
+    </p>
+    <a href="https://ivirmacampus.com/totara/dashboard/index.php?id=1" class="ivi-btn ivi-btn--primary" style="color:#fff">{mlang es}Accede aquí{mlang}{mlang en}Access here{mlang}{mlang pt}Acesse aqui{mlang}</a>
+</div>
