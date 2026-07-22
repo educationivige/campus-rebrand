@@ -1,13 +1,18 @@
 <!-- ============================================================
-     Card "Mi LfE" — volver a la formación de excelencia (dashboard id=1).
-     Misma estructura que la card del Visor de puntos (<a class="btn lfe">).
-     Fondo navy + badge blanco (contraste). Multi-idioma es/en/pt (+other).
+     Card "Volver a mi LFE" (dashboard id=1). Fondo navy para TODO el
+     bloque, logo LFE blanco centrado y botón "Volver a mi LFE" con
+     márgenes laterales (los da el padding lateral del contenedor).
+     Estilos .ivi-mylfe* en css-adicional.css.
+     Multi-idioma es/en/pt (+other = fallback para it/cs/sv).
      ============================================================ -->
-<a class="btn lfe" href="/totara/dashboard/index.php?id=1" style="background-color:#08004F;color:#fff;">
-  <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/LFE-blanco.svg" alt="" width="120" height="120" role="presentation" class="img-responsive">
-  <h3 class="lfe-visor-title" style="color:#fff !important;">{mlang es}Mi LfE{mlang}{mlang pt}O meu LfE{mlang}{mlang en}My LfE{mlang}{mlang other}My LfE{mlang}</h3>
-  {mlang es}<span>Volver a mi formación de excelencia.</span>{mlang}
-  {mlang en}<span>Back to my excellence training.</span>{mlang}
-  {mlang pt}<span>Voltar à minha formação de excelência.</span>{mlang}
-  {mlang other}<span>Back to my excellence training.</span>{mlang}
-</a>
+<div class="ivi-mylfe">
+  <a class="ivi-mylfe__logo" href="/totara/dashboard/index.php?id=1" aria-label="Mi LFE">
+    <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/LFE-blanco.svg" alt="" width="120" height="120" role="presentation" class="img-responsive">
+  </a>
+  <a class="ivi-btn ivi-btn--primary ivi-btn--block ivi-mylfe__btn" href="/totara/dashboard/index.php?id=1">
+    {mlang es}Volver a mi LFE{mlang}
+    {mlang en}Back to my LFE{mlang}
+    {mlang pt}Voltar ao meu LFE{mlang}
+    {mlang other}Back to my LFE{mlang}
+  </a>
+</div>

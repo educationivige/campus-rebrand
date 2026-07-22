@@ -1,0 +1,16 @@
+<!-- ============================================================
+     VISOR — Aviso "sin cursos obligatorios disponibles" (estado KO).
+     Estilo aviso naranja de LFE (.no-obligatorio, ya estilada en el CSS
+     desplegado) + icono Material info (sustituye a info_orange.svg).
+     Mantiene la clase .title_lfe y el wrapper .obligatorio-ko (show/hide).
+     Multi-idioma es / pt / other (inglés como fallback), igual que
+     visor-puntos--aviso.html.
+     ============================================================ -->
+<div class="obligatorio-ko">
+  <div class="no-obligatorio title_lfe">
+    <div class="izq"><span class="material-symbols-outlined" aria-hidden="true">info</span></div>
+    <div class="dcha">
+      <p style="margin:0; padding:0; font-size:1.1em;">{mlang es}Actualmente no hay cursos obligatorios disponibles, pero <b>estarán disponibles próximamente.</b><br>¡Mantente atento a las novedades!{mlang}{mlang other}There are currently no mandatory courses available, but <b>they will be available soon.</b><br>Stay tuned for updates!{mlang}{mlang pt}Atualmente, não há cursos obrigatórios disponíveis, mas <b>eles estarão disponíveis em breve.</b><br>Fique atento às novidades!{mlang}</p>
+    </div>
+  </div>
+</div>
