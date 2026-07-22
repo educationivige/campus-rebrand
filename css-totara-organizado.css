@@ -172,6 +172,13 @@ html body .path-totara-program .descprograma h2,
 html body .ascoursetitle {
   font-family: "IVI Glance", "Noto Sans" !important;
 }
+/* Título de curso: navy en vez del teal legacy (#006975) que viene inline
+   en la plantilla; !important para ganar al style="color:…" del elemento.
+   Incluye el .text_to_html anidado por si algún tema le fija color propio. */
+html body .ascoursetitle,
+html body .ascoursetitle .text_to_html {
+  color: var(--navy-blue) !important;
+}
 
 .block_slickslider .slick-prev:before,
 .block_slickslider .slick-next:before {
