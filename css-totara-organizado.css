@@ -8689,3 +8689,49 @@ div#region-main #inst277.block .content.block-content tbody > tr > td.course_com
   font-weight: 400 !important;
   color: var(--navy-blue);
 }
+
+
+/* ============================================================
+   FUSIONADO DESDE css-adicional.css (2026-07-22, 2ª tanda)
+   1) #inst8620 (sidebar): quitar el MARCO del contenedor (borde,
+      sombra y margen superior) que pone la regla base 28.1
+      (#block-region-side-post .block .block-content, :7332, sin
+      !important). Acotado a la instancia para no tocar el resto del
+      sidebar; gana con !important.
+   2) DESPLEGABLE de "Mi LFE" (y demás submenús con hijos del nav
+      primario): .navExpand--list como caja blanca con borde (#E2E8F0),
+      radio 4px y hover/foco de los ítems en warm gray. Acotado a
+      .totaraNav_prim para no tocar otros usos de navExpand (p. ej.
+      cmid-20259, :8089, que además gana por especificidad).
+      HTML: bloques/3-codigo-actual/main-navigation.html.
+   ⚠️ inst8620 es de PRE; revisar el ID en PRO.
+   ============================================================ */
+
+/* 1) #inst8620 (sidebar): contenedor sin marco (borde/sombra/margen) */
+#block-region-side-post #inst8620 .block-content {
+  border: none !important;
+  box-shadow: none !important;
+  margin-top: 0 !important;
+}
+/* El margen superior suele ir en el propio .block, no en .block-content */
+#block-region-side-post #inst8620 {
+  margin-top: 0 !important;
+}
+
+/* 2) Desplegable "Mi LFE": el panel como caja blanca con borde y radio */
+.totaraNav_prim .navExpand--list,
+.totaraNav_prim .navExpand--listSecond {
+  background-color: #fff !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;   /* el hover respeta las esquinas redondeadas */
+}
+/* Ítems transparentes sobre el blanco del panel; hover/foco en warm gray. */
+.totaraNav_prim .navExpand--list_item,
+.totaraNav_prim .navExpand--list_item_link {
+  background: transparent !important;
+}
+.totaraNav_prim .navExpand--list_item_link:hover,
+.totaraNav_prim .navExpand--list_item_link:focus {
+  background: var(--warm-gray, #FAF4EE) !important;
+}
