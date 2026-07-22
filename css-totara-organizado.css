@@ -2223,7 +2223,7 @@ h2#instance-8378-header {
 #page-totara-dashboard-33 #inst11103 table.totaratable td.c0 a:hover,
 #page-totara-dashboard-33 #inst11136 table.totaratable td.c0 a:hover {
     text-decoration: underline !important;
-    color: #008897 !important;
+    color: var(--light-blue) !important;
 }
 
 #page-totara-dashboard-33 #inst10607 table.totaratable td.c0::after,
@@ -2510,7 +2510,7 @@ h2#instance-8378-header {
 #page-totara-dashboard-33 #inst10607 .progress-success .bar,
 #page-totara-dashboard-33 #inst11103 .progress-success .bar,
 #page-totara-dashboard-33 #inst11136 .progress-success .bar {
-    background-color: #008897 !important;
+    background-color: var(--light-blue) !important;
     background-image: none !important;
 }
 
@@ -3784,7 +3784,7 @@ span.ividb_bold {
 
 span.ividb_name {
   font-weight: 600;
-  color: #008897;
+  color: var(--light-blue);
 }
 
 p.ividb_certificatelink {
