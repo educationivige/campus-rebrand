@@ -8735,3 +8735,48 @@ div#region-main #inst277.block .content.block-content tbody > tr > td.course_com
 .totaraNav_prim .navExpand--list_item_link:focus {
   background: var(--warm-gray, #FAF4EE) !important;
 }
+
+
+/* ============================================================
+   FUSIONADO DESDE css-adicional.css (2026-07-22, 3ª tanda)
+   FOOTER — iconos de redes sociales con SVG de marca (rrss-*).
+   La plantilla del footer NO es editable: trae glifos Font Awesome
+   (<i class="fa …"> dentro de .social-circle). Ocultamos el glifo y
+   ponemos el SVG como imagen de FONDO de .social-circle, quitando el
+   círculo por defecto del tema (el SVG ya ES el icono). Cada red se
+   distingue por la clase de su <a> (instagram/twitter/linkedin/youtube).
+   background-image (no mask) porque los SVG llevan su propio color.
+   HTML de referencia: bloques/3-codigo-actual/footer.html.
+   ============================================================ */
+/* Oculta el glifo Font Awesome original */
+.footercolumn.xxss .social-links a .social-circle i.fa {
+  display: none !important;
+}
+/* .social-circle pasa a ser el lienzo del SVG (sin círculo del tema) */
+.footercolumn.xxss .social-links a .social-circle {
+  width: 40px !important;
+  height: 40px !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  transition: opacity .15s ease;
+}
+.footercolumn.xxss .social-links a:hover .social-circle { opacity: .8; }
+
+/* Un SVG por red (según la clase del enlace) */
+.footercolumn.xxss .social-links a.instagram .social-circle {
+  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-instagram.svg") !important;
+}
+.footercolumn.xxss .social-links a.twitter .social-circle {
+  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-X.svg") !important;
+}
+.footercolumn.xxss .social-links a.linkedin .social-circle {
+  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-linkedin.svg") !important;
+}
+.footercolumn.xxss .social-links a.youtube .social-circle {
+  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-youtube.svg") !important;
+}
