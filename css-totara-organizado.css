@@ -179,6 +179,12 @@ html body .ascoursetitle,
 html body .ascoursetitle .text_to_html {
   color: var(--navy-blue) !important;
 }
+/* Texto/intro de curso: negro en vez del gris legacy (#666666) que viene
+   inline en la plantilla; !important para ganar al style="color:…". */
+html body .ascourseintro,
+html body .ascourseintro .text_to_html {
+  color: var(--black) !important;
+}
 
 .block_slickslider .slick-prev:before,
 .block_slickslider .slick-next:before {
@@ -3180,7 +3186,7 @@ width:95%;
 }
 
 .course-description .course-overview .introduction .profes div b {
-  color: #008897 !important;
+  color: var(--light-blue) !important;   /* azul corporativo (antes teal #008897) */
   margin-right: 5px;
   font-weight: 500 !important;
 }
