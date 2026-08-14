@@ -7459,33 +7459,42 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   font-family: var(--font-title, 'IVI Glance', sans-serif) !important;
 }
 
-/* --- 28.4 Finalización vs Inscritos: banner-enlace crema --- */
+/* --- 28.4 Finalización vs Inscritos: aspecto de BOTÓN blanco ---
+   Botón blanco con borde suave (semántica .ivi-btn--ghost): blanco →
+   hover relleno navy. Solo CSS; el HTML del bloque no cambia. --- */
 .ivi-kpi__enlace {
   display: flex;
   align-items: center;
-  gap: 14px;
-  background: var(--warm-gray, #FAF4EE);
-  border-radius: 10px;
-  padding: 22px 26px;
+  justify-content: center;      /* contenido centrado, como un botón */
+  gap: 10px;
+  background: #fff;             /* botón blanco (antes crema --warm-gray) */
+  border: 2px solid var(--border-soft, #E4E2EE);
+  border-radius: var(--btn-radius-pill, 999px);   /* píldora, como los botones */
+  padding: 14px 26px;
   font-family: var(--font-body, 'Noto Sans', sans-serif);
   font-size: 16px;
   font-weight: 700;
   color: var(--navy-blue, #08004F) !important;
   text-decoration: none !important;
   transition: background-color .2s ease;
-  /* La sombra la lleva el propio banner (el contenedor va a sangre) */
-  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05)));
+  box-shadow: none;            /* el botón no lleva la sombra del banner */
 }
 
 .ivi-kpi__enlace:hover,
 .ivi-kpi__enlace:focus {
-  background: #F3EBE1; /* crema un punto más oscuro */
-  color: var(--navy-blue, #08004F) !important;
+  background: var(--navy-blue, #08004F);   /* hover: se rellena (invierte) */
+  border-color: var(--navy-blue, #08004F);
+  color: #fff !important;
 }
 
 .ivi-kpi__enlace .material-symbols-outlined {
   font-size: 26px;
   color: var(--navy-blue, #08004F);
+}
+
+.ivi-kpi__enlace:hover .material-symbols-outlined,
+.ivi-kpi__enlace:focus .material-symbols-outlined {
+  color: #fff;
 }
 
 /* --- 28.5 Cursos que imparto: título + card con lista --- */
