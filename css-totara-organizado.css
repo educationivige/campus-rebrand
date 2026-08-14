@@ -798,13 +798,15 @@ html .has-full-page-slider #block-region-top {
   padding-right: 20px;
 }
 /* --- Banner "Learning for Excellence" (Home): degradado de marca LFE
-       (magenta→morado, igual que el hero LFE) + tarjeta crema con el curso
+       (navy→azul→violeta→magenta, 5 paradas) + tarjeta crema con el curso
        destacado. El botón usa el sistema .ivi-btn (ver HTML). --- */
 .cta_lfe .content.block-content {
   background: linear-gradient(90deg,
-    #B01C67 0%,
-    #7A2494 55%,
-    #5B2C9E 100%) !important;
+    #08004F 12%,
+    #063DB2 38%,
+    #5B2C9E 57%,
+    #7A2494 72%,
+    #B2407E 89%) !important;
   color: #fff !important;
   padding: 20px 26px !important;
   border-radius: var(--border-radius-large);
@@ -902,7 +904,7 @@ html .has-full-page-slider #block-region-top {
 /* --- Bloques one-tech-launch --- */
 #inst9929.one-tech-launch .content.block-content,
 #inst10654.one-tech-launch .content.block-content{
-    background-image: url('https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute.png');
+    background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Navy-2.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -1469,7 +1471,7 @@ html .has-full-page-slider #block-region-top {
 #inst216 .block-totara-featured-links-layout .block-totara-featured-links-tile.background-cover {
   flex-basis: auto;
   width: 30% !important;
-  max-height: 300px;
+  max-height: 230px;
   background-size: cover;
   margin-top: -15px;
 }
