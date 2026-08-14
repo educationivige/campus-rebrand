@@ -7480,8 +7480,8 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   box-shadow: none;            /* el botón no lleva la sombra del banner */
 }
 
-.ivi-kpi__enlace:hover,
-.ivi-kpi__enlace:focus {
+#block-region-side-post .ivi-kpi__enlace:hover,
+#block-region-side-post .ivi-kpi__enlace:focus {
   background: var(--navy-blue, #08004F);   /* hover: se rellena (invierte) */
   border-color: var(--navy-blue, #08004F);
   color: #fff !important;
@@ -7492,9 +7492,12 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   color: var(--navy-blue, #08004F);
 }
 
-.ivi-kpi__enlace:hover .material-symbols-outlined,
-.ivi-kpi__enlace:focus .material-symbols-outlined {
-  color: #fff;
+/* Texto (.multilang) e icono en blanco al hacer hover. Se ancla al id de la
+   región (#block-region-side-post) para ganar a la regla de enlace del tema
+   base (color en hover con !important y mayor especificidad). */
+#block-region-side-post .ivi-kpi__enlace:hover *,
+#block-region-side-post .ivi-kpi__enlace:focus * {
+  color: #fff !important;
 }
 
 /* --- 28.5 Cursos que imparto: título + card con lista --- */
