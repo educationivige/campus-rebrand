@@ -421,60 +421,70 @@ a[href*="/message/edit.php"] {
   margin-top: 40px;
 }
 
+/* Card: un único rectángulo redondeado (sin franja superior del logo a
+   todo lo ancho) y la columna izquierda alineada arriba. Fondo: degradado
+   lineal de blanco (100% opaco al 18% → 50% al 100%), en diagonal
+   arriba-izquierda → abajo-derecha (según Figma). */
 #page-login-index .loginbox.clearfix.twocolumns {
   width: auto;
   margin: 0 100px 0 auto;
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   position: relative;
-  background-color: rgba(255, 255, 255, .85);
+  background: linear-gradient(135deg, #ffffff 18%, rgba(255, 255, 255, 0.5) 100%);
   padding: 0px;
-  border-radius: 0 0 var(--border-radius-large) var(--border-radius-large);
-  align-items: flex-end;
-  padding-bottom: var(--spacing-large);
+  border-radius: var(--border-radius-large);
 }
 
+/* Logo dentro de la columna izquierda. La imagen la pone Totara (estilo
+   inline del <h2>); aquí solo se recoloca arriba-centrado en la columna. */
 #page-login-index .loginpanel h2 {
   position: absolute;
+  top: 36px;
   left: 0;
-  height: 86px;
-  width: 100%;
-  top: -86px;
-  background-color: rgba(255, 255, 255, .85);
-  border-radius: var(--border-radius-large) var(--border-radius-large) 0px 0px;
-  background-size: 300px;
+  right: auto;
+  width: 428px;
+  height: 56px;
+  background-color: transparent;
+  background-position: center;
+  background-size: 260px;
+  border-radius: 0;
+  font-size: 0;
 }
 
+/* Panel derecho: navy "flotando" dentro del card (margen por los 4 lados
+   y esquinas redondeadas) */
 #page-login-index .loginpanel {
   order: 2;
-  background-color: rgba(0, 105, 117, .85);
+  background-color: var(--navy-blue);
   color: #fff !important;
-  padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+  margin: var(--spacing-large);
+  padding: var(--spacing-xl);
   max-width: 373px;
-  border-radius: var(--border-radius-large) 0 0 var(--border-radius-large);
+  border-radius: var(--border-radius-large);
 }
 
-#page-login-index .signuppanel {
-  order: 1;
-}
-
+/* Etiquetas del formulario sin iconos de persona/candado */
 #page-login-index .loginform div:nth-child(1):before,
-#page-login-index .loginform div:nth-child(4):before,
-#page-login-index .loginpanel span.flex-icon {
-  color: #fff;
+#page-login-index .loginform div:nth-child(4):before {
+  display: none !important;
 }
 
+/* Inputs blancos con texto navy */
 #page-login-index .loginbox .loginform .form-input input {
-  background-color: transparent !important;
-  color: white;
+  background-color: #fff !important;
+  color: var(--navy-blue);
+  border: none;
+  border-radius: 8px;
 }
 
 #page-login-index .forgetpass {
   line-height: 1.4em !important;
 }
 
+/* Enlace "¿Olvidó su nombre de usuario o contraseña?" en azul claro */
 #page-login-index .forgetpass a {
-  color: #ffffff80 !important;
+  color: var(--bg-blue) !important;
   line-height: 1.4em !important;
   font-size: 14px;
 }
@@ -483,33 +493,53 @@ a[href*="/message/edit.php"] {
   color: white !important;
 }
 
+/* Botón "Iniciar sesión": azul brillante, texto blanco y en negrita.
+   Noto Sans porque 'IVI Glance' (forzada en el head) solo tiene el peso
+   normal cargado; Noto Sans 700 sí está disponible. */
 #page-login-index .loginpanel #loginbtn {
-  color: var(--btn-prim-bg-color);
-  background-color: var(--btn-prim-text-color);
+  color: #fff;
+  background-color: var(--light-blue);
+  font-family: 'Noto Sans', -apple-system, sans-serif !important;
+  font-weight: 700 !important;
 }
 
 #page-login-index .loginpanel #loginbtn:hover {
-  color: var(--btn-prim-text-color-focus);
-  background-color: var(--btn-prim-bg-color-active);
+  color: #fff;
+  background-color: var(--blue-hover);
 }
 
 #page-login-index .potentialidp img.icon {
   display: none;
 }
 
+/* Botón Office 365 / SSO: pill blanco con borde navy y texto en negrita */
 #page-login-index .potentialidp a.btn.btn-default {
-  font-weight: 500;
+  background-color: #fff !important;
+  color: var(--navy-blue) !important;
+  border: 1.5px solid var(--navy-blue) !important;
+  border-radius: var(--border-radius-xl) !important;
+  font-family: 'Noto Sans', -apple-system, sans-serif !important;
+  font-weight: 700 !important;
 }
 
+#page-login-index .potentialidp a.btn.btn-default:hover {
+  background-color: var(--bg-blue) !important;
+  color: var(--navy-blue) !important;
+}
+
+/* Icono del botón Office 365: rejilla en navy (glyph de Material Symbols,
+   cargado en el head; el SVG monocromo anterior no se veía sobre blanco) */
 #page-login-index .potentialidp a.btn.btn-default::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/Microsoft.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-right: 5px;
+  content: "grid_view";
+  font-family: 'Material Symbols Outlined';
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1;
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--navy-blue);
+  margin-right: 8px;
   vertical-align: middle;
 }
 
@@ -518,7 +548,7 @@ a[href*="/message/edit.php"] {
   content: "";
   display: block;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 8px;
   line-height: 1.5em;
 }
@@ -547,10 +577,9 @@ a[href*="/message/edit.php"] {
   content: "Logga in med ditt användarnamn och lösenord som du fått via e-post:";
 }
 
+/* Aviso de "Cookies": no se muestra en el diseño nuevo */
 .loginbox .desc {
-  color: #fff;
-  margin-top: 5px;
-  font-size: 14px;
+  display: none;
 }
 
 .signuppanel h2 {
@@ -581,6 +610,7 @@ a[href*="/message/edit.php"] {
   max-width: 100%;
 }
 
+/* Columna izquierda: hueco arriba (padding-top) para el logo recolocado */
 #page-login-index .signuppanel {
   order: 1;
   max-width: 428px;
@@ -592,7 +622,7 @@ a[href*="/message/edit.php"] {
   align-items: center;
   justify-content: space-evenly;
   align-content: center;
-  padding: 40px 40px 0px 40px;
+  padding: 110px 40px 0px 40px;
   border-bottom-left-radius: var(--border-radius-large);
 }
 
@@ -608,46 +638,83 @@ a[href*="/message/edit.php"] {
   margin-bottom: var(--spacing-xl);
 }
 
+/* "Si trabajas en IVI RMA" (span) y "Si el acceso mediante Office..." (em)
+   en navy y centrados */
 #page-login-index .signuppanel .login-top span,
 #page-login-index .signuppanel .login-detalles em {
   font-size: 15px;
   text-align: center !important;
   display: block;
   line-height: 1.4em !important;
+  color: var(--navy-blue);
 }
 
 #page-login-index .signuppanel .login-top span {
   font-size: 1.1em;
+  font-weight: 700;
 }
 
+/* Columna izquierda a ancho completo para centrar/alinear su contenido */
+#page-login-index .signuppanel > .subcontent,
+#page-login-index .signuppanel .login-detalles {
+  width: 100%;
+}
+
+/* "¿Tienes problemas para entrar?": sin caja, centrado; enlaces
+   subrayados en navy con icono en light blue */
 #page-login-index .signuppanel .problemas {
-  background-color: #fff !important;
-  border-radius: 16px !important;
-  color: var(--color-primary);
-  padding: 5px var(--spacing-medium);
-  width: 105%;
-  margin: 12vh 0 0 -10px !important;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  color: var(--navy-blue);
+  padding: 0;
+  width: 100%;
+  margin: 40px 0 0 0;
+  box-shadow: none;
+  text-align: center;
 }
 
 #page-login-index .signuppanel .problemas h4 {
   font-size: 17px;
+  font-weight: 700;
+  color: var(--navy-blue);
 }
 
-#page-login-index .signuppanel .problemas ul li {
-  list-style-type: none;
-  margin-left: -22px;
-  background: url(https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/settings.svg) no-repeat left center;
-  padding: 0px 0 3px 24px;
+#page-login-index .signuppanel .problemas ul#list-problemas {
+  padding-left: 0;
+  margin-bottom: 0;
 }
 
+#page-login-index .signuppanel .problemas ul li,
 #page-login-index .signuppanel .problemas ul li.mail {
-  background: url(https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mail.svg) no-repeat left center;
-  padding: 0px 0 3px 24px;
+  list-style-type: none;
+  margin-left: 0;
+  background: none;
+  padding: 3px 0;
+}
+
+/* Iconos de los enlaces en light blue (glyphs de Material Symbols):
+   engranaje para las asistencias y sobre para el email */
+#page-login-index .signuppanel .problemas ul#list-problemas li::before {
+  content: "settings";
+  font-family: 'Material Symbols Outlined';
+  font-weight: 400;
+  color: var(--light-blue);
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+#page-login-index .signuppanel .problemas ul#list-problemas li.mail::before {
+  content: "mail";
+}
+
+#page-login-index .signuppanel .problemas ul#list-problemas li a {
+  color: var(--navy-blue) !important;
+  text-decoration: underline;
 }
 
 #page-login-index .signuppanel .problemas ul#list-problemas li a:hover {
-  color: #306c78 !important;
+  color: var(--light-blue) !important;
 }
 
 .signuppanel hr {
@@ -676,6 +743,11 @@ a[href*="/message/edit.php"] {
   align-content: center;
   align-items: center;
   gap: var(--spacing-large);
+}
+
+/* Sin la línea superior del footer en la página de login */
+#page-login-index .second-page-footer {
+  border-top: none;
 }
 
 
