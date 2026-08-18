@@ -870,14 +870,13 @@ html .has-full-page-slider #block-region-top {
   padding-right: 20px;
 }
 /* --- Banner "Learning for Excellence" (Home): degradado de marca LFE
-       (navy→azul→violeta→magenta, 5 paradas) + tarjeta crema con el curso
+       (navy→violeta→magenta→rosa, 4 paradas) + tarjeta crema con el curso
        destacado. El botón usa el sistema .ivi-btn (ver HTML). --- */
 .cta_lfe .content.block-content {
   background: linear-gradient(90deg,
-    #08004F 12%,
-    #063DB2 38%,
-    #5B2C9E 57%,
-    #7A2494 72%,
+    #0F0E65 0%,
+    #5B2C9E 44%,
+    #7A2494 65%,
     #B2407E 89%) !important;
   color: #fff !important;
   padding: 20px 26px !important;
@@ -976,7 +975,7 @@ html .has-full-page-slider #block-region-top {
 /* --- Bloques one-tech-launch --- */
 #inst9929.one-tech-launch .content.block-content,
 #inst10654.one-tech-launch .content.block-content{
-    background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Navy-2.png');
+    background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
