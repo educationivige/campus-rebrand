@@ -1,0 +1,125 @@
+<!-- ============================================================
+     PANELES DE ADMINISTRACIÓN — recolorear barras de las gráficas
+     Las gráficas son <canvas> (ChartJS): el color NO se puede cambiar
+     por CSS. Este script fuerza los colores de marca por DOS vías:
+       1) reescribe el JSON `data-report-options` ANTES de que Totara
+          inicialice el chart (init es async vía requirejs) -> funciona
+          aunque ChartJS no sea global;
+       2) si ChartJS es global, repinta también las gráficas ya
+          renderizadas (Chart.instances / Chart.getChart) y refresca.
+
+     Mapa (legacy -> marca). Cubre los DOS juegos de colores:
+     A) por serie de "Finalización vs Inscritos":
+       #85C99C  Completados -> #08004F  Navy blue
+       #00B7BD  En progreso -> #0CE3C6  Teal
+       #E79181  No iniciado -> #004DF0  Light blue
+     B) paleta categórica global (orden del mockup 2026-08-20):
+       1 #3869B1 -> #08004F Navy         · 2 #DA7E31 -> #004DF0 Light blue
+       3 #3F9852 -> #0CE3C6 Teal         · 4 #CC2428 -> #002B34 Deep teal
+       5 #958C3D -> #B4084A Red          · 6 #6B4C9A -> #7D43F5 Purple
+       7 #8C8C8C -> #8A8A9E Text-gray   (6-7 fuera del mockup: por familia)
+
+     Solo actúa en los 6 dashboards de admin. Pegar como bloque HTML
+     del panel (o, definitivo, fusionar en additional-html-footer.js).
+     ============================================================ -->
+<script>
+(function () {
+  var PANELS = [
+    'page-totara-dashboard-2', 'page-totara-dashboard-3',
+    'page-totara-dashboard-4', 'page-totara-dashboard-22',
+    'page-totara-dashboard-23', 'page-totara-dashboard-26'
+  ];
+  if (PANELS.indexOf(document.body.id) === -1) return;
+
+  // legacy -> marca (claves en minúsculas)
+  var MAP = {
+    // A) por serie de "Finalización vs Inscritos"
+    '#85c99c': '#08004f', // Completados -> Navy blue
+    '#00b7bd': '#0ce3c6', // En progreso -> Teal
+    '#e79181': '#004df0', // No iniciado -> Light blue
+    // B) paleta categórica global (orden del mockup)
+    '#3869b1': '#08004f', // 1 -> Navy blue
+    '#da7e31': '#004df0', // 2 -> Light blue
+    '#3f9852': '#0ce3c6', // 3 -> Teal
+    '#cc2428': '#002b34', // 4 -> Deep teal
+    '#958c3d': '#b4084a', // 5 -> Red
+    '#6b4c9a': '#7d43f5', // 6 -> Purple (fuera del mockup)
+    '#8c8c8c': '#8a8a9e'  // 7 -> Text-gray (fuera del mockup)
+  };
+
+  var KEYS = Object.keys(MAP).map(function (k) {
+    return { re: new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig'), to: MAP[k] };
+  });
+
+  function mapColor(c) {
+    if (typeof c === 'string') { return MAP[c.trim().toLowerCase()] || c; }
+    if (Array.isArray(c)) { return c.map(mapColor); }
+    return c;
+  }
+
+  // 1) Reescribir el JSON de opciones ANTES de que Totara pinte
+  function rewriteAttr(canvas) {
+    if (!canvas || canvas.getAttribute('data-core-autoinitialise') === 'done') return;
+    var a = canvas.getAttribute('data-report-options');
+    if (!a) return;
+    var out = a;
+    KEYS.forEach(function (m) { out = out.replace(m.re, m.to); });
+    if (out !== a) canvas.setAttribute('data-report-options', out);
+  }
+
+  // 2) Repintar gráficas YA renderizadas (si Chart.js es global)
+  function getChart(canvas) {
+    if (!window.Chart) return null;
+    if (typeof Chart.getChart === 'function') {
+      try { var c = Chart.getChart(canvas); if (c) return c; } catch (e) {}
+    }
+    if (Chart.instances) {
+      for (var id in Chart.instances) {
+        var i = Chart.instances[id];
+        var cv = i && (i.canvas || (i.chart && i.chart.canvas));
+        if (cv === canvas) return i;
+      }
+    }
+    return null;
+  }
+
+  function remapLive() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.rb-chartjs__chart__canvas'),
+      function (canvas) {
+        var chart = getChart(canvas);
+        if (!chart) return;
+        var data = chart.data || (chart.config && chart.config.data);
+        if (!data || !data.datasets) return;
+        var changed = false;
+        data.datasets.forEach(function (ds) {
+          ['backgroundColor', 'borderColor', 'hoverBackgroundColor'].forEach(function (p) {
+            if (ds[p] != null) {
+              var m = mapColor(ds[p]);
+              if (m !== ds[p]) { ds[p] = m; changed = true; }
+            }
+          });
+        });
+        if (changed) { try { chart.update(); } catch (e) {} }
+      }
+    );
+  }
+
+  function scan() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.rb-chartjs__chart__canvas'), rewriteAttr
+    );
+    remapLive();
+  }
+
+  // ejecutar ya + observar canvases nuevos + reintentar unos segundos
+  scan();
+  try {
+    var mo = new MutationObserver(scan);
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 8000);
+  } catch (e) {}
+  var tries = 0;
+  var t = setInterval(function () { tries++; scan(); if (tries > 30) clearInterval(t); }, 200);
+})();
+</script>
