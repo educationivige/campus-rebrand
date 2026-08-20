@@ -8878,3 +8878,507 @@ div#region-main #inst277.block .content.block-content tbody > tr > td.course_com
 .footercolumn.xxss .social-links a.youtube .social-circle {
   background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-youtube.svg") !important;
 }
+
+/* ============================================================
+   29. PANELES DE ADMINISTRACIÓN POR REGIÓN
+   (fusionado del CSS adicional el 2026-08-20)
+   Dashboards de gestión (tenants): dashboard-2 (North America),
+   -3 (Italy), -4 (North Europe), -22 (Latam), -23 (Global),
+   -26 (Middle East). Todos usan bloques Totara NATIVOS (no HTML
+   propio): report_graph, featured_links, course_search,
+   totara_dashboard, my_learning_nav, report_manager, xp,
+   virtualmeetings. Se estiliza por scope de dashboard + tipo de
+   bloque (los IDs son de PRE: revisar en PRO). El hero
+   (.block_slickslider) se excluye: ya tiene su estilo global.
+   NOTA: las gráficas son <canvas> (ChartJS); sus colores salen de
+   la config del informe en Totara, no del CSS. Los fondos teal del
+   hero (bg-admin.jpg) y de los tiles featured-links (seguimiento.png…)
+   son IMÁGENES subidas a Totara: se recolorean resubiéndolas, no por
+   CSS. Aquí solo se reviste el "chrome" del bloque (cabecera,
+   tipografía, buscador, navs). Los bloques van SIN caja blanca:
+   transparentes sobre el fondo warm-gray (decisión 2026-08-20).
+   ============================================================ */
+
+/* --- Fondo de página --- */
+#page-totara-dashboard-2,
+#page-totara-dashboard-3,
+#page-totara-dashboard-4,
+#page-totara-dashboard-22,
+#page-totara-dashboard-23,
+#page-totara-dashboard-26 {
+  background-color: var(--warm-gray);
+}
+
+/* --- Hero: más aire entre el encabezado y el contenido de abajo ---
+   OJO especificidad: el organizado tiene
+   `#block-region-top .block_slickslider { margin-bottom:20px }` (1 id+1
+   clase). Como el "CSS adicional" carga ANTES, hay que subir la
+   especificidad (se añade #block-region-top → 2 ids+1 clase) para ganar. */
+#page-totara-dashboard-2 #block-region-top .lfe_hero,
+#page-totara-dashboard-3 #block-region-top .lfe_hero,
+#page-totara-dashboard-4 #block-region-top .lfe_hero,
+#page-totara-dashboard-22 #block-region-top .lfe_hero,
+#page-totara-dashboard-23 #block-region-top .lfe_hero,
+#page-totara-dashboard-26 #block-region-top .lfe_hero {
+  margin-bottom: 48px !important;
+}
+
+/* --- Hero: pastilla del subtítulo (p.ej. "Italy", "North America") ---
+   El subtítulo es <h3><span> con la pastilla en estilo INLINE
+   (background-color:#F9F9F940, blanco ~25%): sobre el teal viejo se veía,
+   pero sobre la imagen azul nueva casi desaparece. Se fija por CSS (con
+   !important porque el inline gana) para que no dependa de la imagen. --- */
+#page-totara-dashboard-2 .lfe_hero .conttext .text h3 span,
+#page-totara-dashboard-3 .lfe_hero .conttext .text h3 span,
+#page-totara-dashboard-4 .lfe_hero .conttext .text h3 span,
+#page-totara-dashboard-22 .lfe_hero .conttext .text h3 span,
+#page-totara-dashboard-23 .lfe_hero .conttext .text h3 span,
+#page-totara-dashboard-26 .lfe_hero .conttext .text h3 span {
+  display: inline-block;
+  padding: 9px 22px !important;
+  border-radius: 999px !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  color: #fff !important;
+  margin-top: 0 !important;
+  /* tamaño/peso fijos: garantizan la MISMA pill en las 5 regiones,
+     sin depender del font-size inline raro (19.2852px) */
+  font-family: var(--font-body) !important;
+  font-size: 19px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+/* --- Hero: menos espacio entre el título y el subtítulo ---
+   El hueco lo meten estilos INLINE (h2 margin-bottom:30px + span
+   margin-top:20px); se recortan por CSS (!important gana al inline). --- */
+#page-totara-dashboard-2 .lfe_hero .conttext .text h2,
+#page-totara-dashboard-3 .lfe_hero .conttext .text h2,
+#page-totara-dashboard-4 .lfe_hero .conttext .text h2,
+#page-totara-dashboard-22 .lfe_hero .conttext .text h2,
+#page-totara-dashboard-23 .lfe_hero .conttext .text h2,
+#page-totara-dashboard-26 .lfe_hero .conttext .text h2 {
+  margin-bottom: 12px !important;
+}
+
+#page-totara-dashboard-2 .lfe_hero .conttext .text h3,
+#page-totara-dashboard-3 .lfe_hero .conttext .text h3,
+#page-totara-dashboard-4 .lfe_hero .conttext .text h3,
+#page-totara-dashboard-22 .lfe_hero .conttext .text h3,
+#page-totara-dashboard-23 .lfe_hero .conttext .text h3,
+#page-totara-dashboard-26 .lfe_hero .conttext .text h3 {
+  margin-top: 0 !important;
+}
+
+/* --- Bloques SIN caja blanca: transparentes sobre el fondo warm-gray
+       (decisión 2026-08-20: se quita el fondo blanco de las cajas) --- */
+#page-totara-dashboard-2 .block:not(.block_slickslider),
+#page-totara-dashboard-3 .block:not(.block_slickslider),
+#page-totara-dashboard-4 .block:not(.block_slickslider),
+#page-totara-dashboard-22 .block:not(.block_slickslider),
+#page-totara-dashboard-23 .block:not(.block_slickslider),
+#page-totara-dashboard-26 .block:not(.block_slickslider) {
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 32px !important;
+}
+
+/* --- Cabecera del bloque: sin barra ni padding lateral, alineada
+       con el contenido; título IVI Glance navy con aire inferior --- */
+#page-totara-dashboard-2 .block:not(.block_slickslider) .header.block-header,
+#page-totara-dashboard-3 .block:not(.block_slickslider) .header.block-header,
+#page-totara-dashboard-4 .block:not(.block_slickslider) .header.block-header,
+#page-totara-dashboard-22 .block:not(.block_slickslider) .header.block-header,
+#page-totara-dashboard-23 .block:not(.block_slickslider) .header.block-header,
+#page-totara-dashboard-26 .block:not(.block_slickslider) .header.block-header {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#page-totara-dashboard-2 .block:not(.block_slickslider) .title.block-title,
+#page-totara-dashboard-3 .block:not(.block_slickslider) .title.block-title,
+#page-totara-dashboard-4 .block:not(.block_slickslider) .title.block-title,
+#page-totara-dashboard-22 .block:not(.block_slickslider) .title.block-title,
+#page-totara-dashboard-23 .block:not(.block_slickslider) .title.block-title,
+#page-totara-dashboard-26 .block:not(.block_slickslider) .title.block-title {
+  padding: 0 0 14px 0 !important;
+}
+
+#page-totara-dashboard-2 .block:not(.block_slickslider) .title.block-title h2,
+#page-totara-dashboard-3 .block:not(.block_slickslider) .title.block-title h2,
+#page-totara-dashboard-4 .block:not(.block_slickslider) .title.block-title h2,
+#page-totara-dashboard-22 .block:not(.block_slickslider) .title.block-title h2,
+#page-totara-dashboard-23 .block:not(.block_slickslider) .title.block-title h2,
+#page-totara-dashboard-26 .block:not(.block_slickslider) .title.block-title h2 {
+  font-family: var(--font-title) !important;
+  font-weight: 700;
+  font-size: 20px !important;
+  color: var(--navy-blue) !important;
+  margin: 0;
+}
+
+#page-totara-dashboard-2 .block:not(.block_slickslider) .content.block-content,
+#page-totara-dashboard-3 .block:not(.block_slickslider) .content.block-content,
+#page-totara-dashboard-4 .block:not(.block_slickslider) .content.block-content,
+#page-totara-dashboard-22 .block:not(.block_slickslider) .content.block-content,
+#page-totara-dashboard-23 .block:not(.block_slickslider) .content.block-content,
+#page-totara-dashboard-26 .block:not(.block_slickslider) .content.block-content {
+  font-family: var(--font-body);
+  color: var(--navy-blue);
+  padding: 0 !important;
+  /* sin caja: el tema pinta algunos .block-content como tarjeta blanca
+     (p.ej. las gráficas report_graph) → se fuerza transparente */
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* --- Gráficas de informe (report_graph): sin recuadro blanco ---
+   El fondo blanco lo ponen los DIVS contenedores de la gráfica; se hacen
+   transparentes. NO se toca el <canvas> ni los .chartjs-size-monitor /
+   .chartjs-render-monitor (los usa ChartJS para dibujar/redimensionar:
+   tocarlos con `*` hacía que la gráfica no se visualizara). El COLOR de
+   las barras es <canvas> (config del gráfico del informe en Totara). */
+#page-totara-dashboard-2 .block_totara_report_graph .block_totara_report_graph__chart,
+#page-totara-dashboard-2 .block_totara_report_graph .rb-chartjs,
+#page-totara-dashboard-2 .block_totara_report_graph .rb-chartjs__chart,
+#page-totara-dashboard-3 .block_totara_report_graph .block_totara_report_graph__chart,
+#page-totara-dashboard-3 .block_totara_report_graph .rb-chartjs,
+#page-totara-dashboard-3 .block_totara_report_graph .rb-chartjs__chart,
+#page-totara-dashboard-4 .block_totara_report_graph .block_totara_report_graph__chart,
+#page-totara-dashboard-4 .block_totara_report_graph .rb-chartjs,
+#page-totara-dashboard-4 .block_totara_report_graph .rb-chartjs__chart,
+#page-totara-dashboard-22 .block_totara_report_graph .block_totara_report_graph__chart,
+#page-totara-dashboard-22 .block_totara_report_graph .rb-chartjs,
+#page-totara-dashboard-22 .block_totara_report_graph .rb-chartjs__chart,
+#page-totara-dashboard-23 .block_totara_report_graph .block_totara_report_graph__chart,
+#page-totara-dashboard-23 .block_totara_report_graph .rb-chartjs,
+#page-totara-dashboard-23 .block_totara_report_graph .rb-chartjs__chart,
+#page-totara-dashboard-26 .block_totara_report_graph .block_totara_report_graph__chart,
+#page-totara-dashboard-26 .block_totara_report_graph .rb-chartjs,
+#page-totara-dashboard-26 .block_totara_report_graph .rb-chartjs__chart {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* --- Sidebar izquierdo (side-pre): tarjeta blanca ---
+   Columna izquierda (Búsqueda de cursos + Otras páginas). Se envuelve
+   como tarjeta: fondo blanco, sombra suave, esquinas redondeadas y
+   padding. Global (dashboard-23) NO se incluye: tiene el side-pre vacío. */
+/* La tarjeta blanca se pinta con un ::before SÓLIDO, metido 15px por
+   cada lado (el gutter de la columna) para ALINEARSE con el hero sin
+   sangrar. Así el blanco es sólido, llena todo el card y la sombra va
+   pegada al blanco. El contenido va encima con 18px de padding interior
+   (33px de padding en la columna = 15 gutter + 18 interior). */
+#page-totara-dashboard-2 #block-region-side-pre,
+#page-totara-dashboard-3 #block-region-side-pre,
+#page-totara-dashboard-4 #block-region-side-pre,
+#page-totara-dashboard-22 #block-region-side-pre,
+#page-totara-dashboard-26 #block-region-side-pre {
+  position: relative !important;
+  z-index: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 18px 33px !important;
+}
+
+#page-totara-dashboard-2 #block-region-side-pre::before,
+#page-totara-dashboard-3 #block-region-side-pre::before,
+#page-totara-dashboard-4 #block-region-side-pre::before,
+#page-totara-dashboard-22 #block-region-side-pre::before,
+#page-totara-dashboard-26 #block-region-side-pre::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 15px;
+  right: 15px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+  z-index: -1;
+}
+
+/* dentro de la tarjeta: bloques algo más juntos y sin margen sobrante abajo */
+#page-totara-dashboard-2 #block-region-side-pre .block:not(.block_slickslider),
+#page-totara-dashboard-3 #block-region-side-pre .block:not(.block_slickslider),
+#page-totara-dashboard-4 #block-region-side-pre .block:not(.block_slickslider),
+#page-totara-dashboard-22 #block-region-side-pre .block:not(.block_slickslider),
+#page-totara-dashboard-26 #block-region-side-pre .block:not(.block_slickslider) {
+  margin-bottom: 20px !important;
+}
+
+#page-totara-dashboard-2 #block-region-side-pre .block:not(.block_slickslider):last-of-type,
+#page-totara-dashboard-3 #block-region-side-pre .block:not(.block_slickslider):last-of-type,
+#page-totara-dashboard-4 #block-region-side-pre .block:not(.block_slickslider):last-of-type,
+#page-totara-dashboard-22 #block-region-side-pre .block:not(.block_slickslider):last-of-type,
+#page-totara-dashboard-26 #block-region-side-pre .block:not(.block_slickslider):last-of-type {
+  margin-bottom: 0 !important;
+}
+
+/* --- Búsqueda de cursos: input suave + botón azul de marca --- */
+#page-totara-dashboard-2 .block_course_search .input-group,
+#page-totara-dashboard-3 .block_course_search .input-group,
+#page-totara-dashboard-4 .block_course_search .input-group,
+#page-totara-dashboard-22 .block_course_search .input-group,
+#page-totara-dashboard-23 .block_course_search .input-group,
+#page-totara-dashboard-26 .block_course_search .input-group {
+  display: flex;
+  gap: 8px;
+}
+
+#page-totara-dashboard-2 .block_course_search .form-control,
+#page-totara-dashboard-3 .block_course_search .form-control,
+#page-totara-dashboard-4 .block_course_search .form-control,
+#page-totara-dashboard-22 .block_course_search .form-control,
+#page-totara-dashboard-23 .block_course_search .form-control,
+#page-totara-dashboard-26 .block_course_search .form-control {
+  height: 42px;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-family: var(--font-body);
+  color: var(--navy-blue);
+}
+
+#page-totara-dashboard-2 .block_course_search .input-group-btn .btn,
+#page-totara-dashboard-3 .block_course_search .input-group-btn .btn,
+#page-totara-dashboard-4 .block_course_search .input-group-btn .btn,
+#page-totara-dashboard-22 .block_course_search .input-group-btn .btn,
+#page-totara-dashboard-23 .block_course_search .input-group-btn .btn,
+#page-totara-dashboard-26 .block_course_search .input-group-btn .btn {
+  height: 42px;
+  padding: 0 22px;
+  background: var(--light-blue) !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  font-family: var(--font-title);
+  font-weight: 700;
+  box-shadow: none !important;
+}
+
+#page-totara-dashboard-2 .block_course_search .input-group-btn .btn:hover,
+#page-totara-dashboard-3 .block_course_search .input-group-btn .btn:hover,
+#page-totara-dashboard-4 .block_course_search .input-group-btn .btn:hover,
+#page-totara-dashboard-22 .block_course_search .input-group-btn .btn:hover,
+#page-totara-dashboard-23 .block_course_search .input-group-btn .btn:hover,
+#page-totara-dashboard-26 .block_course_search .input-group-btn .btn:hover {
+  background: var(--blue-hover) !important;
+}
+
+/* --- Listas de navegación (Paneles de control, Otras páginas,
+       Mi Aprendizaje): enlaces azules, filas con separador --- */
+/* Reset de sangría/padding del tema en ul/li/.name (si no, los enlaces
+   salen indentados y con filas altísimas en vivo) */
+#page-totara-dashboard-2 .block_totara_dashboard :is(ul.list, li.dashboard, .name),
+#page-totara-dashboard-3 .block_totara_dashboard :is(ul.list, li.dashboard, .name),
+#page-totara-dashboard-4 .block_totara_dashboard :is(ul.list, li.dashboard, .name),
+#page-totara-dashboard-22 .block_totara_dashboard :is(ul.list, li.dashboard, .name),
+#page-totara-dashboard-23 .block_totara_dashboard :is(ul.list, li.dashboard, .name),
+#page-totara-dashboard-26 .block_totara_dashboard :is(ul.list, li.dashboard, .name),
+#page-totara-dashboard-3 .block_totara_my_learning_nav :is(ul, li, .name) {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+#page-totara-dashboard-2 .block_totara_dashboard ul.list li,
+#page-totara-dashboard-3 .block_totara_dashboard ul.list li,
+#page-totara-dashboard-4 .block_totara_dashboard ul.list li,
+#page-totara-dashboard-22 .block_totara_dashboard ul.list li,
+#page-totara-dashboard-23 .block_totara_dashboard ul.list li,
+#page-totara-dashboard-26 .block_totara_dashboard ul.list li,
+#page-totara-dashboard-3 .block_totara_my_learning_nav li {
+  list-style: none;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+#page-totara-dashboard-2 .block_totara_dashboard ul.list li:last-child,
+#page-totara-dashboard-3 .block_totara_dashboard ul.list li:last-child,
+#page-totara-dashboard-4 .block_totara_dashboard ul.list li:last-child,
+#page-totara-dashboard-22 .block_totara_dashboard ul.list li:last-child,
+#page-totara-dashboard-23 .block_totara_dashboard ul.list li:last-child,
+#page-totara-dashboard-26 .block_totara_dashboard ul.list li:last-child,
+#page-totara-dashboard-3 .block_totara_my_learning_nav li:last-child {
+  border-bottom: 0;
+}
+
+#page-totara-dashboard-2 .block_totara_dashboard .name a,
+#page-totara-dashboard-3 .block_totara_dashboard .name a,
+#page-totara-dashboard-4 .block_totara_dashboard .name a,
+#page-totara-dashboard-22 .block_totara_dashboard .name a,
+#page-totara-dashboard-23 .block_totara_dashboard .name a,
+#page-totara-dashboard-26 .block_totara_dashboard .name a,
+#page-totara-dashboard-3 .block_totara_my_learning_nav a {
+  display: block;
+  padding: 11px 0 !important;
+  font-family: var(--font-body);
+  color: var(--light-blue) !important;
+  text-decoration: none;
+}
+
+#page-totara-dashboard-2 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-3 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-4 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-22 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-23 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-26 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-3 .block_totara_my_learning_nav a:hover {
+  color: var(--navy-blue) !important;
+  text-decoration: none;
+}
+
+/* --- Enlaces destacados (featured links): esquinas redondeadas --- */
+#page-totara-dashboard-2 .block_totara_featured_links .block-totara-featured-links-tile,
+#page-totara-dashboard-3 .block_totara_featured_links .block-totara-featured-links-tile,
+#page-totara-dashboard-4 .block_totara_featured_links .block-totara-featured-links-tile,
+#page-totara-dashboard-22 .block_totara_featured_links .block-totara-featured-links-tile,
+#page-totara-dashboard-23 .block_totara_featured_links .block-totara-featured-links-tile,
+#page-totara-dashboard-26 .block_totara_featured_links .block-totara-featured-links-tile {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+/* --- Administrador de reportes (report_manager, solo Global) ---
+   Bloque con dos vistas (ficha=grid / lista) conmutables por JS. */
+
+/* Subtítulo interno "Informes" */
+#page-totara-dashboard-23 .totara_core__myreports__title h2 {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy-blue);
+  margin: 0 0 14px;
+}
+
+/* Fila superior: contador a la izquierda, toggle grid/lista a la derecha */
+#page-totara-dashboard-23 .totara_core__myreports__overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__count {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-gray);
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle {
+  display: flex;
+  gap: 6px;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--navy-blue) !important;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle__btn_active {
+  background: var(--light-blue);
+  border-color: var(--light-blue);
+  color: #fff !important;
+}
+
+/* Lista base = filas limpias (icono + título) */
+#page-totara-dashboard-23 ul.totara_core__myreports__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item {
+  list-style: none;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item__content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border-soft);
+  text-decoration: none !important;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item:last-child .totara_core__myreports__list__item__content {
+  border-bottom: 0;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item__content__image {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item__content__image img {
+  max-width: 28px;
+  max-height: 28px;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item__content__title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--navy-blue) !important;
+  text-decoration: none;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list__item__content:hover .totara_core__myreports__list__item__content__title {
+  color: var(--light-blue) !important;
+}
+
+/* Vista ficha (grid): tiles en cuadrícula, icono sobre el título */
+#page-totara-dashboard-23 ul.totara_core__myreports__list--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content {
+  flex-direction: column;
+  text-align: center;
+  gap: 8px;
+  padding: 16px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+/* --- Responsive: menos padding en móvil --- */
+@media (max-width: 767px) {
+  #page-totara-dashboard-2 .block:not(.block_slickslider) .content.block-content,
+  #page-totara-dashboard-3 .block:not(.block_slickslider) .content.block-content,
+  #page-totara-dashboard-4 .block:not(.block_slickslider) .content.block-content,
+  #page-totara-dashboard-22 .block:not(.block_slickslider) .content.block-content,
+  #page-totara-dashboard-23 .block:not(.block_slickslider) .content.block-content,
+  #page-totara-dashboard-26 .block:not(.block_slickslider) .content.block-content {
+    padding: 0 !important;
+  }
+  #page-totara-dashboard-2 .block_course_search .input-group,
+  #page-totara-dashboard-3 .block_course_search .input-group,
+  #page-totara-dashboard-4 .block_course_search .input-group,
+  #page-totara-dashboard-22 .block_course_search .input-group,
+  #page-totara-dashboard-23 .block_course_search .input-group,
+  #page-totara-dashboard-26 .block_course_search .input-group {
+    flex-wrap: wrap;
+  }
+}
