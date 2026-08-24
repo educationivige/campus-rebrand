@@ -3647,22 +3647,15 @@ table.appendChild(tfoot);
 })();
 
 /* ============================================================
-   PANELES DE ADMINISTRACIÓN — recolorear barras de las gráficas
+   GRÁFICAS CHARTJS — aplicar la paleta de marca globalmente
    Las gráficas son <canvas> (ChartJS): el color no se puede cambiar
    por CSS. Fuerza los colores de marca por dos vías: (1) reescribe el
    JSON data-report-options antes de que Totara pinte; (2) si ChartJS
-   es global, repinta las gráficas ya renderizadas. Solo actúa en los
-   6 dashboards de admin (2/3/4/22/23/26). Fusionado el 2026-08-20.
+   es global, repinta las gráficas ya renderizadas. Actúa sobre todas
+   las gráficas ChartJS de Totara, presentes y futuras.
    Fuente de referencia: bloques/4-codigo-nuevo/panel-admin--recolor-graficas.html
    ============================================================ */
 (function () {
-  var PANELS = [
-    'page-totara-dashboard-2', 'page-totara-dashboard-3',
-    'page-totara-dashboard-4', 'page-totara-dashboard-22',
-    'page-totara-dashboard-23', 'page-totara-dashboard-26'
-  ];
-  if (PANELS.indexOf(document.body.id) === -1) return;
-
   // legacy -> marca (claves en minúsculas)
   var MAP = {
     // A) por serie de "Finalización vs Inscritos"
@@ -3746,7 +3739,7 @@ table.appendChild(tfoot);
 
   function remapLive() {
     Array.prototype.forEach.call(
-      document.querySelectorAll('.rb-chartjs__chart__canvas'),
+      document.querySelectorAll('canvas[data-report-options], .rb-chartjs__chart__canvas'),
       function (canvas) {
         var chart = getChart(canvas);
         if (!chart) return;
@@ -3777,7 +3770,7 @@ table.appendChild(tfoot);
 
   function scan() {
     Array.prototype.forEach.call(
-      document.querySelectorAll('.rb-chartjs__chart__canvas'), rewriteAttr
+      document.querySelectorAll('canvas[data-report-options], .rb-chartjs__chart__canvas'), rewriteAttr
     );
     remapLive();
   }
