@@ -1,5 +1,5 @@
 <!-- ============================================================
-     PANELES DE ADMINISTRACIÓN — recolorear barras de las gráficas
+     GRÁFICAS CHARTJS — aplicar la paleta de marca globalmente
      Las gráficas son <canvas> (ChartJS): el color NO se puede cambiar
      por CSS. Este script fuerza los colores de marca por DOS vías:
        1) reescribe el JSON `data-report-options` ANTES de que Totara
@@ -19,24 +19,18 @@
        5 #958C3D -> #B4084A Red          · 6 #6B4C9A -> #7D43F5 Purple
        7 #8C8C8C -> #8A8A9E Text-gray   (6-7 fuera del mockup: por familia)
 
-     Solo actúa en los 6 dashboards de admin. Pegar como bloque HTML
-     del panel (o, definitivo, fusionar en additional-html-footer.js).
+     Actúa sobre todas las gráficas ChartJS de Totara, presentes y
+     futuras. La versión definitiva vive en additional-html-footer.js.
      ============================================================ -->
 <script>
 (function () {
-  var PANELS = [
-    'page-totara-dashboard-2', 'page-totara-dashboard-3',
-    'page-totara-dashboard-4', 'page-totara-dashboard-22',
-    'page-totara-dashboard-23', 'page-totara-dashboard-26'
-  ];
-  if (PANELS.indexOf(document.body.id) === -1) return;
-
   // legacy -> marca (claves en minúsculas)
   var MAP = {
     // A) por serie de "Finalización vs Inscritos"
     '#85c99c': '#08004f', // Completados -> Navy blue
     '#00b7bd': '#0ce3c6', // En progreso -> Teal
     '#e79181': '#004df0', // No iniciado -> Light blue
+    '#f58c7c': '#004df0', // No iniciado -> Light blue (variante)
     // B) paleta categórica global (orden del mockup)
     '#3869b1': '#08004f', // 1 -> Navy blue
     '#da7e31': '#004df0', // 2 -> Light blue
@@ -85,7 +79,7 @@
 
   function remapLive() {
     Array.prototype.forEach.call(
-      document.querySelectorAll('.rb-chartjs__chart__canvas'),
+      document.querySelectorAll('canvas[data-report-options], .rb-chartjs__chart__canvas'),
       function (canvas) {
         var chart = getChart(canvas);
         if (!chart) return;
@@ -107,7 +101,7 @@
 
   function scan() {
     Array.prototype.forEach.call(
-      document.querySelectorAll('.rb-chartjs__chart__canvas'), rewriteAttr
+      document.querySelectorAll('canvas[data-report-options], .rb-chartjs__chart__canvas'), rewriteAttr
     );
     remapLive();
   }
