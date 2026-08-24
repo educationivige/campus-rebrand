@@ -3701,6 +3701,17 @@ table.appendChild(tfoot);
     return legends.length > 0;
   }
 
+  function enhanceFullReportLinks() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.block .footer a[href*="/totara/reportbuilder/report.php"]'),
+      function (link) {
+        link.classList.add('ivi-btn', 'ivi-btn--primary', 'ivi-btn--sm', 'ivi-full-report-btn');
+        var footer = link.closest('.footer');
+        if (footer) footer.classList.add('ivi-report-footer');
+      }
+    );
+  }
+
   // 1) Reescribir el JSON de opciones ANTES de que Totara pinte
   function rewriteAttr(canvas) {
     if (!canvas) return;
@@ -3769,6 +3780,7 @@ table.appendChild(tfoot);
   }
 
   function scan() {
+    enhanceFullReportLinks();
     Array.prototype.forEach.call(
       document.querySelectorAll('canvas[data-report-options], .rb-chartjs__chart__canvas'), rewriteAttr
     );
