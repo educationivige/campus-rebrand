@@ -1034,6 +1034,228 @@ html .has-full-page-slider #block-region-top {
   }
 }
 
+/* --- Ajustes finales de gráficas e informes de administración --- */
+#page-totara-dashboard-2 .rb-chartjs__chart,
+#page-totara-dashboard-3 .rb-chartjs__chart,
+#page-totara-dashboard-4 .rb-chartjs__chart,
+#page-totara-dashboard-22 .rb-chartjs__chart,
+#page-totara-dashboard-23 .rb-chartjs__chart,
+#page-totara-dashboard-26 .rb-chartjs__chart,
+#page-totara-dashboard-2 .rb-chartjs__chart__canvas,
+#page-totara-dashboard-3 .rb-chartjs__chart__canvas,
+#page-totara-dashboard-4 .rb-chartjs__chart__canvas,
+#page-totara-dashboard-22 .rb-chartjs__chart__canvas,
+#page-totara-dashboard-23 .rb-chartjs__chart__canvas,
+#page-totara-dashboard-26 .rb-chartjs__chart__canvas {
+  height: 400px !important;
+  max-height: 400px !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_report_graph .content.block-content,
+#page-totara-dashboard-3 #page-content .block_totara_report_graph .content.block-content,
+#page-totara-dashboard-4 #page-content .block_totara_report_graph .content.block-content,
+#page-totara-dashboard-22 #page-content .block_totara_report_graph .content.block-content,
+#page-totara-dashboard-23 #page-content .block_totara_report_graph .content.block-content,
+#page-totara-dashboard-26 #page-content .block_totara_report_graph .content.block-content {
+  padding: 24px !important;
+}
+
+#page-totara-dashboard-2 .block_totara_report_graph .footer,
+#page-totara-dashboard-3 .block_totara_report_graph .footer,
+#page-totara-dashboard-4 .block_totara_report_graph .footer,
+#page-totara-dashboard-22 .block_totara_report_graph .footer,
+#page-totara-dashboard-23 .block_totara_report_graph .footer,
+#page-totara-dashboard-26 .block_totara_report_graph .footer {
+  margin-top: 16px;
+}
+
+.ivi-report-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.ivi-report-footer .ivi-full-report-btn {
+  background: #fff !important;
+  border-color: #fff !important;
+  color: var(--light-blue, #004df0) !important;
+}
+
+.ivi-report-footer .ivi-full-report-btn:hover,
+.ivi-report-footer .ivi-full-report-btn:focus {
+  background: var(--light-blue, #004df0) !important;
+  border-color: var(--light-blue, #004df0) !important;
+  color: #fff !important;
+}
+
+/* --- Mosaicos de informes destacados y LFE --- */
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-layout,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-layout,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-layout,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-layout,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-layout,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-layout {
+  row-gap: 28px !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small),
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small),
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small),
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small),
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small),
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) {
+  justify-content: flex-start !important;
+  margin-bottom: 40px !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small {
+  flex-grow: 0 !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) .block-totara-featured-links-flex-filler,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) .block-totara-featured-links-flex-filler,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) .block-totara-featured-links-flex-filler,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) .block-totara-featured-links-flex-filler,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) .block-totara-featured-links-flex-filler,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-layout:has(.block-totara-featured-links-tile-small) .block-totara-featured-links-flex-filler {
+  display: none !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  max-height: 68px !important;
+  padding: 8px 12px !important;
+  background: transparent !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small .block-totara-featured-links-content-bottom::before {
+  background: transparent !important;
+  opacity: 0 !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small h3,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small h3,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small h3,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small h3,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small h3,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-small h3 {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+}
+
+/* Tarjetas grandes: franja blanca translúcida, compacta y uniforme. */
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 80px !important;
+  min-height: 80px !important;
+  max-height: 80px !important;
+  padding: 10px 18px !important;
+  background: transparent !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom::before,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom::before {
+  background: rgba(255, 255, 255, 0.78) !important;
+  opacity: 1 !important;
+}
+
+#page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom h3,
+#page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom h3,
+#page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom h3,
+#page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom h3,
+#page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom h3,
+#page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom h3 {
+  position: relative;
+  z-index: 1;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--navy-blue, #08004f) !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+}
+
+/* La tarjeta recorta su imagen; al abrir la rueda se libera el recorte
+   para que el menú de edición pueda desplegarse con margen. */
+.block_totara_featured_links .block-totara-featured-links-tile:has([aria-expanded="true"]),
+.block_totara_featured_links .block-totara-featured-links-tile:has(.open),
+.block_totara_featured_links .block-totara-featured-links-tile:has(.show) {
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 50 !important;
+}
+
+.block_totara_featured_links .block-totara-featured-links-tile:has([aria-expanded="true"]) [role="menu"],
+.block_totara_featured_links .block-totara-featured-links-tile:has(.open) [role="menu"],
+.block_totara_featured_links .block-totara-featured-links-tile:has(.show) [role="menu"] {
+  z-index: 51 !important;
+}
+
+@media (max-width: 767px) {
+  #page-totara-dashboard-2 #page-content .block_totara_report_graph .content.block-content,
+  #page-totara-dashboard-3 #page-content .block_totara_report_graph .content.block-content,
+  #page-totara-dashboard-4 #page-content .block_totara_report_graph .content.block-content,
+  #page-totara-dashboard-22 #page-content .block_totara_report_graph .content.block-content,
+  #page-totara-dashboard-23 #page-content .block_totara_report_graph .content.block-content,
+  #page-totara-dashboard-26 #page-content .block_totara_report_graph .content.block-content {
+    padding: 16px !important;
+  }
+
+  .ivi-report-footer .ivi-full-report-btn {
+    width: 100%;
+  }
+
+  #page-totara-dashboard-2 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+  #page-totara-dashboard-3 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+  #page-totara-dashboard-4 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+  #page-totara-dashboard-22 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+  #page-totara-dashboard-23 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom,
+  #page-totara-dashboard-26 #page-content .block_totara_featured_links .block-totara-featured-links-tile-medium .block-totara-featured-links-content-bottom {
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+    padding: 8px 14px !important;
+  }
+}
+
 
 /* ============================================================
    4. DASHBOARD LFE
