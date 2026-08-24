@@ -55,7 +55,8 @@
     Array.prototype.forEach.call(
       document.querySelectorAll('.block .footer a[href*="/totara/reportbuilder/report.php"]'),
       function (link) {
-        link.classList.add('ivi-btn', 'ivi-btn--primary', 'ivi-btn--sm', 'ivi-full-report-btn');
+        link.classList.remove('ivi-btn--primary');
+        link.classList.add('ivi-btn', 'ivi-btn--white', 'ivi-btn--sm', 'ivi-full-report-btn');
         var footer = link.closest('.footer');
         if (footer) footer.classList.add('ivi-report-footer');
       }
