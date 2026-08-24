@@ -3770,7 +3770,6 @@ table.appendChild(tfoot);
         }
         if (changed || removedLegacy) {
           try { chart.update(); } catch (e) {}
-          try { chart.resize(); } catch (e) {}
         }
       }
     );
