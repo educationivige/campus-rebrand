@@ -3647,7 +3647,7 @@ table.appendChild(tfoot);
 })();
 
 /* ============================================================
-   PANELES DE ADMINISTRACIÓN — colores y leyenda de las gráficas
+   PANELES DE ADMINISTRACIÓN — recolorear barras de las gráficas
    Las gráficas son <canvas> (ChartJS): el color no se puede cambiar
    por CSS. Fuerza los colores de marca por dos vías: (1) reescribe el
    JSON data-report-options antes de que Totara pinte; (2) si ChartJS
@@ -3690,63 +3690,6 @@ table.appendChild(tfoot);
     return c;
   }
 
-  function datasetColor(ds) {
-    var color = ds && (ds.backgroundColor || ds.borderColor);
-    if (Array.isArray(color)) color = color[0];
-    return mapColor(color || '#8a8a9e');
-  }
-
-  function legendOrder(label) {
-    var clean = String(label || '').trim().toLowerCase();
-    if (/no iniciado|not started|non iniziato|não iniciado|nezahájeno|ej påbörjad/.test(clean)) return 1;
-    if (/en progreso|en curso|in progress|in corso|em progresso|probíhá|pågående/.test(clean)) return 2;
-    if (/completad|completed|completat|concluíd|dokonč|slutförd/.test(clean)) return 3;
-    return 10;
-  }
-
-  function renderHtmlLegend(canvas, datasets) {
-    if (!canvas || !datasets || !datasets.length) return;
-    var chartWrap = canvas.closest('.rb-chartjs__chart');
-    if (!chartWrap) return;
-
-    var signature = datasets.slice().sort(function (a, b) {
-      return legendOrder(a.label) - legendOrder(b.label);
-    }).map(function (ds) {
-      return String(ds.label || '').trim() + ':' + datasetColor(ds);
-    }).join('|');
-
-    var legend = chartWrap.querySelector('.ivi-admin-chart-legend');
-    if (legend && legend.getAttribute('data-legend-signature') === signature) return;
-    if (!legend) {
-      legend = document.createElement('div');
-      legend.className = 'ivi-admin-chart-legend';
-      legend.setAttribute('aria-label', 'Leyenda');
-      chartWrap.insertBefore(legend, canvas);
-    }
-
-    legend.innerHTML = '';
-    legend.setAttribute('data-legend-signature', signature);
-    datasets.slice().sort(function (a, b) {
-      return legendOrder(a.label) - legendOrder(b.label);
-    }).forEach(function (ds) {
-      var item = document.createElement('div');
-      item.className = 'ivi-admin-chart-legend__item';
-
-      var line = document.createElement('span');
-      line.className = 'ivi-admin-chart-legend__line';
-      line.style.backgroundColor = datasetColor(ds);
-      line.setAttribute('aria-hidden', 'true');
-
-      var label = document.createElement('span');
-      label.className = 'ivi-admin-chart-legend__label';
-      label.textContent = String(ds.label || '').trim();
-
-      item.appendChild(line);
-      item.appendChild(label);
-      legend.appendChild(item);
-    });
-  }
-
   // 1) Reescribir el JSON de opciones ANTES de que Totara pinte
   function rewriteAttr(canvas) {
     if (!canvas || canvas.getAttribute('data-core-autoinitialise') === 'done') return;
@@ -3754,12 +3697,6 @@ table.appendChild(tfoot);
     if (!a) return;
     var out = a;
     KEYS.forEach(function (m) { out = out.replace(m.re, m.to); });
-    try {
-      var options = JSON.parse(out);
-      if (options.options && options.options.legend) options.options.legend.display = false;
-      out = JSON.stringify(options);
-      renderHtmlLegend(canvas, options.data && options.data.datasets);
-    } catch (e) {}
     if (out !== a) canvas.setAttribute('data-report-options', out);
   }
 
@@ -3787,7 +3724,6 @@ table.appendChild(tfoot);
         if (!chart) return;
         var data = chart.data || (chart.config && chart.config.data);
         if (!data || !data.datasets) return;
-        var options = chart.options || (chart.config && chart.config.options);
         var changed = false;
         data.datasets.forEach(function (ds) {
           ['backgroundColor', 'borderColor', 'hoverBackgroundColor'].forEach(function (p) {
@@ -3797,11 +3733,6 @@ table.appendChild(tfoot);
             }
           });
         });
-        if (options && options.legend && options.legend.display !== false) {
-          options.legend.display = false;
-          changed = true;
-        }
-        renderHtmlLegend(canvas, data.datasets);
         if (changed) { try { chart.update(); } catch (e) {} }
       }
     );
