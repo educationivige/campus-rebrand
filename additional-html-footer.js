@@ -3690,13 +3690,41 @@ table.appendChild(tfoot);
     return c;
   }
 
+  function isCompletionChart(datasets) {
+    if (!datasets || datasets.length !== 3) return false;
+    var labels = datasets.map(function (ds) {
+      return String(ds.label || '').trim().toLowerCase();
+    }).join('|');
+    return /completad|completed|completat|concluíd|dokonč|slutförd/.test(labels) &&
+      /progreso|progress|corso|progresso|probíhá|pågående/.test(labels) &&
+      /no iniciado|not started|non iniziato|não iniciado|nezahájeno|ej påbörjad/.test(labels);
+  }
+
+  function removeLegacyLegend(canvas) {
+    var chartWrap = canvas && canvas.closest('.rb-chartjs__chart');
+    if (!chartWrap) return false;
+    var legends = chartWrap.querySelectorAll('.ivi-admin-chart-legend');
+    Array.prototype.forEach.call(legends, function (legend) { legend.remove(); });
+    return legends.length > 0;
+  }
+
   // 1) Reescribir el JSON de opciones ANTES de que Totara pinte
   function rewriteAttr(canvas) {
-    if (!canvas || canvas.getAttribute('data-core-autoinitialise') === 'done') return;
+    if (!canvas) return;
+    removeLegacyLegend(canvas);
+    if (canvas.getAttribute('data-core-autoinitialise') === 'done') return;
     var a = canvas.getAttribute('data-report-options');
     if (!a) return;
     var out = a;
     KEYS.forEach(function (m) { out = out.replace(m.re, m.to); });
+    try {
+      var config = JSON.parse(out);
+      if (isCompletionChart(config.data && config.data.datasets) &&
+          config.options && config.options.legend) {
+        config.options.legend.display = true;
+        out = JSON.stringify(config);
+      }
+    } catch (e) {}
     if (out !== a) canvas.setAttribute('data-report-options', out);
   }
 
@@ -3724,6 +3752,8 @@ table.appendChild(tfoot);
         if (!chart) return;
         var data = chart.data || (chart.config && chart.config.data);
         if (!data || !data.datasets) return;
+        var removedLegacy = removeLegacyLegend(canvas);
+        var options = chart.options || (chart.config && chart.config.options);
         var changed = false;
         data.datasets.forEach(function (ds) {
           ['backgroundColor', 'borderColor', 'hoverBackgroundColor'].forEach(function (p) {
@@ -3733,7 +3763,15 @@ table.appendChild(tfoot);
             }
           });
         });
-        if (changed) { try { chart.update(); } catch (e) {} }
+        if (isCompletionChart(data.datasets) && options && options.legend &&
+            options.legend.display !== true) {
+          options.legend.display = true;
+          changed = true;
+        }
+        if (changed || removedLegacy) {
+          try { chart.update(); } catch (e) {}
+          try { chart.resize(); } catch (e) {}
+        }
       }
     );
   }
