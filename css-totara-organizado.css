@@ -7793,7 +7793,8 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   color: #fff !important;
 }
 
-/* --- 28.5 Cursos que imparto: título + card con lista --- */
+/* --- 28.5 Filas con icono azul (componente genérico) ---
+   .ivi-imparto__* se mantiene como alias para los bloques publicados. */
 .ivi-imparto__titulo {
   font-family: var(--font-body, 'Noto Sans', sans-serif) !important;
   font-size: 17px !important;
@@ -7802,55 +7803,70 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   margin: 0 0 12px !important;
 }
 
-.ivi-imparto__lista {
+.block:has(.ivi-icono-azul) {
+  margin-bottom: 15px !important;
+}
+
+.block:has(.ivi-icono-azul) > .content.block-content {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:is(.ivi-icono-azul, .ivi-imparto__lista) {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding: 12px;
   background: #fff;
   border: 1px solid var(--border-soft, #E3E3E3);
   border-radius: 12px;
-  padding: 12px;
 }
 
-.ivi-imparto__item {
+:is(.ivi-icono-azul__item, .ivi-imparto__item) {
   display: flex;
   align-items: center;
   gap: 12px;
-  text-decoration: none !important;
-  border-radius: 10px;
   padding: 6px;
+  border-radius: 10px;
+  text-decoration: none !important;
   transition: background-color .2s ease;
 }
 
-.ivi-imparto__item:hover,
-.ivi-imparto__item:focus { background: var(--bg-blue, #DCE6FF); }
-
-.ivi-imparto__item .material-symbols-outlined {
-  flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+:is(.ivi-icono-azul__item, .ivi-imparto__item):hover,
+:is(.ivi-icono-azul__item, .ivi-imparto__item):focus {
   background: var(--bg-blue, #DCE6FF);
-  border-radius: 10px;
-  font-size: 24px;
-  color: var(--light-blue, #004DF0);
 }
 
-.ivi-imparto__nombre {
+:is(.ivi-icono-azul__item, .ivi-imparto__item) .material-symbols-outlined {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--bg-blue, #DCE6FF);
+  border-radius: 10px;
+  color: var(--light-blue, #004DF0);
+  font-size: 24px;
+}
+
+:is(.ivi-icono-azul__nombre, .ivi-imparto__nombre) {
   display: block;
+  color: var(--light-blue, #004DF0) !important;
   font-family: var(--font-body, 'Noto Sans', sans-serif);
   font-size: 15px;
   font-weight: 700;
-  color: var(--light-blue, #004DF0) !important;
 }
 
-.ivi-imparto__detalle {
+:is(.ivi-icono-azul__detalle, .ivi-imparto__detalle) {
   display: block;
+  color: var(--text-gray, #666);
   font-family: var(--font-body, 'Noto Sans', sans-serif);
   font-size: 13px;
-  color: var(--text-gray, #666);
+  font-weight: 700;
 }
 
 /* --- 28.6 Cursos en los que soy tutor (bloque NATIVO report table) ---
