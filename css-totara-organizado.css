@@ -1051,6 +1051,29 @@ html .has-full-page-slider #block-region-top {
   max-height: 400px !important;
 }
 
+/* Barras al doble de alto: SOLO las gráficas de barras horizontales
+   (seguimiento de cursos, muchas filas), detectadas por el tipo real
+   en data-report-options. Las de líneas ("Accesos por mes") se quedan
+   a 400px. Independiente de inst-id / idioma / región. */
+#page-totara-dashboard-2 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-2 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
+#page-totara-dashboard-3 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-3 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
+#page-totara-dashboard-4 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-4 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
+#page-totara-dashboard-22 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-22 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
+#page-totara-dashboard-23 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-23 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
+#page-totara-dashboard-26 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-26 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'] {
+  height: 800px !important;
+  max-height: 800px !important;
+}
+
+/* Área de la gráfica como tarjeta blanca (canvas + "Ver informe
+   completo"). Los divs internos siguen transparentes (§29) y muestran
+   este blanco; el título del bloque queda encima, sobre el crema. */
 #page-totara-dashboard-2 #page-content .block_totara_report_graph .content.block-content,
 #page-totara-dashboard-3 #page-content .block_totara_report_graph .content.block-content,
 #page-totara-dashboard-4 #page-content .block_totara_report_graph .content.block-content,
@@ -1058,6 +1081,9 @@ html .has-full-page-slider #block-region-top {
 #page-totara-dashboard-23 #page-content .block_totara_report_graph .content.block-content,
 #page-totara-dashboard-26 #page-content .block_totara_report_graph .content.block-content {
   padding: 24px !important;
+  background: #fff !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-soft) !important;
 }
 
 #page-totara-dashboard-2 .block_totara_report_graph .footer,
@@ -1262,10 +1288,12 @@ html .has-full-page-slider #block-region-top {
    ============================================================ */
 
 /* Fondo warm gray de las páginas LFE: dashboard 10 (LFE), 11 (Monthly
-   Seminars), 12 (Must-Read) y edición de certificados (mod/data) */
+   Seminars), 12 (Must-Read), 27 (Visor de puntos LFE 2025) y edición
+   de certificados (mod/data) */
 #page-totara-dashboard-10,
 #page-totara-dashboard-11,
 #page-totara-dashboard-12,
+#page-totara-dashboard-27,
 #page-mod-data-edit {
   background-color: var(--warm-gray, #faf4ee) !important;
 }
@@ -8893,7 +8921,13 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
    Obligatoria (#inst277). Colores por bloque = su cabecera.
    El texto de los badges y el "Pendiente" los inyecta el bloque JS
    bloques/4-codigo-nuevo/visor-puntos--badges-puntos.html.
-   ⚠️ IDs de PRE (inst277-281): cambiar en PRO.
+   Cubre DOS visores con la misma estructura y colores por módulo:
+     · Visor de puntos LFE (dashboard-10): #inst277 (FO), #inst278-281.
+     · Visor 2025 (dashboard-27): #inst9478 (FO), #inst9479-9482.
+   Mapeo por módulo/color: 277↔9478 (FO), 278↔9479 (#7B2594, Monthly),
+   279↔9480 (#AC1D6B, MustRead), 280↔9481 (#622A9C, Cert), 281↔9482
+   (navy, Catálogo). El JS del footer ya inyecta en ambos (ids 10 y 27).
+   ⚠️ IDs de PRE (inst277-281 / inst9478-9482): cambiar en PRO.
    ============================================================ */
 
 /* --- Badge de puntos/estado (última columna) --- */
@@ -8901,7 +8935,11 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 #inst277 .lfe-score-badge,
 #inst278 .lfe-score-badge,
 #inst279 .lfe-score-badge,
-#inst280 .lfe-score-badge {
+#inst280 .lfe-score-badge,
+#inst9478 .lfe-score-badge,
+#inst9479 .lfe-score-badge,
+#inst9480 .lfe-score-badge,
+#inst9481 .lfe-score-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -8916,11 +8954,15 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
   white-space: nowrap;
 }
 /* Excelencia: color de cada bloque (mismo tono que su cabecera) */
-#inst278 .lfe-score-badge { background-color: #7B2594; color: #fff; }
-#inst279 .lfe-score-badge { background-color: #AC1D6B; color: #fff; }
-#inst280 .lfe-score-badge { background-color: #622A9C; color: #fff; }
+#inst278 .lfe-score-badge,
+#inst9479 .lfe-score-badge { background-color: #7B2594; color: #fff; }
+#inst279 .lfe-score-badge,
+#inst9480 .lfe-score-badge { background-color: #AC1D6B; color: #fff; }
+#inst280 .lfe-score-badge,
+#inst9481 .lfe-score-badge { background-color: #622A9C; color: #fff; }
 /* Formación Obligatoria: azul corporativo (un único azul) */
-#inst277 .lfe-score-badge { background-color: var(--light-blue, #004DF0); color: #fff; }
+#inst277 .lfe-score-badge,
+#inst9478 .lfe-score-badge { background-color: var(--light-blue, #004DF0); color: #fff; }
 
 /* --- Iconos Material por módulo (curso + calendario en la fecha) --- */
 /* Usa 'Material Symbols Outlined' (importada arriba, :11) y sus ligaduras. */
@@ -8933,7 +8975,17 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 #inst280 tbody td.course_completion_completeddate::before,
 #inst281 tbody td.course_completion_completeddate::before,
 #inst277 tbody td:first-child::before,
-#inst277 tbody td.course_completion_completeddate::before {
+#inst277 tbody td.course_completion_completeddate::before,
+#inst9478 tbody td:first-child::before,
+#inst9479 tbody td:first-child::before,
+#inst9480 tbody td:first-child::before,
+#inst9481 tbody td:first-child::before,
+#inst9482 tbody td:first-child::before,
+#inst9478 tbody td.course_completion_completeddate::before,
+#inst9479 tbody td.course_completion_completeddate::before,
+#inst9480 tbody td.course_completion_completeddate::before,
+#inst9481 tbody td.course_completion_completeddate::before,
+#inst9482 tbody td.course_completion_completeddate::before {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
@@ -8950,30 +9002,55 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 #inst278 tbody td:first-child img,
 #inst279 tbody td:first-child img,
 #inst280 tbody td:first-child img,
-#inst281 tbody td:first-child img { display: none !important; }
+#inst281 tbody td:first-child img,
+#inst9478 tbody td:first-child img,
+#inst9479 tbody td:first-child img,
+#inst9480 tbody td:first-child img,
+#inst9481 tbody td:first-child img,
+#inst9482 tbody td:first-child img { display: none !important; }
 /* Glifos: curso (school) vs. calendario (calendar_month). Para cambiar el
    icono del curso, edita el `content` (p.ej. 'menu_book'/'workspace_premium'). */
 #inst277 tbody td:first-child::before,
 #inst278 tbody td:first-child::before,
 #inst279 tbody td:first-child::before,
 #inst280 tbody td:first-child::before,
-#inst281 tbody td:first-child::before { content: 'school'; }
+#inst281 tbody td:first-child::before,
+#inst9478 tbody td:first-child::before,
+#inst9479 tbody td:first-child::before,
+#inst9480 tbody td:first-child::before,
+#inst9481 tbody td:first-child::before,
+#inst9482 tbody td:first-child::before { content: 'school'; }
 #inst277 tbody td.course_completion_completeddate::before,
 #inst278 tbody td.course_completion_completeddate::before,
 #inst279 tbody td.course_completion_completeddate::before,
 #inst280 tbody td.course_completion_completeddate::before,
-#inst281 tbody td.course_completion_completeddate::before { content: 'calendar_month'; }
+#inst281 tbody td.course_completion_completeddate::before,
+#inst9478 tbody td.course_completion_completeddate::before,
+#inst9479 tbody td.course_completion_completeddate::before,
+#inst9480 tbody td.course_completion_completeddate::before,
+#inst9481 tbody td.course_completion_completeddate::before,
+#inst9482 tbody td.course_completion_completeddate::before { content: 'calendar_month'; }
 /* Color por módulo (icono de curso + calendario); FO en azul corporativo */
 #inst278 tbody td:first-child::before,
-#inst278 tbody td.course_completion_completeddate::before { color: #7B2594; }
+#inst278 tbody td.course_completion_completeddate::before,
+#inst9479 tbody td:first-child::before,
+#inst9479 tbody td.course_completion_completeddate::before { color: #7B2594; }
 #inst279 tbody td:first-child::before,
-#inst279 tbody td.course_completion_completeddate::before { color: #AC1D6B; }
+#inst279 tbody td.course_completion_completeddate::before,
+#inst9480 tbody td:first-child::before,
+#inst9480 tbody td.course_completion_completeddate::before { color: #AC1D6B; }
 #inst280 tbody td:first-child::before,
-#inst280 tbody td.course_completion_completeddate::before { color: #622A9C; }
+#inst280 tbody td.course_completion_completeddate::before,
+#inst9481 tbody td:first-child::before,
+#inst9481 tbody td.course_completion_completeddate::before { color: #622A9C; }
 #inst281 tbody td:first-child::before,
-#inst281 tbody td.course_completion_completeddate::before { color: var(--navy-blue, #08004F); }
+#inst281 tbody td.course_completion_completeddate::before,
+#inst9482 tbody td:first-child::before,
+#inst9482 tbody td.course_completion_completeddate::before { color: var(--navy-blue, #08004F); }
 #inst277 tbody td:first-child::before,
-#inst277 tbody td.course_completion_completeddate::before { color: var(--light-blue, #004DF0); }
+#inst277 tbody td.course_completion_completeddate::before,
+#inst9478 tbody td:first-child::before,
+#inst9478 tbody td.course_completion_completeddate::before { color: var(--light-blue, #004DF0); }
 
 /* --- Formación Obligatoria (#inst277): ajustes de tabla --- */
 /* Sin fondo blanco (transparente sobre el fondo de página). Override del
@@ -8981,25 +9058,36 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 div#region-main #inst277.block .content.block-content,
 div#region-main #inst277.block .content.block-content tbody,
 div#region-main #inst277.block .content.block-content tbody > tr,
-div#region-main #inst277.block .content.block-content tbody > tr:nth-of-type(odd) {
+div#region-main #inst277.block .content.block-content tbody > tr:nth-of-type(odd),
+div#region-main #inst9478.block .content.block-content,
+div#region-main #inst9478.block .content.block-content tbody,
+div#region-main #inst9478.block .content.block-content tbody > tr,
+div#region-main #inst9478.block .content.block-content tbody > tr:nth-of-type(odd) {
   background: transparent !important;
   background-color: transparent !important;
 }
 /* Cabecera (th) y celdas (td) centradas verticalmente */
 div#region-main #inst277.block .content.block-content thead > tr > th,
-div#region-main #inst277.block .content.block-content tbody > tr > td {
+div#region-main #inst277.block .content.block-content tbody > tr > td,
+div#region-main #inst9478.block .content.block-content thead > tr > th,
+div#region-main #inst9478.block .content.block-content tbody > tr > td {
   vertical-align: middle !important;
 }
 /* Columna "Realizado" alineada a la izquierda (override del center de arriba) */
 div#region-main #inst277.block .content.block-content thead > tr > th:last-child,
 div#region-main #inst277.block .content.block-content tbody > tr > td:last-child,
-div#region-main #inst277.block .content.block-content tbody > tr > td.course_completion_iscomplete {
+div#region-main #inst277.block .content.block-content tbody > tr > td.course_completion_iscomplete,
+div#region-main #inst9478.block .content.block-content thead > tr > th:last-child,
+div#region-main #inst9478.block .content.block-content tbody > tr > td:last-child,
+div#region-main #inst9478.block .content.block-content tbody > tr > td.course_completion_iscomplete {
   text-align: left !important;
 }
 /* Cabecera sin ordenación (evita el re-render de reportbuilder que
    descolocaba/filtraba las filas). Títulos visibles, sin clic ni flecha. */
-#inst277 thead th { pointer-events: none !important; }
-#inst277 thead th a {
+#inst277 thead th,
+#inst9478 thead th { pointer-events: none !important; }
+#inst277 thead th a,
+#inst9478 thead th a {
   pointer-events: none !important;
   cursor: default !important;
   text-decoration: none !important;
@@ -9007,14 +9095,21 @@ div#region-main #inst277.block .content.block-content tbody > tr > td.course_com
 }
 #inst277 thead th .commands,
 #inst277 thead th .iconsort,
-#inst277 thead th [data-flex-icon*="sort"] { display: none !important; }
+#inst277 thead th [data-flex-icon*="sort"],
+#inst9478 thead th .commands,
+#inst9478 thead th .iconsort,
+#inst9478 thead th [data-flex-icon*="sort"] { display: none !important; }
 
 /* "Pendiente" en la columna de fecha (lo inserta el JS cuando no hay fecha
    de superación; el calendario lo pinta el ::before). Tenue en cursiva. */
 #inst277 .lfe-pending-label,
 #inst278 .lfe-pending-label,
 #inst279 .lfe-pending-label,
-#inst280 .lfe-pending-label {
+#inst280 .lfe-pending-label,
+#inst9478 .lfe-pending-label,
+#inst9479 .lfe-pending-label,
+#inst9480 .lfe-pending-label,
+#inst9481 .lfe-pending-label {
   font-style: italic;
   color: #6b7280;
 }
@@ -9337,9 +9432,6 @@ div#region-main #inst277.block .content.block-content tbody > tr > td.course_com
   bottom: 0;
   left: 15px;
   right: 15px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: var(--shadow-soft);
   z-index: -1;
 }
 
@@ -9458,19 +9550,56 @@ div#region-main #inst277.block .content.block-content tbody > tr > td.course_com
   display: block;
   padding: 11px 0 !important;
   font-family: var(--font-body);
-  color: var(--light-blue) !important;
+  color: var(--navy-blue) !important;
+  font-weight: 400 !important;
   text-decoration: none;
 }
 
 #page-totara-dashboard-2 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-2 .block_totara_dashboard .name a:focus,
 #page-totara-dashboard-3 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-3 .block_totara_dashboard .name a:focus,
 #page-totara-dashboard-4 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-4 .block_totara_dashboard .name a:focus,
 #page-totara-dashboard-22 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-22 .block_totara_dashboard .name a:focus,
 #page-totara-dashboard-23 .block_totara_dashboard .name a:hover,
+#page-totara-dashboard-23 .block_totara_dashboard .name a:focus,
 #page-totara-dashboard-26 .block_totara_dashboard .name a:hover,
-#page-totara-dashboard-3 .block_totara_my_learning_nav a:hover {
-  color: var(--navy-blue) !important;
+#page-totara-dashboard-26 .block_totara_dashboard .name a:focus,
+#page-totara-dashboard-3 .block_totara_my_learning_nav a:hover,
+#page-totara-dashboard-3 .block_totara_my_learning_nav a:focus {
+  color: var(--light-blue) !important;
   text-decoration: none;
+}
+
+/* Italia (dashboard-3) — "Mi Aprendizaje": icono nativo de Totara al
+   lado del enlace. Cada <li> trae un <a.action-icon> (flex-icon:
+   calendario para Inscripciones, archivo para Registro de Aprendizaje)
+   + el <a> de texto; el display:block de arriba los apilaba. Se pasa
+   el <li> a flex para que el icono quede EN LÍNEA, antes del texto.
+   Solo Italia tiene este bloque (my_learning_nav). */
+#page-totara-dashboard-3 .block_totara_my_learning_nav.block ul.list li {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+#page-totara-dashboard-3 .block_totara_my_learning_nav.block ul.list li .action-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  padding: 0 !important;
+}
+#page-totara-dashboard-3 .block_totara_my_learning_nav.block ul.list li .action-icon .flex-icon {
+  color: var(--navy-blue) !important;
+  font-size: 18px !important;
+  margin: 0 !important;
+}
+#page-totara-dashboard-3 .block_totara_my_learning_nav.block ul.list li > a:not(.action-icon) {
+  flex: 1 1 auto !important;
+}
+#page-totara-dashboard-3 .block_totara_my_learning_nav.block ul.list li:hover .action-icon .flex-icon {
+  color: var(--light-blue) !important;
 }
 
 /* --- Enlaces destacados (featured links): esquinas redondeadas --- */
