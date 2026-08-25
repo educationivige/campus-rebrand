@@ -1,0 +1,86 @@
+<script>
+/**
+ * Script para extraer título del curso y actualizar elementos HTML
+ *
+ * Este script:
+ * 1. Extrae el título del curso de un bloque HTML específico
+ * 2. Separa el título en dos partes (antes y después del guion)
+ * 3. Actualiza los elementos HTML correspondientes
+ *
+ * El título principal muestra el año de la edición, fijado A MANO en la
+ * constante LFE_YEAR (abajo). Se toma la base del nombre del curso (parte
+ * anterior al guion), se le quita el año que traiga y se le añade LFE_YEAR.
+ * Para cambiar de edición, edita ese único valor.
+ */
+
+function extractAndUpdateLFETitle(blockId = 'inst9485') {
+  try {
+    // Seleccionar el bloque usando el ID configurable
+    const block = document.getElementById(blockId);
+
+    if (!block) {
+      console.error(`No se encontró el bloque con ID: ${blockId}`);
+      return false;
+    }
+
+    // Buscar el título del curso dentro del bloque
+    const titleElement = block.querySelector('.block_current_learningas-tile__link_title');
+
+    if (!titleElement) {
+      console.error('No se encontró el elemento del título del curso');
+      return false;
+    }
+
+    // Obtener el texto del título
+    const fullTitle = titleElement.textContent.trim();
+
+    // Dividir el título en dos partes usando el guion como separador
+    const titleParts = fullTitle.split(' - ');
+
+    if (titleParts.length !== 2) {
+      console.error('El formato del título no es el esperado (debe contener un guion)');
+      return false;
+    }
+
+    // Año de la edición LFE. CAMBIAR A MANO cada nueva edición.
+    const LFE_YEAR = 2025;
+    // Base del título (sin el año que traiga el curso) + LFE_YEAR
+    const baseTitle = titleParts[0].trim().replace(/\s*\d{4}\s*$/, '').trim();
+    const mainTitle = `${baseTitle} ${LFE_YEAR}`; // "Learning for Excellence 2025"
+    const subTitle = titleParts[1].trim();        // "Ginecología"
+
+    // Actualizar el elemento del título principal (con LFE_YEAR)
+    const mainTitleElement = document.querySelector('.lfe-banner-titulo');
+    if (mainTitleElement) {
+      mainTitleElement.textContent = mainTitle;
+    } else {
+      console.error('No se encontró el elemento para el título principal');
+    }
+
+    // Actualizar el elemento del subtítulo
+    const subTitleElement = document.querySelector('.lfe-banner-tipo');
+    if (subTitleElement) {
+      subTitleElement.textContent = subTitle;
+    } else {
+      console.error('No se encontró el elemento para el subtítulo');
+    }
+
+    console.log('Títulos actualizados correctamente:');
+    console.log('- Título principal:', mainTitle);
+    console.log('- Subtítulo:', subTitle);
+
+    return true;
+  } catch (error) {
+    console.error('Error al procesar los títulos:', error);
+    return false;
+  }
+}
+
+// Ejecutar el script cuando el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+  // Ejecutar el script con el ID de bloque predeterminado
+  // Para usar con otro ID, modifica el parámetro: extractAndUpdateLFETitle('otroID');
+  extractAndUpdateLFETitle();
+  console.log('Script de extracción de títulos ejecutado después de cargar el DOM');
+});
+</script>
