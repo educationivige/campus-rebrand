@@ -39,6 +39,16 @@ document.addEventListener('DOMContentLoaded', function() {
             instancias: ['inst212', 'inst226'], // Instancias de los bloques para etiquetas
         },
 
+        // Configuración para "Mis certificados" en las Homes interna y externa
+        certificatesConfig: {
+            enabledForIds: ['6'],
+            enabledForAllPatterns: false,
+            instancias: ['inst237', 'inst354'],
+            pdfWorker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js',
+            thumbWidth: 320,
+            downloadName: 'Certificado-Campus.pdf'
+        },
+
         // Configuración para procesar tabla de estados
         tablaEstadosConfig: {
             enabledForIds: ['10', '27'], // IDs específicos donde se activa la función
@@ -363,6 +373,182 @@ document.addEventListener('DOMContentLoaded', function() {
                 Utils.log('Etiquetas', `Observer desconectado para ${containerId}`);
             });
             this.observers.clear();
+        }
+    };
+
+    // ============================================================
+    // MÓDULO MIS CERTIFICADOS — Homes interna y externa
+    // Miniatura de la primera página + acciones Ver / Descargar.
+    // Instancias actuales: #inst237 (interna) y #inst354 (externa).
+    // ============================================================
+    const CertificatesModule = {
+        blobCache: {},
+
+        labels: {
+            es: { view: 'Ver', download: 'Descargar', empty: 'No hay certificados disponibles para mostrar.' },
+            en: { view: 'View', download: 'Download', empty: 'There are no certificates available to display.' },
+            it: { view: 'Visualizza', download: 'Scarica', empty: 'Non ci sono certificati disponibili da mostrare.' },
+            pt: { view: 'Ver', download: 'Descarregar', empty: 'Não há certificados disponíveis para mostrar.' },
+            cs: { view: 'Zobrazit', download: 'Stáhnout', empty: 'Nejsou k dispozici žádné certifikáty.' },
+            sv: { view: 'Visa', download: 'Ladda ner', empty: 'Det finns inga tillgängliga certifikat att visa.' }
+        },
+
+        getLabels: function() {
+            const lang = (document.documentElement.lang || 'es').toLowerCase().split('-')[0];
+            return this.labels[lang] || this.labels.es;
+        },
+
+        fetchPdfBlob: function(url) {
+            if (!this.blobCache[url]) {
+                this.blobCache[url] = fetch(url, { credentials: 'same-origin' }).then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const contentType = response.headers.get('content-type') || '';
+                    if (contentType.indexOf('pdf') === -1) {
+                        throw new Error('La respuesta no es PDF (' + contentType + ')');
+                    }
+                    return response.blob();
+                });
+            }
+            return this.blobCache[url];
+        },
+
+        renderThumb: function(url, img) {
+            if (!window.pdfjsLib || !img) {
+                Utils.log('Mis certificados', 'pdf.js no disponible; se conserva la miniatura actual');
+                return;
+            }
+
+            try {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = config.certificatesConfig.pdfWorker;
+            } catch (error) {
+                Utils.log('Mis certificados', 'No se pudo configurar el worker de pdf.js: ' + error.message, true);
+            }
+
+            this.fetchPdfBlob(url)
+                .then(function(blob) { return blob.arrayBuffer(); })
+                .then(function(buffer) { return window.pdfjsLib.getDocument({ data: buffer }).promise; })
+                .then(function(pdf) { return pdf.getPage(1); })
+                .then(function(page) {
+                    const baseViewport = page.getViewport({ scale: 1 });
+                    const scale = (config.certificatesConfig.thumbWidth / baseViewport.width) *
+                        (window.devicePixelRatio || 1);
+                    const viewport = page.getViewport({ scale: scale });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    return page.render({
+                        canvasContext: canvas.getContext('2d'),
+                        viewport: viewport
+                    }).promise.then(function() {
+                        img.src = canvas.toDataURL('image/png');
+                        img.classList.add('cert-thumb--real');
+                    });
+                })
+                .catch(function(error) {
+                    Utils.log('Mis certificados', 'No se pudo renderizar la miniatura: ' + error.message, true);
+                });
+        },
+
+        downloadPdf: function(url) {
+            this.fetchPdfBlob(url)
+                .then(function(blob) {
+                    const objectUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = objectUrl;
+                    link.download = config.certificatesConfig.downloadName;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 5000);
+                })
+                .catch(function(error) {
+                    Utils.log('Mis certificados', 'No se pudo descargar el PDF: ' + error.message, true);
+                    window.open(url, '_blank', 'noopener');
+                });
+        },
+
+        buildActions: function(url) {
+            const labels = this.getLabels();
+            const actions = document.createElement('div');
+            actions.className = 'cert-actions';
+
+            const view = document.createElement('a');
+            view.className = 'ivi-btn ivi-btn--navy ivi-btn--sm ivi-btn--pill';
+            view.href = url;
+            view.target = '_blank';
+            view.rel = 'noopener';
+            view.innerHTML = '<i class="fa-regular fa-eye" aria-hidden="true"></i> ' + labels.view;
+
+            const download = document.createElement('button');
+            download.type = 'button';
+            download.className = 'ivi-btn ivi-btn--ghost ivi-btn--sm ivi-btn--pill';
+            download.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> ' + labels.download;
+            download.addEventListener('click', () => this.downloadPdf(url));
+
+            actions.appendChild(view);
+            actions.appendChild(download);
+            return actions;
+        },
+
+        enhanceItem: function(item) {
+            if (item.dataset.certDone === '1') return;
+
+            const link = item.querySelector('a[href]');
+            if (!link) return;
+
+            item.dataset.certDone = '1';
+            const url = link.getAttribute('href');
+            item.appendChild(this.buildActions(url));
+            this.renderThumb(url, link.querySelector('img'));
+        },
+
+        showEmptyNotice: function(block) {
+            const content = block.querySelector('.content.block-content') || block;
+            if (content.querySelector('.cert-empty-notice')) return;
+
+            Array.from(content.childNodes).forEach(function(node) {
+                if (node.nodeType === 1) node.style.display = 'none';
+                if (node.nodeType === 3 && node.textContent.trim()) node.textContent = '';
+            });
+
+            const notice = document.createElement('div');
+            notice.className = 'dai-empty-notice dai-empty-notice--corp cert-empty-notice';
+            notice.innerHTML = '<span class="dai-empty-notice__icon">' +
+                '<i class="fa fa-info-circle" aria-hidden="true"></i></span>' +
+                this.getLabels().empty;
+            content.appendChild(notice);
+        },
+
+        processBlock: function(block, showEmpty) {
+            const items = block.querySelectorAll('.certificateitem');
+            if (!items.length) {
+                if (showEmpty) this.showEmptyNotice(block);
+                return;
+            }
+            items.forEach(item => this.enhanceItem(item));
+            Utils.log('Mis certificados', items.length + ' certificado(s) procesados en #' + block.id);
+        },
+
+        init: function() {
+            if (!URLMatcher.isUrlPatternMatched(config.certificatesConfig)) {
+                Utils.log('Mis certificados', 'URL o dashboard no permitido');
+                return;
+            }
+
+            const blocks = config.certificatesConfig.instancias
+                .map(id => document.getElementById(id))
+                .filter(Boolean);
+
+            if (!blocks.length) {
+                Utils.log('Mis certificados', 'No se encontró ninguna instancia configurada');
+                return;
+            }
+
+            blocks.forEach(block => this.processBlock(block, false));
+            setTimeout(() => {
+                blocks.forEach(block => this.processBlock(block, true));
+            }, 600);
         }
     };
 
@@ -1762,6 +1948,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Inicializar ocultar Current Learning vacíos
             this.inicializarCurrentLearningVacios();
+
+            // Inicializar miniaturas y acciones de certificados
+            CertificatesModule.init();
 
             // Inicializar Plan Ciberseguridad 2026 (async, no bloquea al resto)
             CyberPlanModule.init();

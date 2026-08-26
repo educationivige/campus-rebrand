@@ -1,0 +1,88 @@
+<!-- MIS ÚLTIMAS INSIGNIAS — activa el layout definido en
+     css-totara-organizado.css y aplica el sistema IVI al enlace
+     nativo "Ver todos". Pegar en un bloque HTML/JS de la Home
+     de externos. Instancia actual: #inst355. -->
+<script>
+(function () {
+    'use strict';
+
+    const CONFIG = {
+        blockIds: ['inst355'],
+        debug: true
+    };
+
+    function log(message) {
+        if (CONFIG.debug) console.log('[Mis últimas insignias] ' + message);
+    }
+
+    function normaliseText(value) {
+        return String(value || '').trim().toLocaleLowerCase();
+    }
+
+    function findSeeAll(block) {
+        const direct = block.querySelector('a.seeall, .footer a');
+        if (direct) return direct;
+
+        const labels = [
+            'ver todos', 'ver todo', 'see all', 'visualizza tutti',
+            'zobrazit vše', 'visa alla'
+        ];
+
+        return Array.from(block.querySelectorAll('a')).find(function (link) {
+            return labels.includes(normaliseText(link.textContent));
+        }) || null;
+    }
+
+    function enhanceBlock(block) {
+        block.classList.add('ivi-badges-enhanced');
+
+        const list = block.querySelector('ul.badges');
+        if (!list) return false;
+
+        const seeAll = findSeeAll(block);
+        if (seeAll) {
+            seeAll.classList.add(
+                'ivi-badges-seeall',
+                'ivi-btn',
+                'ivi-btn--primary',
+                'ivi-btn--pill'
+            );
+
+            const wrapper = seeAll.closest('.footer') || seeAll.parentElement;
+            if (wrapper) wrapper.classList.add('ivi-badges-seeall-wrap');
+        }
+
+        log(list.children.length + ' badge(s) procesados');
+        return true;
+    }
+
+    function scan() {
+        let enhanced = false;
+
+        CONFIG.blockIds.forEach(function (id) {
+            const block = document.getElementById(id);
+            if (block && enhanceBlock(block)) enhanced = true;
+        });
+
+        return enhanced;
+    }
+
+    function boot() {
+        scan();
+
+        /* El bloque puede terminar de renderizar después del DOMContentLoaded. */
+        const observer = new MutationObserver(scan);
+        observer.observe(document.body, { childList: true, subtree: true });
+        setTimeout(function () {
+            scan();
+            observer.disconnect();
+        }, 8000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();
+</script>
