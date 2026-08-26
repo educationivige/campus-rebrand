@@ -3987,3 +3987,170 @@ table.appendChild(tfoot);
   var tries = 0;
   var t = setInterval(function () { tries++; scan(); if (tries > 30) clearInterval(t); }, 200);
 })();
+
+/**************** MIS CERTIFICADOS — Página de listado (list.php) ****************
+ * Replica en /blocks/mycertificates/list.php la miniatura real del PDF y los
+ * botones Ver / Descargar del bloque de la home. En la home lo hace
+ * CertificatesModule, pero está acotado al dashboard id=6 y a inst237/inst354,
+ * así que aquí va un módulo autónomo: acotado por ruta, idempotente y que carga
+ * pdf.js si no está disponible. Si algo no encaja, no hace nada (fail-safe).
+ ******************************************************************************/
+(function () {
+    'use strict';
+
+    // Guard de ruta: solo la página de listado de certificados.
+    if (window.location.pathname.indexOf('/blocks/mycertificates/list.php') === -1) return;
+
+    var CONFIG = {
+        pdfLib:       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js',
+        pdfWorker:    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js',
+        thumbWidth:   320,
+        downloadName: 'Certificado-Campus.pdf',
+        debug:        true
+    };
+
+    function log(msg, data) {
+        if (CONFIG.debug) console.log('[Certificados lista] ' + msg, data || '');
+    }
+
+    var LABELS = {
+        es: { view: 'Ver',       download: 'Descargar'   },
+        en: { view: 'View',      download: 'Download'    },
+        it: { view: 'Visualizza', download: 'Scarica'    },
+        pt: { view: 'Ver',       download: 'Descarregar' },
+        cs: { view: 'Zobrazit',  download: 'Stáhnout'    },
+        sv: { view: 'Visa',      download: 'Ladda ner'   }
+    };
+    function getLabels() {
+        var lang = (document.documentElement.lang || 'es').toLowerCase().split('-')[0];
+        return LABELS[lang] || LABELS.es;
+    }
+
+    var blobCache = {};
+    function fetchPdfBlob(url) {
+        if (!blobCache[url]) {
+            blobCache[url] = fetch(url, { credentials: 'same-origin' }).then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                var ct = r.headers.get('content-type') || '';
+                if (ct.indexOf('pdf') === -1) throw new Error('La respuesta no es PDF (' + ct + ')');
+                return r.blob();
+            });
+        }
+        return blobCache[url];
+    }
+
+    function renderThumb(url, img) {
+        if (!window.pdfjsLib || !img) {
+            log('pdf.js no disponible o sin <img>; se conserva el placeholder');
+            return;
+        }
+        try { window.pdfjsLib.GlobalWorkerOptions.workerSrc = CONFIG.pdfWorker; } catch (e) {}
+
+        fetchPdfBlob(url)
+            .then(function (blob) { return blob.arrayBuffer(); })
+            .then(function (buf) { return window.pdfjsLib.getDocument({ data: buf }).promise; })
+            .then(function (pdf) { return pdf.getPage(1); })
+            .then(function (page) {
+                var base = page.getViewport({ scale: 1 });
+                var scale = (CONFIG.thumbWidth / base.width) * (window.devicePixelRatio || 1);
+                var vp = page.getViewport({ scale: scale });
+                var canvas = document.createElement('canvas');
+                canvas.width = vp.width;
+                canvas.height = vp.height;
+                return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise
+                    .then(function () {
+                        img.src = canvas.toDataURL('image/png');
+                        img.classList.add('cert-thumb--real');
+                    });
+            })
+            .catch(function (err) { log('No se pudo renderizar la miniatura', err && err.message); });
+    }
+
+    function downloadPdf(url) {
+        fetchPdfBlob(url)
+            .then(function (blob) {
+                var obj = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = obj;
+                a.download = CONFIG.downloadName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(function () { URL.revokeObjectURL(obj); }, 5000);
+            })
+            .catch(function (err) {
+                log('No se pudo descargar como blob, abro la URL', err && err.message);
+                window.open(url, '_blank', 'noopener');
+            });
+    }
+
+    function buildActions(url) {
+        var labels = getLabels();
+        var wrap = document.createElement('div');
+        wrap.className = 'cert-actions';
+
+        var view = document.createElement('a');
+        view.className = 'ivi-btn ivi-btn--navy ivi-btn--sm ivi-btn--pill';
+        view.href = url;
+        view.target = '_blank';
+        view.rel = 'noopener';
+        view.innerHTML = '<i class="fa-regular fa-eye" aria-hidden="true"></i> ' + labels.view;
+
+        var down = document.createElement('button');
+        down.type = 'button';
+        down.className = 'ivi-btn ivi-btn--ghost ivi-btn--sm ivi-btn--pill';
+        down.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i> ' + labels.download;
+        down.addEventListener('click', function () { downloadPdf(url); });
+
+        wrap.appendChild(view);
+        wrap.appendChild(down);
+        return wrap;
+    }
+
+    function enhanceItem(item) {
+        if (item.dataset.certDone === '1') return;
+        var link = item.querySelector('a[href]');
+        if (!link) return;
+        item.dataset.certDone = '1';
+        var url = link.getAttribute('href');
+        item.appendChild(buildActions(url));
+        renderThumb(url, link.querySelector('img'));
+    }
+
+    function process() {
+        var items = document.querySelectorAll('.certificateitem');
+        if (!items.length) { log('Aún no hay .certificateitem en el DOM'); return 0; }
+        Array.prototype.forEach.call(items, enhanceItem);
+        log(items.length + ' certificado(s) procesados');
+        return items.length;
+    }
+
+    function loadPdfJs() {
+        return new Promise(function (resolve) {
+            if (window.pdfjsLib) { resolve(); return; }
+            var s = document.createElement('script');
+            s.src = CONFIG.pdfLib;
+            s.onload  = function () { log('pdf.js cargado'); resolve(); };
+            s.onerror = function () { log('No se pudo cargar pdf.js'); resolve(); };
+            document.head.appendChild(s);
+        });
+    }
+
+    function boot() {
+        loadPdfJs().then(function () {
+            process();
+            // Reintento por si los certificados se renderizan algo más tarde.
+            var tries = 0;
+            var timer = setInterval(function () {
+                tries++;
+                if (process() > 0 || tries > 15) clearInterval(timer);
+            }, 300);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();

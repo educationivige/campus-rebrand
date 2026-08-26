@@ -7519,6 +7519,117 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   }
 }
 
+/* ------------------------------------------------------------
+   Rejilla de 4 columnas + página de listado (list.php) — 2026
+   Mismo diseño en el BLOQUE (homes interna/externa) y en la PÁGINA
+   /blocks/mycertificates/list.php. La miniatura del PDF y los botones
+   Ver/Descargar los inyecta el módulo de additional-html-footer.js.
+   NOTA: #page-blocks-mycertificates-list es el id del <body> de la
+   página de listado; si al inspeccionar ves otro id, sustitúyelo.
+   ------------------------------------------------------------ */
+
+/* Rejilla de 4 columnas (bloque + listado) */
+.block_mycertificates .mycertificates.row,
+#page-blocks-mycertificates-list .mycertificates.row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+
+.block_mycertificates .certificateitem,
+#page-blocks-mycertificates-list .certificateitem {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  flex: 0 0 25% !important;
+  width: 25% !important;
+  max-width: 25% !important;
+  padding-right: 12px !important;
+  padding-left: 12px !important;
+}
+
+.block_mycertificates .certificateitem > a,
+#page-blocks-mycertificates-list .certificateitem > a {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  color: var(--navy-blue, #08004F) !important;
+  text-decoration: none !important;
+}
+
+/* Nombre del curso a 2 líneas (mantiene el tamaño/peso de arriba) */
+.block_mycertificates .coursename,
+#page-blocks-mycertificates-list .coursename {
+  display: -webkit-box !important;
+  min-height: 2.6em !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+}
+
+/* Botonera pegada abajo para alinear tarjetas de distinta altura */
+.block_mycertificates .cert-actions,
+#page-blocks-mycertificates-list .cert-actions {
+  margin-top: auto !important;
+  padding-top: 12px !important;
+}
+
+/* En el BLOQUE de las homes solo se muestran los 4 primeros (el resto,
+   con "Ver todo" → list.php). En list.php NO se limita: se ven todos. */
+.block_mycertificates .mycertificates.row > .certificateitem:nth-child(n + 5) {
+  display: none !important;
+}
+
+/* Responsive: 2 columnas en tablet, 1 en móvil */
+@media (max-width: 991px) {
+  .block_mycertificates .certificateitem,
+  #page-blocks-mycertificates-list .certificateitem {
+    flex-basis: 50% !important;
+    width: 50% !important;
+    max-width: 50% !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .block_mycertificates .certificateitem,
+  #page-blocks-mycertificates-list .certificateitem {
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* --- Específico de la PÁGINA de listado (list.php) --- */
+
+/* Fondo warm gray de toda la página */
+#page-blocks-mycertificates-list {
+  background-color: var(--warm-gray, #FAF4EE) !important;
+}
+
+/* Contenedor principal transparente para que se vea el fondo warm gray */
+#page-blocks-mycertificates-list #region-main,
+#page-blocks-mycertificates-list #region-main .card,
+#page-blocks-mycertificates-list [role="main"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* En list.php la miniatura va DENTRO de .certificatename, así que se oculta
+   solo el texto (font-size:0) y se restaura la imagen. */
+#page-blocks-mycertificates-list .certificatename {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+}
+
+#page-blocks-mycertificates-list .certificatename img {
+  font-size: initial !important;
+  line-height: normal !important;
+}
+
 
 /* ============================================================
    27. SISTEMA DE BOTONES — .ivi-btn (reutilizable)
