@@ -2263,201 +2263,191 @@ div#region-main #inst281 .header.block-header h2::after {
   vertical-align: middle;
 }
 
-/* --- Dashboard externos (.externos) --- */
-.externos .content.block-content {
-  background-color: #fff !important;
+/* --- Dashboard externos: carrusel de cursos recomendados (.externos) --- */
+#page-totara-dashboard-6 .externos .content.block-content {
+  background: #fff !important;
   border-radius: 0;
   box-shadow: none !important;
   padding: 1em 0 !important;
 }
 
-.externos .carousel-container {
+#page-totara-dashboard-6 .externos .carousel-container {
   position: relative;
-  width: 100%;
-  max-width: none;
-  margin: auto;
-  overflow: visible;
-  background: #fff;
   display: flex;
   align-items: stretch;
-  padding: 0 60px;
+  width: 100% !important;
+  max-width: none !important;
+  margin: auto;
+  padding: 0 60px !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
 }
 
-.externos .carousel {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
+#page-totara-dashboard-6 .externos .carousel {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 14px 10px !important;
+  gap: 16px !important;
+  overflow-x: auto !important;
+  box-sizing: border-box !important;
   scroll-behavior: unset;
-  padding: 14px 10px;
-  scroll-padding: 10px;
-  width: 100%;
+  scroll-padding: 10px !important;
 }
 
-.externos .carousel::-webkit-scrollbar {
+#page-totara-dashboard-6 .externos .carousel::-webkit-scrollbar {
   display: none;
 }
 
-.externos .carousel-card {
-  flex: 0 0 90%;
-  max-width: 90%;
-  background: white;
-  border-radius: var(--spacing-small);
-  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05)));
-  scroll-snap-align: start;
-  overflow: hidden;
+#page-totara-dashboard-6 .externos .carousel-card {
   display: flex;
+  flex: 0 0 90%;
   flex-direction: column;
-  height: 100%;
+  width: 90%;
+  min-width: 0;
+  max-width: 90%;
+  height: auto !important;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #fff !important;
+  border-radius: var(--spacing-small);
+  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05))) !important;
+  scroll-snap-align: start;
 }
 
-.externos .carousel-card img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
+#page-totara-dashboard-6 .externos .carousel-card img {
+  width: 100% !important;
+  height: 140px !important;
   margin: 0 !important;
+  object-fit: cover !important;
 }
 
-.externos .carousel-card .atto_image_button_text-bottom.img-responsive {
+#page-totara-dashboard-6 .externos .carousel-card .atto_image_button_text-bottom.img-responsive {
   max-width: 100% !important;
 }
 
-.externos .card-content {
-  padding: 14px;
+#page-totara-dashboard-6 .externos .card-content {
   flex-grow: 1;
-  max-height: none;
+  max-height: none !important;
+  padding: 14px !important;
 }
 
-.externos .card-content h3 {
-  font-size: 15px !important;
+#page-totara-dashboard-6 .externos .card-content h3 {
   margin-bottom: var(--spacing-small);
   color: var(--color-secondary-dark) !important;
+  font-size: 15px !important;
 }
 
-.externos .card-content p {
-  font-size: 14px;
+#page-totara-dashboard-6 .externos .card-content p {
   color: var(--color-text-gray);
+  font-size: 14px;
 }
 
-.externos .card-content .datos {
+#page-totara-dashboard-6 .externos .card-content .datos {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start !important;
+  gap: 8px 16px !important;
   margin-top: var(--spacing-medium);
-  margin-right: var(--spacing-medium);
+  margin-right: 0 !important;
 }
 
-.externos .carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #004DF080;   /* light-blue al 50% (antes teal #1f7a8c80) */
-  color: white;
+/* Iconos del HTML actual: Material Symbols en azul, sin los SVG legacy. */
+#page-totara-dashboard-6 .externos .datos .material-symbols-outlined {
+  color: var(--light-blue, #004DF0) !important;
+  font-size: 19px !important;
+  line-height: 1 !important;
+  margin-right: 5px !important;
+  vertical-align: middle !important;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+#page-totara-dashboard-6 .externos .fecha-inicio::before,
+#page-totara-dashboard-6 .externos .ecmecs::before {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: none !important;
+}
+
+#page-totara-dashboard-6 .externos .card-footer {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-medium);
+}
+
+#page-totara-dashboard-6 .externos .matricula {
+  margin-top: var(--spacing-small);
+}
+
+#page-totara-dashboard-6 .externos .btn-info {
+  padding: 8px var(--spacing-medium);
   border: none;
+  border-radius: 999px !important;
+  background: var(--light-blue);
+  color: #fff !important;
   cursor: pointer;
-  padding: var(--spacing-small);
-  border-radius: 50%;
-  font-size: 18px;
+}
+
+#page-totara-dashboard-6 .externos .btn-info:hover,
+#page-totara-dashboard-6 .externos .btn-info:focus {
+  background: var(--blue-hover, #0038C4) !important;
+  color: #fff !important;
+}
+
+/* Flechas centradas dentro de canaletas laterales de 60px. */
+#page-totara-dashboard-6 .externos .carousel-btn {
+  position: absolute;
+  top: 50% !important;
   z-index: 10;
-  width: 44px;
-  height: 44px;
+  width: 44px !important;
+  height: 44px !important;
+  padding: var(--spacing-small);
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 50%;
+  background: #004DF080;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
-.externos .carousel-btn:hover {
+#page-totara-dashboard-6 .externos .carousel-btn:hover {
   background: var(--light-blue);
 }
 
-.externos .prev {
-  left: 8px;
+#page-totara-dashboard-6 .externos .prev {
+  left: 8px !important;
 }
 
-.externos .next {
-  right: 8px;
+#page-totara-dashboard-6 .externos .next {
+  right: 8px !important;
 }
 
-/* Material Symbols inline del HTML nuevo. Los pseudo-iconos SVG legacy
-   se conservan para que el HTML anterior siga funcionando. */
-.externos .datos .material-symbols-outlined {
-  color: var(--light-blue);
-  font-size: 18px;
-  line-height: 1;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-
-.externos .fecha-inicio:has(.material-symbols-outlined)::before,
-.externos .ecmecs:has(.material-symbols-outlined)::before {
-  content: none !important;
-  display: none !important;
-}
-
-.fecha-inicio::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/horas.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-.ecmecs::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/Iconly_Creditos.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-medium);
-  flex: 0 0 auto;
-}
-
-.externos .matricula {
-  margin-top: var(--spacing-small);
-}
-
-.externos .btn-info {
-  background: var(--light-blue);
-  color: white !important;
-  padding: 8px var(--spacing-medium);
-  border: none;
-  border-radius: 999px !important;
-  cursor: pointer;
-}
-
-.externos .btn-info:hover,
-.externos .btn-info:focus {
-  background-color: var(--blue-hover, #0038C4) !important;
-  color: #fff !important;
-}
-
-/* Tablet: tres tarjetas. Las reglas responsive van después de la base móvil
-   del 90% para ganar por orden natural. */
+/* Tablet: tres tarjetas completas. */
 @media (min-width: 768px) and (max-width: 1199px) {
-  .externos .carousel-card {
-    flex: 0 0 calc((100% - 32px) / 3);
-    max-width: calc((100% - 32px) / 3);
+  #page-totara-dashboard-6 .externos .carousel-card {
+    flex: 0 0 calc((100% - 32px) / 3) !important;
+    width: calc((100% - 32px) / 3) !important;
+    min-width: 0 !important;
+    max-width: calc((100% - 32px) / 3) !important;
   }
 }
 
 /* Pantallas grandes: cuatro tarjetas completas y tres gaps de 16px. */
 @media (min-width: 1200px) {
-  .externos .carousel-card {
-    flex: 0 0 calc((100% - 48px) / 4);
-    max-width: calc((100% - 48px) / 4);
+  #page-totara-dashboard-6 .externos .carousel-card {
+    flex: 0 0 calc((100% - 48px) / 4) !important;
+    width: calc((100% - 48px) / 4) !important;
+    min-width: 0 !important;
+    max-width: calc((100% - 48px) / 4) !important;
   }
 }
 
