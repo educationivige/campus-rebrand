@@ -2265,8 +2265,8 @@ div#region-main #inst281 .header.block-header h2::after {
 
 /* --- Dashboard externos (.externos) --- */
 .externos .content.block-content {
-  background-color: var(--color-gray-light) !important;
-  border-radius: none;
+  background-color: #fff !important;
+  border-radius: 0;
   box-shadow: none !important;
   padding: 1em 0 !important;
 }
@@ -2274,22 +2274,22 @@ div#region-main #inst281 .header.block-header h2::after {
 .externos .carousel-container {
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: none;
   margin: auto;
   overflow: visible;
-  background: var(--color-gray-light);
-  padding-bottom: 1em !important;
+  background: #fff;
   display: flex;
   align-items: stretch;
-  padding: 0 40px;
+  padding: 0 60px;
 }
 
 .externos .carousel {
   display: flex;
-  gap: var(--spacing-medium);
+  gap: 16px;
   overflow-x: auto;
   scroll-behavior: unset;
-  padding-bottom: 1em;
+  padding: 14px 10px;
+  scroll-padding: 10px;
   width: 100%;
 }
 
@@ -2302,7 +2302,7 @@ div#region-main #inst281 .header.block-header h2::after {
   max-width: 90%;
   background: white;
   border-radius: var(--spacing-small);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05)));
   scroll-snap-align: start;
   overflow: hidden;
   display: flex;
@@ -2312,7 +2312,7 @@ div#region-main #inst281 .header.block-header h2::after {
 
 .externos .carousel-card img {
   width: 100%;
-  height: 180px;
+  height: 140px;
   object-fit: cover;
   margin: 0 !important;
 }
@@ -2322,13 +2322,13 @@ div#region-main #inst281 .header.block-header h2::after {
 }
 
 .externos .card-content {
-  padding: var(--spacing-medium);
+  padding: 14px;
   flex-grow: 1;
-  max-height: 180px;
+  max-height: none;
 }
 
 .externos .card-content h3 {
-  font-size: 17px !important;
+  font-size: 15px !important;
   margin-bottom: var(--spacing-small);
   color: var(--color-secondary-dark) !important;
 }
@@ -2349,7 +2349,7 @@ div#region-main #inst281 .header.block-header h2::after {
 
 .externos .carousel-btn {
   position: absolute;
-  top: 40%;
+  top: 50%;
   transform: translateY(-50%);
   background: #004DF080;   /* light-blue al 50% (antes teal #1f7a8c80) */
   color: white;
@@ -2359,7 +2359,8 @@ div#region-main #inst281 .header.block-header h2::after {
   border-radius: 50%;
   font-size: 18px;
   z-index: 10;
-  width: 42px;
+  width: 44px;
+  height: 44px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -2368,12 +2369,28 @@ div#region-main #inst281 .header.block-header h2::after {
   background: var(--light-blue);
 }
 
-.prev {
-  left: -10px;
+.externos .prev {
+  left: 8px;
 }
 
-.next {
-  right: var(--spacing-large);
+.externos .next {
+  right: 8px;
+}
+
+/* Material Symbols inline del HTML nuevo. Los pseudo-iconos SVG legacy
+   se conservan para que el HTML anterior siga funcionando. */
+.externos .datos .material-symbols-outlined {
+  color: var(--light-blue);
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.externos .fecha-inicio:has(.material-symbols-outlined)::before,
+.externos .ecmecs:has(.material-symbols-outlined)::before {
+  content: none !important;
+  display: none !important;
 }
 
 .fecha-inicio::before {
@@ -2417,14 +2434,32 @@ div#region-main #inst281 .header.block-header h2::after {
   color: white !important;
   padding: 8px var(--spacing-medium);
   border: none;
-  border-radius: 25px !important;
+  border-radius: 999px !important;
   cursor: pointer;
 }
 
-.externos .btn-info:hover {
-  background-color: var(--color-secondary-dark);
+.externos .btn-info:hover,
+.externos .btn-info:focus {
+  background-color: var(--blue-hover, #0038C4) !important;
+  color: #fff !important;
 }
 
+/* Tablet: tres tarjetas. Las reglas responsive van después de la base móvil
+   del 90% para ganar por orden natural. */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .externos .carousel-card {
+    flex: 0 0 calc((100% - 32px) / 3);
+    max-width: calc((100% - 32px) / 3);
+  }
+}
+
+/* Pantallas grandes: cuatro tarjetas completas y tres gaps de 16px. */
+@media (min-width: 1200px) {
+  .externos .carousel-card {
+    flex: 0 0 calc((100% - 48px) / 4);
+    max-width: calc((100% - 48px) / 4);
+  }
+}
 
 /* ============================================================
    5. DASHBOARD EXPEDIENTE — #page-totara-dashboard-16
