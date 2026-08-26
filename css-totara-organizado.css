@@ -341,10 +341,12 @@ a[href*="/message/edit.php"] {
     display: none;
 }
 
-/* Sin migas de pan en la Home (dashboard 9). Se oculta solo la lista,
+/* Sin migas de pan en las Homes interna y externa (dashboards 9 y 6).
+   Se oculta solo la lista,
    no .breadcrumb-container entero, para no perder los botones de
    edición que el tema pinta ahí (Personalizar esta página). */
-#page-totara-dashboard-9 .breadcrumb-container .breadcrumb-nav {
+#page-totara-dashboard-9 .breadcrumb-container .breadcrumb-nav,
+#page-totara-dashboard-6 .breadcrumb-container .breadcrumb-nav {
   display: none;
 }
 
@@ -760,6 +762,11 @@ a[href*="/message/edit.php"] {
   background-color: #faf4ee !important;
 }
 
+/* La Home de usuarios externos mantiene el fondo blanco de la Home interna. */
+#page-totara-dashboard-6 {
+  background-color: #fff !important;
+}
+
 /* --- Slider principal --- */
 .block_slickslider .elslide div.nolink {
   margin: auto auto auto 0px;
@@ -1014,14 +1021,8 @@ html .has-full-page-slider #block-region-top {
     padding: 10px;
 }
 
-/* --- Responsive carousel externos y botones calificaciones --- */
+/* --- Responsive de botones de calificaciones --- */
 @media (min-width: 768px) {
-  /* CARRUSEL EXTERNOS */
-  .externos .carousel-card {
-    flex: 0 0 32%;
-    max-width: 33%;
-  }
-
   /* Bloques-informe del sidebar (Cursos que imparto, Finalización,
      Tracking): enlaces navy en negrita (rediseño 2026-07-13; antes
      eran botones naranjas con texto blanco) */
@@ -1711,7 +1712,11 @@ html .has-full-page-slider #block-region-top {
 #inst287 .block_current_learningas-tile,
 #inst287 .block_current_learningas-tile__content,
 #inst287 .block_current_learningas-tile__link,
-#inst287 .block_current_learningas-tile__maincontent {
+#inst287 .block_current_learningas-tile__maincontent,
+#inst352 .block_current_learningas-tile,
+#inst352 .block_current_learningas-tile__content,
+#inst352 .block_current_learningas-tile__link,
+#inst352 .block_current_learningas-tile__maincontent {
   height: auto !important;
   max-height: none !important;
   min-height: 0 !important;
@@ -1719,12 +1724,16 @@ html .has-full-page-slider #block-region-top {
 }
 
 #inst287 .block_current_learningas-tile__content_duedate,
-#inst287 .block_current_learningas-tile__content {
+#inst287 .block_current_learningas-tile__content,
+#inst352 .block_current_learningas-tile__content_duedate,
+#inst352 .block_current_learningas-tile__content {
   position: static !important;
 }
 
 #inst287 .block_current_learningas-tile__link_title,
-#inst287 #current_learningas .block_current_learningas-tile__link_title {
+#inst287 #current_learningas .block_current_learningas-tile__link_title,
+#inst352 .block_current_learningas-tile__link_title,
+#inst352 #current_learningas .block_current_learningas-tile__link_title {
   display: block !important;
   -webkit-line-clamp: none !important;
   line-clamp: none !important;
@@ -1735,11 +1744,50 @@ html .has-full-page-slider #block-region-top {
 }
 
 #inst287 .block_current_learningas-tile__content_duedate_text,
-#inst287 #current_learningas .block_current_learningas-tile__content_duedate_text {
+#inst287 #current_learningas .block_current_learningas-tile__content_duedate_text,
+#inst352 .block_current_learningas-tile__content_duedate_text,
+#inst352 #current_learningas .block_current_learningas-tile__content_duedate_text {
   background: var(--red) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   border: none !important;
+}
+
+/* "Mi formación" de externos (#inst352): badge de vencimiento tipo pill,
+   sin el punto rojo legacy, y progreso pegado al pie de cada tarjeta. */
+#inst352 .block_current_learningas-tile__content_duedate_text,
+#inst352 #current_learningas .block_current_learningas-tile__content_duedate_text {
+  display: inline-block !important;
+  border-radius: 999px !important;
+  padding: 5px 14px !important;
+}
+
+#inst352 .block_current_learningas-tile__content_duedate::before,
+#inst352 .block_current_learningas-tile__content_duedate::after,
+#inst352 .block_current_learningas-tile__content_duedate_text::before,
+#inst352 .block_current_learningas-tile__content_duedate_text::after,
+#inst352 .block_current_learningas-tile__content_duedate_text-label-danger::before,
+#inst352 .block_current_learningas-tile__content_duedate_text-label-danger::after {
+  display: none !important;
+  content: none !important;
+}
+
+#page-totara-dashboard-6 #inst352 li.block_current_learningas-tile,
+#page-totara-dashboard-6 #inst352 .block_current_learningas-tile__maincontent {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#page-totara-dashboard-6 #inst352 .block_current_learningas-tile__image {
+  flex: 0 0 auto !important;
+}
+
+#page-totara-dashboard-6 #inst352 .block_current_learningas-tile__maincontent {
+  flex: 1 1 auto !important;
+}
+
+#page-totara-dashboard-6 #inst352 .block_current_learningas-tile__content_duedate {
+  margin-top: auto !important;
 }
 
 /* --- Puntos de excelencia (#inst216, Formación de Excelencia): banda
@@ -4728,35 +4776,116 @@ div#region-main #inst10405.block .content {
    21. CERTIFICADOS Y BADGES
    ============================================================ */
 
-.mycertificates.row .certificateitem .certificatename {
-  display: none;
-}
-
-.mycertificates.row .certificateitem img {
-  box-shadow: none !important;
-}
-
-#block-region-main .mycertificates img {
-  max-height: 90px;
-  margin: auto auto var(--spacing-small) auto;
-  margin-top: var(--spacing-large);
-}
-
-.mycertificates.row .certificateitem a {
-  margin: auto;
-  text-align: center;
-  line-height: 1.5em;
-  max-width: 200px;
-}
-
-.mycertificates.row .certificateitem img {
-  max-width: 90px !important;
-  margin: auto;
-}
-
 .block_badges ul.badges img {
   width: 110px;
   height: 110px;
+}
+
+/* --- Home externos: "Mis últimas insignias" (#inst355) ---
+   El script home-externos--js-ultimas-insignias.html añade la clase
+   .ivi-badges-enhanced y las clases del sistema IVI al enlace nativo. */
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced .content.block-content {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  background: var(--warm-gray, #FAF4EE) !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05))) !important;
+  padding: 28px 32px !important;
+}
+
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  gap: 28px 20px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+/* Hasta seis badges por fila, siempre alineados desde la izquierda. */
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges > li {
+  float: none !important;
+  display: flex !important;
+  flex: 0 1 calc((100% - 100px) / 6) !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-width: 145px !important;
+  max-width: 220px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges img {
+  display: block !important;
+  width: 145px !important;
+  height: 145px !important;
+  max-width: 100% !important;
+  margin: 0 auto 14px !important;
+  object-fit: contain !important;
+}
+
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges a {
+  color: var(--navy-blue, #08004F) !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  text-decoration: none !important;
+}
+
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges a:hover {
+  color: var(--light-blue, #004DF0) !important;
+}
+
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced .ivi-badges-seeall-wrap {
+  position: static !important;
+  width: 100% !important;
+  margin-top: 28px !important;
+  text-align: center !important;
+}
+
+#page-totara-dashboard-6 .block_badges.ivi-badges-enhanced a.ivi-badges-seeall {
+  margin: 0 !important;
+  border-radius: var(--btn-radius-pill, 999px) !important;
+}
+
+@media (max-width: 1199px) {
+  #page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges > li {
+    flex-basis: calc((100% - 60px) / 4) !important;
+  }
+}
+
+@media (max-width: 991px) {
+  #page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges > li {
+    flex-basis: calc((100% - 40px) / 3) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  #page-totara-dashboard-6 .block_badges.ivi-badges-enhanced .content.block-content {
+    padding: 22px 18px !important;
+  }
+
+  #page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges > li {
+    flex-basis: calc((100% - 20px) / 2) !important;
+    min-width: 130px !important;
+  }
+
+  #page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges img {
+    width: 130px !important;
+    height: 130px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  #page-totara-dashboard-6 .block_badges.ivi-badges-enhanced ul.badges > li {
+    flex-basis: 100% !important;
+  }
 }
 
 .ividb_uservisible_1 {
@@ -7193,18 +7322,26 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
    MIS CERTIFICADOS (block_mycertificates): miniatura + botones
    Generado por expediente/mis-certificados.html — rebranding IVI 2026
    ============================================================ */
-/* Contenedor del bloque en crema */
+/* Contenedor compartido por las Homes interna (#inst237) y externa
+   (#inst354): fondo warm gray y acabado de tarjeta del sistema. */
 .block_mycertificates .content.block-content {
-  background: var(--warm-gray, #FAF4EE);
-  border: 1px solid rgba(8, 0, 79, 0.05);
-  border-radius: 14px;
-  box-shadow: var(--shadow-soft);
-  padding: 28px 32px;
+  background: var(--warm-gray, #FAF4EE) !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--block-shadow, var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05))) !important;
+  padding: 24px !important;
   font-family: var(--font-body);
+}
+
+.block_mycertificates .mycertificates.row {
+  margin: 0 !important;
+  row-gap: 24px;
 }
 
 .block_mycertificates .certificateitem {
   text-align: center;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .block_mycertificates .certificateitem img.img-responsive {
@@ -7286,11 +7423,6 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
 /* --- Certificados rediseño 2026-07-13 (los botones los genera el
        script "JS: Mis certificados" con el sistema .ivi-btn) --- */
 
-/* Bloque Mis Certificados de la Home: fondo crema */
-#inst237 .content.block-content {
-  background: var(--warm-gray, #FAF4EE) !important;
-}
-
 /* Botonera sin desplazamientos en hover */
 .cert-actions .ivi-btn {
   margin: 0 !important;
@@ -7330,14 +7462,15 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
 .block_mycertificates a.seeall {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  font-family: var(--font-title, 'IVI Glance', sans-serif) !important;
+  font-family: var(--font-title, 'IVI Glance', 'Noto Sans', sans-serif) !important;
   font-size: 15px !important;
   font-weight: 400 !important;
   background: var(--light-blue, #004DF0) !important;
   color: #fff !important;
   border: 2px solid var(--light-blue, #004DF0) !important;
-  border-radius: 10px !important;
+  border-radius: 999px !important;
   padding: 10px 24px !important;
   text-decoration: none !important;
   transition: background-color .2s ease, color .2s ease;
@@ -7349,32 +7482,16 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   border-color: var(--light-blue, #004DF0) !important;
 }
 
-/* "Ver todo": botón azul de marca, centrado bajo el contenedor */
-.block_mycertificates .seeall {
-  display: inline-block;
-  padding: 11px 24px;
-  border: none;
-  border-radius: 8px;
-  background: var(--light-blue, #004DF0);
-  color: #ffffff;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  text-decoration: none;
-  transition: background 0.18s ease, color 0.18s ease;
-}
-
-.block_mycertificates .seeall:hover {
-  background: var(--blue-hover, #0038C4);
-  color: #ffffff;
-  text-decoration: none;
-}
-
 /* "Ver todo" centrado y separado de la cuadrícula de certificados */
 .block_mycertificates .text-right:has(.seeall) {
   text-align: center;
   margin-top: 28px;
+}
+
+@media (max-width: 767px) {
+  .block_mycertificates .content.block-content {
+    padding: 18px !important;
+  }
 }
 
 
