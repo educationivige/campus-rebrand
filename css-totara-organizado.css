@@ -1042,12 +1042,14 @@ html .has-full-page-slider #block-region-top {
 #page-totara-dashboard-22 .rb-chartjs__chart,
 #page-totara-dashboard-23 .rb-chartjs__chart,
 #page-totara-dashboard-26 .rb-chartjs__chart,
+#page-totara-dashboard-15 .rb-chartjs__chart,
 #page-totara-dashboard-2 .rb-chartjs__chart__canvas,
 #page-totara-dashboard-3 .rb-chartjs__chart__canvas,
 #page-totara-dashboard-4 .rb-chartjs__chart__canvas,
 #page-totara-dashboard-22 .rb-chartjs__chart__canvas,
 #page-totara-dashboard-23 .rb-chartjs__chart__canvas,
-#page-totara-dashboard-26 .rb-chartjs__chart__canvas {
+#page-totara-dashboard-26 .rb-chartjs__chart__canvas,
+#page-totara-dashboard-15 .rb-chartjs__chart__canvas {
   height: 400px !important;
   max-height: 400px !important;
 }
@@ -1067,7 +1069,9 @@ html .has-full-page-slider #block-region-top {
 #page-totara-dashboard-23 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
 #page-totara-dashboard-23 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
 #page-totara-dashboard-26 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
-#page-totara-dashboard-26 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'] {
+#page-totara-dashboard-26 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'],
+#page-totara-dashboard-15 #page-content .rb-chartjs__chart:has(.rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"']),
+#page-totara-dashboard-15 #page-content .rb-chartjs__chart__canvas[data-report-options*='"type":"horizontalBar"'] {
   height: 800px !important;
   max-height: 800px !important;
 }
@@ -9520,14 +9524,17 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
    hero (bg-admin.jpg) y de los tiles featured-links (seguimiento.png…)
    son IMÁGENES subidas a Totara: se recolorean resubiéndolas, no por
    CSS. Aquí solo se reviste el "chrome" del bloque (cabecera,
-   tipografía, buscador, navs). Los bloques van SIN caja blanca:
-   transparentes sobre el fondo warm-gray (decisión 2026-08-20).
+   tipografía, buscador, navs). Los bloques van como TARJETA BLANCA con
+   sombra sobre el fondo warm-gray (2026-08-31; antes eran transparentes).
+   El dashboard-15 ("Mi panel como manager") comparte solo el fondo y la
+   altura de gráficas, no el resto del chrome de administración.
    ============================================================ */
 
 /* --- Fondo de página --- */
 #page-totara-dashboard-2,
 #page-totara-dashboard-3,
 #page-totara-dashboard-4,
+#page-totara-dashboard-15,
 #page-totara-dashboard-22,
 #page-totara-dashboard-23,
 #page-totara-dashboard-26 {
@@ -9655,12 +9662,12 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
 #page-totara-dashboard-26 .block:not(.block_slickslider) .content.block-content {
   font-family: var(--font-body);
   color: var(--navy-blue);
-  padding: 0 !important;
-  /* sin caja: el tema pinta algunos .block-content como tarjeta blanca
-     (p.ej. las gráficas report_graph) → se fuerza transparente */
-  background: transparent !important;
+  /* tarjeta blanca con sombra (antes iban transparentes/"SIN caja") */
+  background: #fff !important;
   border: 0 !important;
-  box-shadow: none !important;
+  border-radius: 14px !important;
+  box-shadow: var(--block-shadow, var(--shadow-soft)) !important;
+  padding: 20px !important;
 }
 
 /* --- Gráficas de informe (report_graph): sin recuadro blanco ---
@@ -9932,31 +9939,45 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
   color: var(--text-gray);
 }
 
+/* Toggle cuadrícula/lista: dos botones limpios (el tema lo pintaba como
+   pastilla → se fuerza el look de botón). !important para ganar al tema. */
 #page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle {
-  display: flex;
-  gap: 6px;
+  display: inline-flex !important;
+  gap: 6px !important;
+  background: none !important;
+  padding: 0 !important;
+  border: 0 !important;
 }
 
 #page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 34px !important;
+  min-width: 0 !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
   color: var(--navy-blue) !important;
-  text-decoration: none;
-  overflow: hidden;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
 }
 
 #page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle__btn_active {
-  background: var(--light-blue);
-  border-color: var(--light-blue);
+  background: var(--light-blue) !important;
+  border-color: var(--light-blue) !important;
   color: #fff !important;
 }
 
-/* Lista base = filas limpias (icono + título) */
+/* El glifo del botón activo no hereda el color → se fuerza blanco */
+#page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle__btn_active .flex-icon,
+#page-totara-dashboard-23 .totara_core__myreports__itemstyletoggle__btn_active .flex-icon::before {
+  color: #fff !important;
+}
+
+/* Lista base (ul) */
 #page-totara-dashboard-23 ul.totara_core__myreports__list {
   margin: 0;
   padding: 0;
@@ -9967,33 +9988,9 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
   list-style: none;
 }
 
-#page-totara-dashboard-23 .totara_core__myreports__list__item__content {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 4px;
-  border-bottom: 1px solid var(--border-soft);
-  text-decoration: none !important;
-}
-
-#page-totara-dashboard-23 .totara_core__myreports__list__item:last-child .totara_core__myreports__list__item__content {
-  border-bottom: 0;
-}
-
-#page-totara-dashboard-23 .totara_core__myreports__list__item__content__image {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-}
-
-#page-totara-dashboard-23 .totara_core__myreports__list__item__content__image img {
-  max-width: 28px;
-  max-height: 28px;
-}
-
+/* Título (ambas vistas) + hover azul */
 #page-totara-dashboard-23 .totara_core__myreports__list__item__content__title {
   font-family: var(--font-body);
-  font-size: 14px;
   color: var(--navy-blue) !important;
   text-decoration: none;
 }
@@ -10002,24 +9999,124 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
   color: var(--light-blue) !important;
 }
 
-/* Vista ficha (grid): tiles en cuadrícula, icono sobre el título */
-#page-totara-dashboard-23 ul.totara_core__myreports__list--grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
+/* === Vista LISTA (ul SIN --grid): filas con hover en tarjeta redondeada,
+       icono en recuadro azul, sin líneas separadoras === */
+#page-totara-dashboard-23 .totara_core__myreports__list:not(.totara_core__myreports__list--grid) .totara_core__myreports__list__item {
+  border: 0 !important;
 }
 
+#page-totara-dashboard-23 .totara_core__myreports__list:not(.totara_core__myreports__list--grid) .totara_core__myreports__list__item__content {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+  border: 1px solid transparent !important;   /* sin línea; reserva el sitio del hover */
+  border-radius: 12px !important;
+  text-decoration: none !important;
+  transition: border-color .2s ease, box-shadow .2s ease !important;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list:not(.totara_core__myreports__list--grid) .totara_core__myreports__list__item__content:hover {
+  border-color: var(--light-blue) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list:not(.totara_core__myreports__list--grid) .totara_core__myreports__list__item__content__image {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  background: var(--bg-blue, #DCE6FF) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list:not(.totara_core__myreports__list--grid) .totara_core__myreports__list__item__content__image img {
+  max-width: 26px !important;
+  max-height: 26px !important;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list:not(.totara_core__myreports__list--grid) .totara_core__myreports__list__item__content__title {
+  font-size: 14px;
+}
+
+/* === Vista CUADRÍCULA (ul .__list--grid): fichas === */
+#page-totara-dashboard-23 ul.totara_core__myreports__list--grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+  gap: 16px !important;
+  grid-auto-rows: auto !important;   /* filas según su contenido (no alto fijo) */
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item {
+  list-style: none !important;
+  display: flex !important;
+  flex-direction: column !important;   /* la ficha llena la altura de la fila */
+  height: auto !important;             /* mata cualquier alto fijo del tema */
+  min-height: 0 !important;
+  border: 0 !important;
+}
+
+/* Ficha = tarjeta (imagen arriba, título debajo) */
 #page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content {
-  flex-direction: column;
-  text-align: center;
-  gap: 8px;
-  padding: 16px 10px;
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+  gap: 12px !important;
+  flex: 1 0 auto !important;         /* crece hasta la altura de la fila */
+  height: auto !important;           /* mata el alto fijo del tema → cabe todo el título */
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 100% !important;
+  padding: 16px 12px !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  text-decoration: none !important;
+  overflow: visible !important;      /* el tema recortaba el título */
+  transition: border-color .2s ease, box-shadow .2s ease !important;
 }
 
 #page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content:hover {
-  box-shadow: var(--shadow-soft);
+  border-color: var(--light-blue) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+/* Imagen del tipo de informe: recuadro azul + icono centrado */
+#page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content__image {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px 0 !important;
+  background: var(--bg-blue, #DCE6FF) !important;
+  border-radius: 10px !important;
+}
+
+#page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content__image img {
+  max-width: 46px !important;
+  max-height: 46px !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Título de la ficha — sin recorte (el tema lo limitaba con line-clamp) */
+#page-totara-dashboard-23 .totara_core__myreports__list--grid .totara_core__myreports__list__item__content__title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 /* --- Responsive: menos padding en móvil --- */
@@ -10030,7 +10127,7 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
   #page-totara-dashboard-22 .block:not(.block_slickslider) .content.block-content,
   #page-totara-dashboard-23 .block:not(.block_slickslider) .content.block-content,
   #page-totara-dashboard-26 .block:not(.block_slickslider) .content.block-content {
-    padding: 0 !important;
+    padding: 14px !important;
   }
   #page-totara-dashboard-2 .block_course_search .input-group,
   #page-totara-dashboard-3 .block_course_search .input-group,
