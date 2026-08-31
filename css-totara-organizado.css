@@ -6754,10 +6754,14 @@ body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group_item {
   font-size: 13px !important;
 }
 /* Iconos de meta como MATERIAL SYMBOLS (el organizado los pone en Font
-   Awesome, css-totara-organizado.css:2723-2741). Sobrescribimos fuente,
-   peso y glifo; reloj = schedule, calendario = calendar_month. */
+   Awesome más arriba: narrow §7 y wide §26). Sobrescribimos fuente, peso y
+   glifo; reloj = schedule, calendario = calendar_month. Cubre las DOS vistas:
+   fichas (Narrow) y listado (Wide) — la Wide no lleva el wrapper
+   __textarea_group, por eso su selector es directo. */
 body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:first-child::before,
-body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(2)::before {
+body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(2)::before,
+body#page-totara-catalog-index .tw-catalogItemWide__textarea_group_item:first-child::before,
+body#page-totara-catalog-index .tw-catalogItemWide__textarea_group_item:nth-child(2)::before {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal !important;
   font-size: 16px !important;
@@ -6769,10 +6773,12 @@ body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalog
   -webkit-font-feature-settings: 'liga' !important;
   -webkit-font-smoothing: antialiased !important;
 }
-body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:first-child::before {
+body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:first-child::before,
+body#page-totara-catalog-index .tw-catalogItemWide__textarea_group_item:first-child::before {
   content: 'schedule' !important;          /* Duración → reloj */
 }
-body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(2)::before {
+body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(2)::before,
+body#page-totara-catalog-index .tw-catalogItemWide__textarea_group_item:nth-child(2)::before {
   content: 'calendar_month' !important;    /* Fecha → calendario */
 }
 
@@ -7379,9 +7385,35 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   max-width: 150px !important;
 }
 
-/* "Descarga tu certificado" es un texto genérico redundante con el botón */
-.block_mycertificates .certificatename {
-  display: none;
+/* "Descarga tu certificado" (.certificatename) es un texto genérico
+   redundante con el botón: se oculta EN CUALQUIER contexto (bloque de las
+   homes, list.php, o donde aparezca), conservando la miniatura si el plugin
+   la mete dentro (caso list.php). Consolida las antiguas reglas acotadas. */
+.certificatename {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Colapsa cualquier hijo de texto/enlace ("Descarga tu certificado"), que
+   puede traer su propio font-size/line-height y dejaría hueco entre la
+   miniatura y el título. La imagen se restaura en la regla de abajo. */
+.certificatename *:not(img) {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Miniatura visible (list.php la mete dentro de .certificatename), como
+   bloque centrado para no dejar el hueco de línea base de las imágenes. */
+.certificatename img {
+  font-size: initial !important;
+  line-height: normal !important;
+  display: block !important;
+  margin: 0 auto !important;
 }
 
 .block_mycertificates .coursename {
@@ -7603,31 +7635,30 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
 
 /* --- Específico de la PÁGINA de listado (list.php) --- */
 
-/* Fondo warm gray de toda la página */
+/* Página en BLANCO (antes iba warm gray entera); solo el bloque de
+   contenido va warm gray, como tarjeta (ver regla de [role="main"]). */
 #page-blocks-mycertificates-list {
-  background-color: var(--warm-gray, #FAF4EE) !important;
+  background-color: #fff !important;
 }
 
-/* Contenedor principal transparente para que se vea el fondo warm gray */
+/* #region-main transparente: deja ver el blanco alrededor de la tarjeta */
 #page-blocks-mycertificates-list #region-main,
-#page-blocks-mycertificates-list #region-main .card,
-#page-blocks-mycertificates-list [role="main"] {
+#page-blocks-mycertificates-list #region-main .card {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
 }
 
-/* En list.php la miniatura va DENTRO de .certificatename, así que se oculta
-   solo el texto (font-size:0) y se restaura la imagen. */
-#page-blocks-mycertificates-list .certificatename {
-  font-size: 0 !important;
-  line-height: 0 !important;
-  color: transparent !important;
-}
-
-#page-blocks-mycertificates-list .certificatename img {
-  font-size: initial !important;
-  line-height: normal !important;
+/* El contenido pasa a ser la TARJETA warm gray con esquinas redondeadas
+   (mismo acabado que .block_mycertificates .content.block-content). */
+#page-blocks-mycertificates-list #region-main [role="main"] {
+  background: var(--warm-gray, #FAF4EE) !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-soft, 0 2px 8px rgba(8, 0, 79, 0.05)) !important;
+  padding: 24px !important;
+  margin: 8px 0 32px !important;
+  font-family: var(--font-body);
 }
 
 
