@@ -22,9 +22,21 @@ bloques/2-actual/*
 !bloques/1-diseno/.gitkeep
 !bloques/2-actual/.gitkeep
 
+# Documento interno de flujo de trabajo (no se versiona)
+FLUJO-DE-TRABAJO.md
+
 # CSS en pruebas: se pega a mano en "CSS adicional" del tema; al verificar
 # la sección se fusiona en css-totara-organizado.css (no se versiona)
 bloques/css-adicional.css
 
 # Scripts del Expediente (se gestionan en Totara, no en el repo)
 expediente/
+
+# Imágenes de trabajo sueltas en la raíz: los assets del rebranding viven en
+# Totara (local_uploadfiles), no en el repo. El .psd es archivo fuente pesado.
+*.psd
+/bg-admin.jpg
+/bg-admin.png
+/bg-admin-IVI.png
+/robot-laia.png
+/Paneles-Control-Rebranding.png
