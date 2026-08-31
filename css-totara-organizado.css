@@ -1612,6 +1612,14 @@ html .has-full-page-slider #block-region-top {
   padding: 20px 0px !important;
 }
 
+/* Excepción: el bloque "Administración" (block_settings) lleva cabecera navy a
+   ancho completo → su título necesita sangría izquierda para no quedar pegado
+   al borde, alineado con el resto de bloques. Especificidad extra para ganar
+   a la regla de arriba. */
+.block.chromeless.block_settings .title.block-title {
+  padding-left: 20px !important;
+}
+
 /* --- Títulos y bloques --- */
 .title_lfe .title.block-title h2,
 #inst789 .title.block-title h2,
