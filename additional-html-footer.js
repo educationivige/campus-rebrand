@@ -3852,6 +3852,8 @@ table.appendChild(tfoot);
     '#00b7bd': '#0ce3c6', // En progreso -> Teal
     '#e79181': '#004df0', // No iniciado -> Light blue (legacy alternativo)
     '#f58c7c': '#004df0', // No iniciado -> Light blue (color real de los paneles)
+    '#52b4bb': '#0ce3c6', // En progreso -> Teal (variante del panel "Mi panel como manager", dashboard-15)
+    '#e39182': '#004df0', // No iniciado -> Light blue (variante del panel "Mi panel como manager", dashboard-15)
     // B) paleta categórica global (orden del mockup)
     '#3869b1': '#08004f', // 1 -> Navy blue
     '#da7e31': '#004df0', // 2 -> Light blue
