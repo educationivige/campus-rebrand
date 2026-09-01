@@ -65,6 +65,12 @@ Los 5 regionales comparten el mismo tratamiento: fondo warm-gray, **bloques en t
 | **Expediente IMR** | *(Por confirmar si aplica / cambios.)* | *(Por confirmar.)* | ☐ | ☐ |
 | **[Admin tenant] IMR** | *(Por confirmar si aplica / cambios.)* | *(Por confirmar.)* | ☐ | ☐ |
 
+## Páginas de perfil / sistema (no son dashboards)
+
+| Página | Cambios realizados | Archivos relacionados | PRE (actuatxp) | PRO (ivirmacampus) |
+|---|---|---|---|---|
+| **Calificaciones** (`grade/report/overview`, `#page-grade-report-overview-index`) | Los listados nativos "Cursos a los que estoy inscrito" y "Cursos que estoy enseñando" se muestran como **tarjetas en 4 columnas con paginación** (oculta la tabla nativa). Títulos visibles con icono Material (`menu_book` / `co_present`) en light blue; hover de paginación con relleno light blue y texto blanco; sin badge "Sin calificación". | `additional-html-footer.js` (IIFE acotado a `/grade/report/overview/`, monta las tarjetas) · `css-totara-organizado.css` §30 (`ivi-cursos-*`), complementa §15 (CALIFICACIONES) | ✅ *(pendiente purga)* | ☐ |
+
 ---
 
 ## Paneles marcados/redactados en la captura (confirmar si aplican)
@@ -78,4 +84,4 @@ En `Paneles-Control-Rebranding.png` aparecen tachados o redactados (sin ✅) —
 
 ---
 
-_Última actualización: 2026-08-31._
+_Última actualización: 2026-09-01._
