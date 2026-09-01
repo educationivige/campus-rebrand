@@ -73,6 +73,24 @@ Los 5 regionales comparten el mismo tratamiento: fondo warm-gray, **bloques en t
 
 ---
 
+## Sustituciones manuales de imágenes (Buscar y reemplazar en BD)
+
+Iconos/imágenes que **no** están en el repo (viven en Totara) y hay que sustituir **a mano**
+con **Administración del sitio › Desarrollo › "Buscar y reemplazar texto en toda la base de
+datos"** (`/admin/tool/replace/`). ⚠️ Es **irreversible** → **backup de BD antes**; ejecutar
+por **cada URL vieja** y en **cada entorno** (PRE y PRO).
+
+| Imagen / icono | Cambio | PRE | PRO |
+|---|---|---|---|
+| **Iconos de compatibilidad de cursos** | `…/additionalimages/0/iconos-compatibilidad.png` → `…/iconos-compatibilidad-IVI-cursos.png` | ☐ | ☐ |
+| **Icono de coordinador** | *(confirmar nombre de archivo actual)* → nuevo | ☐ | ☐ |
+| **Icono de duración (reloj)** | *(confirmar nombre de archivo actual)* → nuevo | ☐ | ☐ |
+
+> Alternativa a la sustitución en BD: **sobrescribir el archivo con el mismo nombre** en
+> `local_uploadfiles` (la URL no cambia y se actualiza en todos sitios sin tocar la BD).
+
+---
+
 ## Paneles marcados/redactados en la captura (confirmar si aplican)
 
 En `Paneles-Control-Rebranding.png` aparecen tachados o redactados (sin ✅) — parecen excluidos del rebranding o sin usar. Confirmar:
