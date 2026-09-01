@@ -4334,3 +4334,73 @@ table.appendChild(tfoot);
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
 })();
+
+/**************** CURSO DE INICIACIÓN (id=976) — ocultar del dashboard principal tras ~1 mes ****************
+ * En el dashboard principal (#page-totara-dashboard-9) oculta el tile del curso
+ * de iniciación (id=976) cuando han pasado 30 días desde que le apareció por
+ * PRIMERA vez al usuario (fecha guardada en localStorage, por usuario). NO
+ * desmatricula ni quita acceso: solo lo oculta de esa vista. Acotado y fail-safe.
+ * Nota: para usuarios que ya lo tenían de antes, el mes cuenta desde la primera
+ * carga tras el despliegue (no desde su matrícula real, que no está en el DOM).
+ ************************************************************************************/
+(function () {
+    'use strict';
+
+    var COURSE_ID = 976;
+    var DAYS = 30;
+    var DASHBOARD_ID = 'page-totara-dashboard-9';
+
+    if (!document.getElementById(DASHBOARD_ID)) return;
+
+    // userid para separar el "primer visto" por persona
+    var uid = '';
+    if (typeof M !== 'undefined' && M.cfg) {
+        uid = (M.cfg.user && M.cfg.user.id) || M.cfg.userid || '';
+    }
+    if (!uid) {
+        var pl = document.querySelector('a[href*="/user/profile.php"]');
+        if (pl) { var mm = (pl.getAttribute('href') || '').match(/id=(\d+)/); if (mm) uid = mm[1]; }
+    }
+    var KEY = 'ivi-init-course-' + COURSE_ID + '-firstseen-' + (uid || 'anon');
+    var MS = DAYS * 24 * 60 * 60 * 1000;
+    var reCourse = new RegExp('[?&]id=' + COURSE_ID + '(?:&|#|$)');
+
+    function lsGet() { try { return window.localStorage.getItem(KEY); } catch (e) { return null; } }
+    function lsSet(v) { try { window.localStorage.setItem(KEY, v); } catch (e) {} }
+
+    function findTile() {
+        var scope = document.getElementById(DASHBOARD_ID);
+        if (!scope) return null;
+        var links = scope.querySelectorAll('a[href*="/course/view.php"]');
+        for (var i = 0; i < links.length; i++) {
+            if (reCourse.test(links[i].getAttribute('href') || '')) {
+                return links[i].closest('li.block_current_learningas-tile') ||
+                       links[i].closest('[class*="learningas-tile"]') ||
+                       links[i].closest('li') || links[i];
+            }
+        }
+        return null;
+    }
+
+    function apply() {
+        var tile = findTile();
+        if (!tile) return false;
+        var now = Date.now();
+        var first = parseInt(lsGet() || '', 10);
+        if (!first || isNaN(first)) { lsSet(String(now)); first = now; }
+        if (now - first >= MS) {
+            tile.style.display = 'none';
+            tile.setAttribute('data-ivi-init-hidden', '1');
+        }
+        return true;
+    }
+
+    function boot() {
+        if (apply()) return;
+        var tries = 0;
+        var timer = setInterval(function () { tries++; if (apply() || tries > 20) clearInterval(timer); }, 300);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
