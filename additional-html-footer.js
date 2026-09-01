@@ -4156,3 +4156,184 @@ table.appendChild(tfoot);
         boot();
     }
 })();
+
+/**************** CALIFICACIONES — Cursos en tarjetas (4 col) + paginación ****************
+ * En grade/report/overview ("Calificaciones") convierte las tablas nativas de
+ * Totara ("Cursos a los que estoy inscrito" #overview-grade y "Cursos que estoy
+ * enseñando" table[data-origin="html_table"]) en una cuadrícula de tarjetas de
+ * 4 columnas, paginada (no el listado seguido). CSS: clases ivi-cursos-*
+ * (css-totara-organizado.css). Va aquí y no en un bloque HTML porque el editor
+ * de Totara elimina el <script>. Acotado por ruta, idempotente y fail-safe:
+ * si algo no encaja, no toca la página.
+ ******************************************************************************/
+(function () {
+    'use strict';
+
+    // Guard de ruta: solo el informe general de calificaciones.
+    if (window.location.pathname.indexOf('/grade/report/overview/') === -1) return;
+
+    var PER_PAGE = 12; // múltiplo de 4 para cuadrar las columnas
+
+    var TARGETS = [
+        { sel: '#overview-grade',                 icon: 'menu_book' },  // inscrito
+        { sel: 'table[data-origin="html_table"]', icon: 'co_present' }  // enseñando
+    ];
+
+    var LABELS = {
+        es: { none: 'Sin calificación', view: 'Ver curso',   prev: 'Anterior',   next: 'Siguiente',  empty: 'No hay cursos para mostrar.' },
+        en: { none: 'No grade',         view: 'View course', prev: 'Previous',   next: 'Next',       empty: 'No courses to show.' },
+        it: { none: 'Nessun voto',      view: 'Vai al corso', prev: 'Precedente', next: 'Successivo', empty: 'Nessun corso da mostrare.' },
+        pt: { none: 'Sem nota',         view: 'Ver curso',   prev: 'Anterior',   next: 'Seguinte',   empty: 'Não há cursos para mostrar.' },
+        cs: { none: 'Bez známky',       view: 'Zobrazit kurz', prev: 'Předchozí', next: 'Další',     empty: 'Žádné kurzy k zobrazení.' },
+        sv: { none: 'Inget betyg',      view: 'Visa kurs',   prev: 'Föregående', next: 'Nästa',      empty: 'Inga kurser att visa.' }
+    };
+    var t = LABELS[(document.documentElement.lang || 'es').toLowerCase().split('-')[0]] || LABELS.es;
+
+    function icon(name) {
+        var s = document.createElement('span');
+        s.className = 'material-symbols-outlined';
+        s.textContent = name;
+        return s;
+    }
+
+    // Extrae {name, href, grade} de cada fila (comparaciones sin "<" a propósito).
+    function parseRows(table) {
+        var out = [], trs = table.querySelectorAll('tbody tr'), i, tr, a, name, cells, last, grade;
+        for (i = 0; trs.length > i; i++) {
+            tr = trs[i];
+            a = tr.querySelector('a[href]');
+            if (!a) continue;
+            name = (a.textContent || '').trim();
+            if (!name) continue;
+            grade = '';
+            cells = tr.querySelectorAll('td');
+            if (cells.length > 1) {
+                last = cells[cells.length - 1];
+                if (!last.querySelector('a')) grade = (last.textContent || '').trim();
+            }
+            out.push({ name: name, href: a.getAttribute('href'), grade: grade });
+        }
+        return out;
+    }
+
+    function buildCard(c, iconName) {
+        var card = document.createElement('article');
+        card.className = 'ivi-curso-card';
+
+        var head = document.createElement('div');
+        head.className = 'ivi-curso-card__head';
+        head.appendChild(icon(iconName));
+
+        var body = document.createElement('div');
+        body.className = 'ivi-curso-card__body';
+
+        var title = document.createElement('h4');
+        title.className = 'ivi-curso-card__title';
+        title.textContent = c.name;
+        title.title = c.name;
+
+        var meta = document.createElement('div');
+        meta.className = 'ivi-curso-card__meta';
+        var badge = document.createElement('span');
+        var g = (c.grade && c.grade !== '-') ? c.grade : '';
+        if (g) {
+            badge.className = 'ivi-curso-card__badge';
+            var gi = icon('grade'); gi.style.fontSize = '1rem';
+            badge.appendChild(gi);
+            badge.appendChild(document.createTextNode(g));
+        } else {
+            badge.className = 'ivi-curso-card__badge ivi-curso-card__badge--muted';
+            badge.textContent = t.none;
+        }
+        meta.appendChild(badge);
+
+        var cta = document.createElement('a');
+        cta.className = 'ivi-curso-card__cta';
+        cta.href = c.href;
+        cta.textContent = t.view;
+
+        body.appendChild(title);
+        body.appendChild(meta);
+        body.appendChild(cta);
+        card.appendChild(head);
+        card.appendChild(body);
+        return card;
+    }
+
+    function build(table, iconName) {
+        var data = parseRows(table);
+
+        var wrap  = document.createElement('div'); wrap.className  = 'ivi-cursos-wrap';
+        var grid  = document.createElement('div'); grid.className  = 'ivi-cursos-grid';
+        var pager = document.createElement('div'); pager.className = 'ivi-cursos-pager';
+        wrap.appendChild(grid); wrap.appendChild(pager);
+
+        var pages = Math.max(1, Math.ceil(data.length / PER_PAGE));
+        var cur = 1;
+
+        function renderGrid() {
+            grid.innerHTML = '';
+            if (!data.length) {
+                var p = document.createElement('p');
+                p.className = 'ivi-cursos-empty';
+                p.textContent = t.empty;
+                grid.appendChild(p);
+                return;
+            }
+            var start = (cur - 1) * PER_PAGE;
+            var slice = data.slice(start, start + PER_PAGE);
+            for (var i = 0; slice.length > i; i++) grid.appendChild(buildCard(slice[i], iconName));
+        }
+        function makeBtn(label, page, disabled, active) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'ivi-cursos-pager__btn' + (active ? ' is-active' : '');
+            b.textContent = label;
+            if (disabled) b.disabled = true;
+            else b.addEventListener('click', function () {
+                cur = page; renderGrid(); renderPager();
+                wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+            return b;
+        }
+        function renderPager() {
+            pager.innerHTML = '';
+            if (pages === 1) return;
+            pager.appendChild(makeBtn('‹ ' + t.prev, cur - 1, cur === 1, false));
+            for (var p = 1; pages >= p; p++) pager.appendChild(makeBtn(String(p), p, false, p === cur));
+            pager.appendChild(makeBtn(t.next + ' ›', cur + 1, cur === pages, false));
+        }
+
+        renderGrid(); renderPager();
+
+        // Inserta la cuadrícula donde estaba la tabla (queda bajo su <h3>) y la oculta.
+        var container = table.closest('.no-overflow') || table;
+        container.parentNode.insertBefore(wrap, container);
+        container.classList.add('ivi-cursos-hidden');
+    }
+
+    function process() {
+        var done = 0;
+        TARGETS.forEach(function (tg) {
+            var tables = document.querySelectorAll(tg.sel);
+            Array.prototype.forEach.call(tables, function (tb) {
+                if (tb.getAttribute('data-ivi-cards')) return;
+                tb.setAttribute('data-ivi-cards', '1');
+                try { build(tb, tg.icon); done++; } catch (e) {}
+            });
+        });
+        return done;
+    }
+
+    function boot() {
+        if (process() > 0) return;
+        var tries = 0;
+        var timer = setInterval(function () {
+            tries++;
+            if (process() > 0 || tries > 15) clearInterval(timer);
+        }, 300);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
