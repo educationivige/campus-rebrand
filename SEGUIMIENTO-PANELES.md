@@ -60,7 +60,7 @@ Los 5 regionales comparten el mismo tratamiento: fondo warm-gray, **bloques en t
 
 | Panel | Cambios realizados | Archivos relacionados | PRE (actuatxp) | PRO (ivirmacampus) |
 |---|---|---|---|---|
-| **PNTs** (dashboard-33) | Bloques PNTs, tabla estilizada, iconos. | CSS §6 (DASHBOARD PNTs) y §20 (BLOQUES PNTs) | ✅ | ☐ |
+| **PNTs** (dashboard-33) | Tiles de cursos como tarjetas (imagen, badge de plazo, progreso) con filtros y paginación cliente. **Filtros como botones azul light**, "Curso" en gris (sin azul) y **badges de plazo con paleta de marca** (semáforo teal/ámbar/naranja/rojo + Completado con borde navy); dots de leyenda a juego. | `bloques/3-codigo-actual/pnts-html-adicional.html` (JS) · CSS §6 (DASHBOARD PNTs) y §20 (BLOQUES PNTs) | ✅ *(pendiente purga)* | ☐ |
 | **IMR** (tenant IMR) | *(Tenant IMR; por confirmar el detalle.)* | `imr/css-tenant-imr.css` *(por confirmar)* | ✅ | ☐ |
 | **Expediente IMR** | *(Por confirmar si aplica / cambios.)* | *(Por confirmar.)* | ☐ | ☐ |
 | **[Admin tenant] IMR** | *(Por confirmar si aplica / cambios.)* | *(Por confirmar.)* | ☐ | ☐ |
