@@ -1,0 +1,679 @@
+<script>
+(function() {
+  // Solo ejecutar en dashboard 33
+  if (!document.getElementById('page-totara-dashboard-33')) return;
+
+  var IMAGE_JSON = 'https://beaesreal.github.io/totara-custom-styles/pnts/images.json';
+  var FALLBACK_IMG = 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/default.png';
+  var imageData = null;
+  var TILES_PER_PAGE = 9;
+
+  // --- Sistema de traducciones multilingüe ---
+  var translations = {
+    es: {
+      all: 'Todo',
+      inprogress: 'Iniciado',
+      notstarted: 'No iniciado',
+      complete: 'Completado',
+      course: 'Curso',
+      duedate: 'Fecha límite',
+      completedOn: 'Completado el',
+      legendGreen: 'Aún dispones de más de 6 meses para su realización en plazo.',
+      legendYellow: 'Dispones de menos de 6 meses para su realización en plazo.',
+      legendOrange: 'Dispones de menos de 1 mes para su realización en plazo.',
+      legendRed: 'Fuera del plazo establecido, pero el curso aún puede completarse.',
+      emptyMsg: 'No existe ningún curso o programa en progreso. Para ver los cursos y programas completados, consulta el apartado <a href="/totara/plan/record/courses.php?userid={userid}&amp;status=all"><b>Historial de formación</b></a>.'
+    },
+    en: {
+      all: 'All',
+      inprogress: 'In progress',
+      notstarted: 'Not started',
+      complete: 'Completed',
+      course: 'Course',
+      duedate: 'Due date',
+      completedOn: 'Completed on',
+      legendGreen: 'You still have more than 6 months to complete it on time.',
+      legendYellow: 'You have less than 6 months to complete it on time.',
+      legendOrange: 'You have less than 1 month to complete it on time.',
+      legendRed: 'Outside the established deadline, but the course can still be completed.',
+      emptyMsg: 'No courses or programs are in progress. To view completed courses and programs, check the section <a href="/totara/plan/record/courses.php?userid={userid}&amp;status=all"><b>Training History</b></a>.'
+    },
+    it: {
+      all: 'Tutto',
+      inprogress: 'In corso',
+      notstarted: 'Non iniziato',
+      complete: 'Completato',
+      course: 'Corso',
+      duedate: 'Data limite',
+      completedOn: 'Completato il',
+      legendGreen: 'Hai ancora più di 6 mesi per completarlo nei tempi.',
+      legendYellow: 'Hai meno di 6 mesi per completarlo nei tempi.',
+      legendOrange: 'Hai meno di 1 mese per completarlo nei tempi.',
+      legendRed: 'Fuori dal termine stabilito, ma il corso può ancora essere completato.',
+      emptyMsg: 'Non ci sono corsi o programmi in corso. Per consultare i corsi e i programmi completati, consulta la sezione <a href="/totara/plan/record/courses.php?userid={userid}&amp;status=all"><b>Storico formazione</b></a>.'
+    },
+    pt: {
+      all: 'Tudo',
+      inprogress: 'Em progresso',
+      notstarted: 'Não iniciado',
+      complete: 'Concluído',
+      course: 'Curso',
+      duedate: 'Data limite',
+      completedOn: 'Concluído em',
+      legendGreen: 'Ainda dispõe de mais de 6 meses para o concluir dentro do prazo.',
+      legendYellow: 'Dispõe de menos de 6 meses para o concluir dentro do prazo.',
+      legendOrange: 'Dispõe de menos de 1 mês para o concluir dentro do prazo.',
+      legendRed: 'Fora do prazo estabelecido, mas o curso ainda pode ser concluído.',
+      emptyMsg: 'Não há cursos ou programas em andamento. Para consultar os cursos e programas concluídos, consulte a seção <a href="/totara/plan/record/courses.php?userid={userid}&amp;status=all"><b>Histórico de formação</b></a>.'
+    },
+    cs: {
+      all: 'Vše',
+      inprogress: 'Probíhá',
+      notstarted: 'Nezahájeno',
+      complete: 'Dokončeno',
+      course: 'Kurz',
+      duedate: 'Termín',
+      completedOn: 'Dokončeno dne',
+      legendGreen: 'Stále máte více než 6 měsíců na dokončení v termínu.',
+      legendYellow: 'Máte méně než 6 měsíců na dokončení v termínu.',
+      legendOrange: 'Máte méně než 1 měsíc na dokončení v termínu.',
+      legendRed: 'Mimo stanovený termín, ale kurz lze stále dokončit.',
+      emptyMsg: 'Neexistují žádné kurzy nebo programy v průběhu. Pro zobrazení dokončených kurzů a programů zkontrolujte svou <a href="/totara/plan/record/courses.php?userid={userid}&amp;status=all"><b>Historii vzdělávání</b></a>.'
+    },
+    sv: {
+      all: 'Alla',
+      inprogress: 'Pågående',
+      notstarted: 'Ej påbörjad',
+      complete: 'Slutförd',
+      course: 'Kurs',
+      duedate: 'Sista datum',
+      completedOn: 'Slutförd den',
+      legendGreen: 'Du har fortfarande mer än 6 månader kvar för att slutföra i tid.',
+      legendYellow: 'Du har mindre än 6 månader kvar för att slutföra i tid.',
+      legendOrange: 'Du har mindre än 1 månad kvar för att slutföra i tid.',
+      legendRed: 'Utanför fastställd tidsfrist, men kursen kan fortfarande slutföras.',
+      emptyMsg: 'Det finns inga kurser eller program pågående. För att se genomförda kurser och program, kontrollera din <a href="/totara/plan/record/courses.php?userid={userid}&amp;status=all"><b>Utbildningshistorik</b></a>.'
+    }
+  };
+
+  function getCurrentLang() {
+    var htmlLang = document.documentElement.lang;
+    if (htmlLang) {
+      var langCode = htmlLang.split('-')[0].toLowerCase();
+      if (translations[langCode]) return langCode;
+    }
+    var bodyClasses = document.body.className;
+    var langMatch = bodyClasses.match(/lang-(\w+)/);
+    if (langMatch && translations[langMatch[1]]) return langMatch[1];
+    if (typeof M !== 'undefined' && M.cfg && M.cfg.lang) {
+      var moodleLang = M.cfg.lang.split('_')[0].toLowerCase();
+      if (translations[moodleLang]) return moodleLang;
+    }
+    return 'es';
+  }
+
+  var currentLang = getCurrentLang();
+  var t = translations[currentLang];
+
+  function getImageForTitle(title) {
+    if (!imageData) return FALLBACK_IMG;
+    var titleLower = title.toLowerCase();
+    for (var i = 0; i < imageData.categorias.length; i++) {
+      var cat = imageData.categorias[i];
+      for (var j = 0; j < cat.keywords.length; j++) {
+        if (titleLower.indexOf(cat.keywords[j].toLowerCase()) !== -1) return cat.imagen;
+      }
+    }
+    return imageData.default || FALLBACK_IMG;
+  }
+
+  function loadJsonAndInit() {
+    fetch(IMAGE_JSON + '?t=' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(data) { imageData = data; init(); })
+      .catch(function() { imageData = { categorias: [], default: FALLBACK_IMG }; init(); });
+  }
+
+  // =========================================
+  // BLOQUE 1: PNTs Globales (inst10607/inst11103)
+  // =========================================
+  var GLOBAL_BLOCK_IDS = ['inst10607', 'inst11103', 'inst11136'];
+  var globalBlockState = {};
+
+  function getGlobalState(blockId) {
+    if (!globalBlockState[blockId]) {
+      globalBlockState[blockId] = { currentFilter: 'all', currentPage: 1, allCourses: [] };
+    }
+    return globalBlockState[blockId];
+  }
+
+  function getLatestTableContainer(block) {
+    if (!block) return null;
+    var containers = block.querySelectorAll('.totara-table-container');
+    return containers.length ? containers[0] : null;
+  }
+
+  function getReportBaseUrl(block) {
+    if (!block) return null;
+    var links = block.querySelectorAll('[class*="pagination"] a[href], [class*="paging"] a[href], [class*="pager"] a[href]');
+    for (var i = 0; i < links.length; i++) {
+      var rawHref = links[i].getAttribute('href');
+      if (!rawHref || rawHref === '#' || rawHref.indexOf('javascript:') === 0) continue;
+      try {
+        var url = new URL(rawHref, window.location.href);
+        url.searchParams.delete('spage');
+        return url.toString();
+      } catch (e) {
+        if (rawHref.indexOf('spage=') !== -1) {
+          return rawHref.replace(/([?&])spage=\d+(&?)/, function(m, pre, post) { return post ? pre : ''; });
+        }
+        return rawHref;
+      }
+    }
+    return null;
+  }
+
+  // --- Parseo de fechas ---
+  function parseDateFromValue(value) {
+    if (!value) return null;
+    var v = value.trim().replace(/\u00a0/g, ' ');
+    if (!v || v === '-') return null;
+    if (/^\d+$/.test(v)) {
+      var num = parseInt(v, 10);
+      if (v.length >= 12) return new Date(num);
+      if (v.length === 10) return new Date(num * 1000);
+      if (v.length === 8) {
+        var ymdYear = parseInt(v.slice(0,4),10), ymdMonth = parseInt(v.slice(4,6),10)-1, ymdDay = parseInt(v.slice(6,8),10);
+        if (!isNaN(ymdYear) && !isNaN(ymdMonth) && !isNaN(ymdDay)) return new Date(ymdYear, ymdMonth, ymdDay);
+      }
+    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(v)) { var iso = new Date(v); if (!isNaN(iso.getTime())) return iso; }
+    var m1 = v.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/);
+    if (m1) {
+      var d1=parseInt(m1[1],10), mth1=parseInt(m1[2],10)-1, y1=parseInt(m1[3],10);
+      if (y1<100) y1+=2000;
+      var dA=new Date(y1,mth1,d1); if (!isNaN(dA.getTime())) return dA;
+    }
+    var monthMap = {
+      enero:0,ene:0,febrero:1,feb:1,marzo:2,mar:2,abril:3,abr:3,mayo:4,may:4,junio:5,jun:5,
+      julio:6,jul:6,agosto:7,ago:7,septiembre:8,sep:8,sept:8,setiembre:8,set:8,octubre:9,oct:9,
+      noviembre:10,nov:10,diciembre:11,dic:11,january:0,jan:0,february:1,march:2,april:3,apr:3,
+      june:5,july:6,august:7,aug:7,september:8,october:9,november:10,december:11,dec:11,
+      gen:0,mag:4,giu:5,lug:6,ott:9,fev:1,mai:4,out:9,dez:11,
+      led:0,uno:1,bre:2,dub:3,kve:4,cvn:5,cvc:6,srp:7,zar:8,rij:9,lis:10,pro:11,
+      úno:1,bře:2,kvě:4,čvn:5,čvc:6,zář:8,říj:9,mars:2,maj:4,juni:5,juli:6,okt:9
+    };
+    var normalized = v.toLowerCase().replace(/[,]/g,' ').replace(/\s+de\s+/g,' ').replace(/\s+/g,' ').trim();
+    var m2 = normalized.match(/(\d{1,2})[\s\-\/\.]+([a-z\u00c0-\u017f\.]+)[\s\-\/\.]+(\d{4})/);
+    if (m2) {
+      var d2=parseInt(m2[1],10), monthName=m2[2].replace(/\./g,''), y2=parseInt(m2[3],10);
+      var mth2=monthMap[monthName]; if (mth2===undefined) mth2=monthMap[monthName.slice(0,3)];
+      if (mth2!==undefined) { var dB=new Date(y2,mth2,d2); if (!isNaN(dB.getTime())) return dB; }
+    }
+    return null;
+  }
+
+  function getCellDate(cell) {
+    if (!cell) return null;
+    var candidates = [];
+    var timeEl = cell.querySelector('time');
+    if (timeEl && timeEl.getAttribute('datetime')) candidates.push(timeEl.getAttribute('datetime'));
+    var abbr = cell.querySelector('abbr');
+    if (abbr && abbr.getAttribute('title')) candidates.push(abbr.getAttribute('title'));
+    ['data-timestamp','data-sortvalue','data-raw','data-value','title'].forEach(function(attr) {
+      var val = cell.getAttribute(attr); if (val) candidates.push(val);
+    });
+    var text = cell.textContent ? cell.textContent.trim() : '';
+    if (text) candidates.push(text);
+    for (var i=0; i<candidates.length; i++) { var d=parseDateFromValue(candidates[i]); if (d) return d; }
+    return null;
+  }
+
+  function formatDateByLang(date, lang) {
+    var monthAbbr = {
+      es:['ene.','feb.','mar.','abr.','may.','jun.','jul.','ago.','sept.','oct.','nov.','dic.'],
+      en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      it:['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'],
+      pt:['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'],
+      cs:['led','úno','bře','dub','kvě','čvn','čvc','srp','zář','říj','lis','pro'],
+      sv:['jan.','feb.','mars','apr.','maj','juni','juli','aug.','sep.','okt.','nov.','dec.']
+    };
+    var months = monthAbbr[lang] || monthAbbr.es;
+    return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
+  function getDueInfoFromEnrollment(cell) {
+    var enrolledDate = getCellDate(cell);
+    if (!enrolledDate) return { text: '', status: '' };
+    var dueDate = new Date(enrolledDate.getTime());
+    dueDate.setFullYear(dueDate.getFullYear() + 1);
+    if (isNaN(dueDate.getTime())) return { text: '', status: '' };
+    var totalMs = dueDate.getTime() - enrolledDate.getTime();
+    var remainingMs = dueDate.getTime() - Date.now();
+    var oneMonthMs = 30*24*60*60*1000;
+    var status = remainingMs <= 0 ? 'danger' : remainingMs <= oneMonthMs ? 'orange' : (totalMs > 0 && remainingMs <= totalMs/2) ? 'warning' : 'success';
+    return { text: formatDateByLang(dueDate, currentLang), status: status };
+  }
+
+  function getFormattedDateFromCell(cell) {
+    var date = getCellDate(cell);
+    return date ? formatDateByLang(date, currentLang) : '';
+  }
+
+  function getLegendHtml(status) {
+    var legendTextByStatus = { success:t.legendGreen, warning:t.legendYellow, orange:t.legendOrange, danger:t.legendRed };
+    var legendText = legendTextByStatus[status];
+    if (!legendText) return '';
+    return '<div class="pnts-badge-tooltip" role="tooltip"><div class="pnts-badge-tooltip__item"><span class="pnts-badge-tooltip__dot pnts-badge-tooltip__dot--'+status+'"></span>'+legendText+'</div></div>';
+  }
+
+  // --- Parsear una fila de la tabla en objeto de curso ---
+  function parseRowData(tr) {
+    // Selectores flexibles: clase exacta o parcial como fallback
+    var nameCell = tr.querySelector('td.course_courselinkicon') ||
+                   tr.querySelector('td[class*="courselinkicon"]');
+    var isCompleteCell = tr.querySelector('td.course_completion_iscomplete') ||
+                         tr.querySelector('td[class*="iscomplete"]');
+    var enrolledCell = tr.querySelector('td.course_completion_enrolleddate') ||
+                       tr.querySelector('td[class*="enrolleddate"]');
+    var completedDateCell = tr.querySelector('td.course_completion_completeddate') ||
+                            tr.querySelector('td[class*="completeddate"]');
+    if (!nameCell) return null;
+
+    var link = nameCell.querySelector('a');
+    var title = link ? link.textContent.trim() : '';
+    var href = link ? link.getAttribute('href') : '#';
+
+    // Determinar estado: primero campo iscomplete, luego barra de progreso
+    var isCompleteText = isCompleteCell ? isCompleteCell.textContent.trim().toLowerCase() : '';
+    var isComplete = (isCompleteText === 'sí' || isCompleteText === 'si' || isCompleteText === 'yes');
+
+    var progressBar = tr.querySelector('.bar[aria-valuenow]');
+    var percent = progressBar ? parseInt(progressBar.getAttribute('aria-valuenow'), 10) : 0;
+    if (isNaN(percent)) percent = 0;
+
+    var status = 'notstarted';
+    if (isComplete || percent === 100) {
+      status = 'complete';
+      if (percent < 100) percent = 100;
+    } else if (percent > 0) {
+      status = 'inprogress';
+    }
+
+    var imgSrc = getImageForTitle(title);
+    var dueInfo = getDueInfoFromEnrollment(enrolledCell);
+
+    // Fecha de completado: parseo con múltiples estrategias de extracción
+    var completedDate = '';
+    if (completedDateCell) {
+      // 1. Intentar parsear y formatear la fecha
+      completedDate = getFormattedDateFromCell(completedDateCell);
+      // 2. Fallback: texto crudo de la celda (por si el formato no es reconocido)
+      if (!completedDate) {
+        var rawDate = (completedDateCell.textContent || '')
+          .replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+        if (rawDate && rawDate !== '-' && rawDate.length > 3) completedDate = rawDate;
+      }
+    }
+
+    var badgeText = '';
+    var badgeClass = '';
+    var badgeIcon = '';
+
+    // Badge "Completado el" cuando status === 'complete'
+    if (status === 'complete') {
+      badgeText = completedDate ? (t.completedOn + ' ' + completedDate) : t.complete;
+      badgeClass = 'completed';
+      badgeIcon = 'check';
+    } else if (dueInfo.text) {
+      badgeText = t.duedate + ' ' + dueInfo.text;
+      badgeClass = dueInfo.status;
+    }
+
+    var colorRank = 99;
+    if (badgeClass === 'danger') colorRank = 1;
+    if (badgeClass === 'warning') colorRank = 2;
+    if (badgeClass === 'orange') colorRank = 3;
+    if (badgeClass === 'success') colorRank = 4;
+    if (badgeClass === 'completed') colorRank = 5;
+
+    return { href: href, title: title, imgSrc: imgSrc, percent: percent, status: status, badgeText: badgeText, badgeClass: badgeClass, badgeIcon: badgeIcon, colorRank: colorRank };
+  }
+
+  // --- Extraer cursos de la primera página (síncrono) ---
+  function parseFirstPage(block) {
+    var container = getLatestTableContainer(block);
+    if (!container) return [];
+    var rows = container.querySelectorAll('table.totaratable tbody tr');
+    var courses = [];
+    rows.forEach(function(tr) { var d = parseRowData(tr); if (d) courses.push(d); });
+    return courses;
+  }
+
+  // --- Detectar páginas adicionales ---
+  function detectMaxPage(block) {
+    var maxPage = 1;
+    var links = block.querySelectorAll('[class*="paging"] a[href], [class*="pagination"] a[href]');
+    links.forEach(function(link) {
+      var href = link.getAttribute('href') || '';
+      var m = href.match(/[?&]spage=(\d+)/);
+      if (m) { var p = parseInt(m[1], 10) + 1; if (p > maxPage) maxPage = p; }
+    });
+    return maxPage;
+  }
+
+  // --- Cargar páginas adicionales en segundo plano ---
+  function fetchRemainingPages(blockId, block, baseCourses, onComplete) {
+    var maxPage = detectMaxPage(block);
+    if (maxPage <= 1) { onComplete(baseCourses); return; }
+
+    var baseUrl = getReportBaseUrl(block);
+    if (!baseUrl) { onComplete(baseCourses); return; }
+
+    var allCourses = baseCourses.slice();
+    var promises = [];
+    for (var p = 2; p <= maxPage; p++) {
+      (function(pageNum) {
+        var spage = pageNum - 1;
+        var sep = baseUrl.indexOf('?') !== -1 ? '&' : '?';
+        var url = baseUrl + sep + 'spage=' + spage;
+        promises.push(
+          fetch(url, { credentials: 'same-origin' })
+            .then(function(r) { return r.ok ? r.text() : ''; })
+            .then(function(html) {
+              if (!html) return [];
+              var parser = new DOMParser();
+              var doc = parser.parseFromString(html, 'text/html');
+              var src = doc.querySelector('#' + blockId) || doc;
+              var rows = src.querySelectorAll('table.totaratable tbody tr');
+              var pageData = [];
+              rows.forEach(function(tr) { var d = parseRowData(tr); if (d) pageData.push(d); });
+              return pageData;
+            })
+            .catch(function() { return []; })
+        );
+      })(p);
+    }
+
+    Promise.all(promises).then(function(pages) {
+      pages.forEach(function(page) { page.forEach(function(c) { allCourses.push(c); }); });
+      onComplete(allCourses);
+    }).catch(function() { onComplete(allCourses); });
+  }
+
+  // --- Crear elemento tile ---
+  function createTileEl(c) {
+    var tile = document.createElement('div');
+    tile.className = 'pnts-tile';
+    tile.setAttribute('data-status', c.status);
+    var badgeIconHtml = c.badgeIcon === 'check' ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> ' : '';
+    var badgeInner = c.badgeText ? (badgeIconHtml + c.badgeText) : '';
+    var tooltipHtml = (c.status !== 'complete') ? getLegendHtml(c.badgeClass) : '';
+    var badgeHtml = badgeInner ? '<div class="pnts-tile__badge pnts-tile__badge--' + (c.badgeClass || 'success') + '">' + badgeInner + tooltipHtml + '</div>' : '';
+    tile.innerHTML = [
+      badgeHtml,
+      '<a href="' + c.href + '" class="pnts-tile__img-link"><div class="pnts-tile__img" style="background-image:url(\'' + c.imgSrc + '\')"></div></a>',
+      '<div class="pnts-tile__body">',
+      '<span class="pnts-tile__type">' + t.course + '</span>',
+      '<a href="' + c.href + '" class="pnts-tile__link"><h3 class="pnts-tile__title">' + c.title + '</h3></a>',
+      '<div class="pnts-tile__progress">',
+      '<div class="progressbar_container ' + (c.percent === 100 ? '' : 'progress-invert') + '">',
+      '<div class="progress progress-striped ' + (c.percent === 100 ? 'progress-success' : 'active') + '">',
+      '<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + c.percent + '" style="width:' + c.percent + '%">',
+      '<span class="progressbar__text">' + c.percent + '%</span>',
+      '</div></div></div></div></div>'
+    ].join('');
+    return tile;
+  }
+
+  // --- Construir toda la UI con filtros y paginación cliente ---
+  function buildTilesUI(block, blockId, allCourses) {
+    var state = getGlobalState(blockId);
+
+    allCourses.sort(function(a, b) { return a.colorRank - b.colorRank; });
+    state.allCourses = allCourses;
+
+    var content = block.querySelector('.content.block-content');
+    var footer = block.querySelector('.footer');
+    var tableContainer = getLatestTableContainer(block);
+    var table = tableContainer ? tableContainer.querySelector('table.totaratable') : null;
+    var svgGraph = block.querySelector('.rb-report-svggraph');
+    if (table) table.style.display = 'none';
+    if (svgGraph) svgGraph.style.display = 'none';
+
+    // Limpiar elementos anteriores
+    block.querySelectorAll('[data-pnts-filter-bar="1"]').forEach(function(el) { el.remove(); });
+    block.querySelectorAll('[data-pnts-tiles-wrap="1"]').forEach(function(el) { el.remove(); });
+    block.querySelectorAll('[data-pnts-empty-msg="1"]').forEach(function(el) { el.remove(); });
+    block.querySelectorAll('[data-pnts-pagination="1"]').forEach(function(el) { el.remove(); });
+
+    // Barra de filtros
+    var filterBar = document.createElement('div');
+    filterBar.className = 'pnts-filter-bar';
+    filterBar.setAttribute('data-pnts-filter-bar', '1');
+    filterBar.innerHTML = '<ul class="nav nav-tabs">' +
+      '<li data-filter="all" class="active"><a href="#">' + t.all + '</a></li>' +
+      '<li data-filter="notstarted"><a href="#">' + t.notstarted + '</a></li>' +
+      '<li data-filter="inprogress"><a href="#">' + t.inprogress + '</a></li>' +
+      '<li data-filter="complete"><a href="#">' + t.complete + '</a></li>' +
+      '</ul>';
+
+    // Contenedor de tiles
+    var tilesWrap = document.createElement('div');
+    tilesWrap.className = 'pnts-tiles-wrap';
+    tilesWrap.setAttribute('data-pnts-tiles-wrap', '1');
+    tilesWrap.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px;align-items:stretch;grid-auto-flow:row dense;';
+
+    // Paginación personalizada
+    var paginationWrap = document.createElement('div');
+    paginationWrap.className = 'pnts-pagination';
+    paginationWrap.setAttribute('data-pnts-pagination', '1');
+
+    // Mensaje vacío
+    var emptyMsg = document.createElement('div');
+    emptyMsg.className = 'pnts-empty-msg';
+    emptyMsg.setAttribute('data-pnts-empty-msg', '1');
+    emptyMsg.style.display = 'none';
+    var userid = '';
+    if (typeof M !== 'undefined' && M.cfg) {
+      if (M.cfg.user && M.cfg.user.id) userid = M.cfg.user.id;
+      else if (M.cfg.userid) userid = M.cfg.userid;
+    }
+    if (!userid) {
+      var profileLink = document.querySelector('.userbutton a, a[href*="/user/profile.php"]');
+      if (profileLink) { var idMatch = profileLink.href.match(/id=(\d+)/); if (idMatch) userid = idMatch[1]; }
+    }
+    emptyMsg.innerHTML = t.emptyMsg.replace(/{userid}/g, userid);
+
+    // Insertar en el DOM en orden
+    content.insertBefore(emptyMsg, footer);
+    content.insertBefore(paginationWrap, emptyMsg);
+    content.insertBefore(tilesWrap, paginationWrap);
+    content.insertBefore(filterBar, tilesWrap);
+    if (tableContainer && footer) content.insertBefore(tableContainer, footer);
+
+    // Ocultar la paginación original del servidor
+    if (tableContainer) {
+      tableContainer.querySelectorAll('[class*="pagination"], [class*="paging"], [class*="pager"]').forEach(function(el) {
+        el.style.display = 'none';
+      });
+    }
+
+    // --- Renderizar una página del filtro activo ---
+    function renderPage(filter, page) {
+      state.currentFilter = filter;
+
+      var filtered = filter === 'all'
+        ? allCourses.slice()
+        : allCourses.filter(function(c) { return c.status === filter; });
+
+      var totalPages = Math.max(1, Math.ceil(filtered.length / TILES_PER_PAGE));
+      var currentPage = Math.min(Math.max(1, page), totalPages);
+      state.currentPage = currentPage;
+
+      var start = (currentPage - 1) * TILES_PER_PAGE;
+      var pageItems = filtered.slice(start, start + TILES_PER_PAGE);
+
+      // Tiles
+      tilesWrap.innerHTML = '';
+      if (filtered.length === 0) {
+        emptyMsg.style.display = 'block';
+        tilesWrap.style.display = 'none';
+      } else {
+        emptyMsg.style.display = 'none';
+        tilesWrap.style.display = 'grid';
+        pageItems.forEach(function(c) { tilesWrap.appendChild(createTileEl(c)); });
+      }
+
+      // Paginación cliente
+      paginationWrap.innerHTML = '';
+      if (totalPages > 1) {
+        var ul = document.createElement('ul');
+        ul.className = 'pnts-pagination__list';
+
+        var prevLi = document.createElement('li');
+        prevLi.className = 'pnts-pagination__item' + (currentPage === 1 ? ' disabled' : '');
+        var prevA = document.createElement('a');
+        prevA.href = '#';
+        prevA.innerHTML = '&laquo;';
+        prevA.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (currentPage > 1) renderPage(filter, currentPage - 1);
+        });
+        prevLi.appendChild(prevA);
+        ul.appendChild(prevLi);
+
+        for (var i = 1; i <= totalPages; i++) {
+          (function(pNum) {
+            var li = document.createElement('li');
+            li.className = 'pnts-pagination__item' + (pNum === currentPage ? ' active' : '');
+            var a = document.createElement('a');
+            a.href = '#';
+            a.textContent = String(pNum);
+            a.addEventListener('click', function(e) { e.preventDefault(); renderPage(filter, pNum); });
+            li.appendChild(a);
+            ul.appendChild(li);
+          })(i);
+        }
+
+        var nextLi = document.createElement('li');
+        nextLi.className = 'pnts-pagination__item' + (currentPage === totalPages ? ' disabled' : '');
+        var nextA = document.createElement('a');
+        nextA.href = '#';
+        nextA.innerHTML = '&raquo;';
+        nextA.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (currentPage < totalPages) renderPage(filter, currentPage + 1);
+        });
+        nextLi.appendChild(nextA);
+        ul.appendChild(nextLi);
+
+        paginationWrap.appendChild(ul);
+        paginationWrap.style.display = '';
+      } else {
+        paginationWrap.style.display = 'none';
+      }
+
+      // Marcar tab activo
+      filterBar.querySelectorAll('li[data-filter]').forEach(function(li) {
+        li.classList.toggle('active', li.getAttribute('data-filter') === filter);
+      });
+    }
+
+    // Click en los tabs de filtro → renderPage desde página 1
+    filterBar.querySelectorAll('li[data-filter]').forEach(function(li) {
+      var a = li.querySelector('a');
+      if (!a) return;
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        renderPage(li.getAttribute('data-filter'), 1);
+      });
+    });
+
+    // Render inicial
+    renderPage('all', 1);
+  }
+
+  // --- Inicializar bloque global (carga progresiva) ---
+  function initGlobalBlock(blockId) {
+    var block = document.querySelector('#page-totara-dashboard-33 #' + blockId);
+    if (!block) return;
+
+    function hasData() {
+      var container = getLatestTableContainer(block);
+      if (!container) return false;
+      return container.querySelectorAll('table.totaratable tbody tr').length > 0;
+    }
+
+    function startBuild() {
+      var b = document.querySelector('#page-totara-dashboard-33 #' + blockId);
+      if (!b) return;
+
+      // 1. Mostrar primera página inmediatamente
+      var firstCourses = parseFirstPage(b);
+      if (firstCourses.length > 0) {
+        buildTilesUI(b, blockId, firstCourses);
+      }
+
+      // 2. Cargar páginas adicionales en segundo plano
+      fetchRemainingPages(blockId, b, firstCourses, function(allCourses) {
+        if (allCourses.length > firstCourses.length) {
+          // Reconstruir con todos los datos
+          var b2 = document.querySelector('#page-totara-dashboard-33 #' + blockId);
+          if (b2) buildTilesUI(b2, blockId, allCourses);
+        }
+      });
+    }
+
+    if (hasData()) {
+      startBuild();
+    } else {
+      var obs = new MutationObserver(function() {
+        if (hasData()) { obs.disconnect(); startBuild(); }
+      });
+      obs.observe(block, { childList: true, subtree: true });
+    }
+  }
+
+  // =========================================
+  // BLOQUE 2: PNTs Requeridos (inst10360)
+  // =========================================
+  function applyImagesToRequiredTiles() {
+    var block = document.querySelector('#page-totara-dashboard-33 #inst10360');
+    if (!block) return;
+    var tiles = block.querySelectorAll('.block_current_learningas-tile');
+    tiles.forEach(function(tile) {
+      if (tile.getAttribute('data-img-applied')) return;
+      var titleEl = tile.querySelector('.block_current_learningas-tile__link_title');
+      var imgEl = tile.querySelector('.block_current_learningas-tile__image_ratio_img');
+      if (!titleEl || !imgEl) return;
+      var title = titleEl.textContent.trim();
+      var url = getImageForTitle(title);
+      imgEl.style.backgroundImage = "url('" + url + "')";
+      tile.setAttribute('data-img-applied', '1');
+    });
+  }
+
+  function initRequired() {
+    var block = document.querySelector('#page-totara-dashboard-33 #inst10360');
+    if (!block) return;
+    applyImagesToRequiredTiles();
+    var obs = new MutationObserver(function() { applyImagesToRequiredTiles(); });
+    obs.observe(block, { childList: true, subtree: true });
+  }
+
+  // =========================================
+  // Init
+  // =========================================
+  function init() {
+    GLOBAL_BLOCK_IDS.forEach(function(blockId) { initGlobalBlock(blockId); });
+    initRequired();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadJsonAndInit);
+  } else {
+    loadJsonAndInit();
+  }
+})();
+</script>
