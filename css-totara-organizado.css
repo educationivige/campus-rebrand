@@ -2685,20 +2685,51 @@ h2#instance-8378-header {
 #page-totara-dashboard-33 #inst10607 .nav.nav-tabs,
 #page-totara-dashboard-33 #inst11103 .nav.nav-tabs,
 #page-totara-dashboard-33 #inst11136 .nav.nav-tabs {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 10px;
     background: transparent !important;
     background-color: transparent !important;
+    border-bottom: 0 !important;
 }
 
 #page-totara-dashboard-33 #inst10607 .nav.nav-tabs li,
 #page-totara-dashboard-33 #inst11103 .nav.nav-tabs li,
 #page-totara-dashboard-33 #inst11136 .nav.nav-tabs li {
-    padding: 20px;
+    padding: 0;
+    margin: 0;
+    float: none;
+}
+
+/* Selectores (filtros) con estilo de botón azul light */
+#page-totara-dashboard-33 #inst10607 .nav.nav-tabs li a,
+#page-totara-dashboard-33 #inst11103 .nav.nav-tabs li a,
+#page-totara-dashboard-33 #inst11136 .nav.nav-tabs li a {
+    display: inline-block;
+    margin: 0;
+    padding: 8px 18px;
+    border: 1.5px solid var(--light-blue, #004DF0);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--light-blue, #004DF0) !important;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+#page-totara-dashboard-33 #inst10607 .nav.nav-tabs li a:hover,
+#page-totara-dashboard-33 #inst11103 .nav.nav-tabs li a:hover,
+#page-totara-dashboard-33 #inst11136 .nav.nav-tabs li a:hover {
+    background: var(--light-blue, #004DF0);
+    color: #ffffff !important;
 }
 
 #page-totara-dashboard-33 #inst10607 .nav.nav-tabs li.active a,
 #page-totara-dashboard-33 #inst11103 .nav.nav-tabs li.active a,
 #page-totara-dashboard-33 #inst11136 .nav.nav-tabs li.active a {
-    border-radius: var(--border-radius-medium);
+    background: var(--light-blue, #004DF0);
+    border-color: var(--light-blue, #004DF0);
+    color: #ffffff !important;
+    border-radius: 999px;
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-tiles-wrap,
@@ -2759,7 +2790,7 @@ h2#instance-8378-header {
     display: block;
     font-size: 11px;
     font-weight: bold;
-    color: var(--color-primary);
+    color: var(--text-gray, #8A8A9E);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 4px;
@@ -2796,39 +2827,42 @@ h2#instance-8378-header {
 #page-totara-dashboard-33 #inst10607 .pnts-tile__badge--success,
 #page-totara-dashboard-33 #inst11103 .pnts-tile__badge--success,
 #page-totara-dashboard-33 #inst11136 .pnts-tile__badge--success {
-    background: #28a745;
+    background: var(--teal, #0CE3C6);
+    color: var(--navy-blue, #08004F);
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-tile__badge--warning,
 #page-totara-dashboard-33 #inst11103 .pnts-tile__badge--warning,
 #page-totara-dashboard-33 #inst11136 .pnts-tile__badge--warning {
-    background: #ffc107;
+    background: #F5A623;
+    color: var(--navy-blue, #08004F);
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-tile__badge--orange,
 #page-totara-dashboard-33 #inst11103 .pnts-tile__badge--orange,
 #page-totara-dashboard-33 #inst11136 .pnts-tile__badge--orange {
-    background: #fd7e14;
+    background: var(--bright-orange, #FC814C);
+    color: var(--navy-blue, #08004F);
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-tile__badge--danger,
 #page-totara-dashboard-33 #inst11103 .pnts-tile__badge--danger,
 #page-totara-dashboard-33 #inst11136 .pnts-tile__badge--danger {
-    background: #dc3545;
+    background: var(--orange, #E9482A);
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-tile__badge--completed,
 #page-totara-dashboard-33 #inst11103 .pnts-tile__badge--completed,
 #page-totara-dashboard-33 #inst11136 .pnts-tile__badge--completed {
     background: #ffffff;
-    color: var(--color-primary, #0F6C72);
-    border: 1.5px solid var(--color-primary, #0F6C72);
+    color: var(--navy-blue, #08004F);
+    border: 1.5px solid var(--navy-blue, #08004F);
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-tile__badge--completed i,
 #page-totara-dashboard-33 #inst11103 .pnts-tile__badge--completed i,
 #page-totara-dashboard-33 #inst11136 .pnts-tile__badge--completed i {
-    color: var(--color-primary, #0F6C72);
+    color: var(--navy-blue, #08004F);
 }
 
 #page-totara-dashboard-33 #inst10607 .pnts-badge-tooltip,
@@ -2895,16 +2929,16 @@ h2#instance-8378-header {
 
 #page-totara-dashboard-33 #inst10607 .pnts-badge-tooltip__dot--success,
 #page-totara-dashboard-33 #inst11103 .pnts-badge-tooltip__dot--success,
-#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--success { background: #28a745; }
+#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--success { background: var(--teal, #0CE3C6); }
 #page-totara-dashboard-33 #inst10607 .pnts-badge-tooltip__dot--warning,
 #page-totara-dashboard-33 #inst11103 .pnts-badge-tooltip__dot--warning,
-#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--warning { background: #ffc107; }
+#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--warning { background: #F5A623; }
 #page-totara-dashboard-33 #inst10607 .pnts-badge-tooltip__dot--orange,
 #page-totara-dashboard-33 #inst11103 .pnts-badge-tooltip__dot--orange,
-#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--orange { background: #fd7e14; }
+#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--orange { background: var(--bright-orange, #FC814C); }
 #page-totara-dashboard-33 #inst10607 .pnts-badge-tooltip__dot--danger,
 #page-totara-dashboard-33 #inst11103 .pnts-badge-tooltip__dot--danger,
-#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--danger { background: #dc3545; }
+#page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--danger { background: var(--orange, #E9482A); }
 #page-totara-dashboard-33 #inst10607 .pnts-badge-tooltip__dot--completed,
 #page-totara-dashboard-33 #inst11103 .pnts-badge-tooltip__dot--completed,
 #page-totara-dashboard-33 #inst11136 .pnts-badge-tooltip__dot--completed {
