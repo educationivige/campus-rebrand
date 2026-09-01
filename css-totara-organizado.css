@@ -185,6 +185,22 @@ html body .ascourseintro,
 html body .ascourseintro .text_to_html {
   color: var(--black) !important;
 }
+/* Icono "Inicio" de la cabecera: Material Symbols calendar_month en light
+   blue (sustituye el fa-calendar con inline #006975); !important para ganar
+   al style="color:…" del elemento. Fusionado desde css-adicional.css. */
+html body .ascabecera .asinfoelem i.fa-calendar {
+  font-family: "Material Symbols Outlined" !important;
+  font-weight: normal;
+  color: var(--light-blue, #004DF0) !important;
+  font-size: 1.6em;
+  line-height: 1;
+  vertical-align: -0.23em;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+}
+html body .ascabecera .asinfoelem i.fa-calendar::before {
+  content: "calendar_month" !important;
+}
 
 .block_slickslider .slick-prev:before,
 .block_slickslider .slick-next:before {
