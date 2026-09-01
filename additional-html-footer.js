@@ -4232,28 +4232,25 @@ table.appendChild(tfoot);
         title.textContent = c.name;
         title.title = c.name;
 
-        var meta = document.createElement('div');
-        meta.className = 'ivi-curso-card__meta';
-        var badge = document.createElement('span');
-        var g = (c.grade && c.grade !== '-') ? c.grade : '';
-        if (g) {
-            badge.className = 'ivi-curso-card__badge';
-            var gi = icon('grade'); gi.style.fontSize = '1rem';
-            badge.appendChild(gi);
-            badge.appendChild(document.createTextNode(g));
-        } else {
-            badge.className = 'ivi-curso-card__badge ivi-curso-card__badge--muted';
-            badge.textContent = t.none;
-        }
-        meta.appendChild(badge);
-
         var cta = document.createElement('a');
         cta.className = 'ivi-curso-card__cta';
         cta.href = c.href;
         cta.textContent = t.view;
 
         body.appendChild(title);
-        body.appendChild(meta);
+        // Badge de calificación solo si el curso tiene nota (si no, no se muestra).
+        var g = (c.grade && c.grade !== '-') ? c.grade : '';
+        if (g) {
+            var meta = document.createElement('div');
+            meta.className = 'ivi-curso-card__meta';
+            var badge = document.createElement('span');
+            badge.className = 'ivi-curso-card__badge';
+            var gi = icon('grade'); gi.style.fontSize = '1rem';
+            badge.appendChild(gi);
+            badge.appendChild(document.createTextNode(g));
+            meta.appendChild(badge);
+            body.appendChild(meta);
+        }
         body.appendChild(cta);
         card.appendChild(head);
         card.appendChild(body);
