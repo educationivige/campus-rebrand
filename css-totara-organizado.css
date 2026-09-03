@@ -4123,6 +4123,14 @@ li.option #choice_1{
   background-color: var(--warm-gray) !important;
 }
 
+/* Avatares SIN borde: ficha de perfil (.tw-profileCard__avatar__img) y avatar
+   del topbar (.totaraNav_prim--side .usermenu .userpicture). El borde lo ponía
+   el tema (var(--color-text) / --nav-tab-text-color); se anula (2026-09-03). */
+.tw-profileCard__avatar__img,
+.totaraNav_prim--side .usermenu .userpicture {
+  border: none !important;
+}
+
 /* ============================================================
    15. CALIFICACIONES — #page-grade-report-overview-index
    ============================================================ */
