@@ -5045,11 +5045,6 @@ div#region-main #inst10405.block .content {
   margin-bottom: 5px;
 }
 
-.tabtree ul.nav-tabs li.active a,
-.tabtree ul.nav-tabs li a:hover {
-  border-radius: 8px !important;
-}
-
 .tabtree ul.nav.nav-tabs {
   padding-bottom: 5px;
 }
