@@ -4534,3 +4534,48 @@ table.appendChild(tfoot);
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
 })();
+
+/**************** AVATAR POR DEFECTO (u/f1·f2·f3) → SVG DE MARCA ****************/
+/* Sustituye la imagen de usuario POR DEFECTO del tema
+   (…/theme/image.php/actua/core/<rev>/u/fN) por el avatar de marca, en TODO
+   el campus. Se hace por JS (no CSS): el <img> no tiene una clase común
+   (topbar usa .defaultuserpic pero la ficha de perfil usa
+   .tw-profileCard__avatar__img), así que el gancho estable es el src. Se
+   reescribe el src para conservar el tamaño nativo de cada avatar y cubrir
+   los que se insertan dinámicamente (popovers, comentarios, listados…).
+   Solo toca los que NO tienen foto propia (src del tema); las fotos reales
+   van por pluginfile y no casan. El SVG escala, así que sirve para f1/f2/f3. */
+(function () {
+    var NEW = 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/avatar-f1.svg';
+    var RE  = /\/theme\/image\.php\/[^"']*\/u\/f[123]\b/;
+
+    function swap(img) {
+        if (!img || img.dataset.iviAvatar === '1') return;
+        if (RE.test(img.getAttribute('src') || '')) {
+            img.src = NEW;
+            img.dataset.iviAvatar = '1';
+        }
+    }
+
+    function scan(root) {
+        if (!root) return;
+        if (root.tagName === 'IMG') { swap(root); return; }
+        if (root.querySelectorAll) root.querySelectorAll('img').forEach(swap);
+    }
+
+    function boot() {
+        scan(document.body);
+        // childList/subtree: los avatares dinámicos llegan con su src puesto;
+        // no observamos atributos (evita bucle al reescribir el src).
+        new MutationObserver(function (muts) {
+            muts.forEach(function (m) {
+                m.addedNodes && m.addedNodes.forEach(function (n) {
+                    if (n.nodeType === 1) scan(n);
+                });
+            });
+        }).observe(document.body, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
