@@ -285,8 +285,10 @@ a[href*="/message/edit.php"] {
 }
 
 /* --- 1.8 Notificaciones popup --- */
+/* Badge de recuento (nº de mensajes/notificaciones) en light blue
+   (antes --color-primary-light = teal; rebranding cabecera 2026-09-03). */
 .popover-region .count-container {
-  background-color: var(--color-primary-light);
+  background-color: var(--light-blue);
 }
 
 .notification-area .control-area .content .content-item-container.selected {
@@ -9476,9 +9478,11 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
       !important). Acotado a la instancia para no tocar el resto del
       sidebar; gana con !important.
    2) DESPLEGABLE de "Mi LFE" (y demás submenús con hijos del nav
-      primario): .navExpand--list como caja blanca con borde (#E2E8F0),
-      radio 4px y hover/foco de los ítems en warm gray. Acotado a
-      .totaraNav_prim para no tocar otros usos de navExpand (p. ej.
+      primario): .navExpand--list como caja blanca con borde suave,
+      radio 10px y hover/foco de los ítems en lavanda (--bg-blue), para
+      IGUALAR el menú de usuario (.usermenu, look del tema: panel blanco +
+      hover lavanda). Antes el hover era warm gray y el radio 4px. Acotado
+      a .totaraNav_prim para no tocar otros usos de navExpand (p. ej.
       cmid-20259, :8089, que además gana por especificidad).
       HTML: bloques/3-codigo-actual/main-navigation.html.
    ⚠️ inst8620 es de PRE; revisar el ID en PRO.
@@ -9495,22 +9499,103 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
   margin-top: 0 !important;
 }
 
-/* 2) Desplegable "Mi LFE": el panel como caja blanca con borde y radio */
+/* 2) Desplegable "Mi LFE": panel como caja blanca con borde suave y radio */
 .totaraNav_prim .navExpand--list,
 .totaraNav_prim .navExpand--listSecond {
   background-color: #fff !important;
-  border: 1px solid #E2E8F0 !important;
-  border-radius: 4px !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 10px !important;
   overflow: hidden !important;   /* el hover respeta las esquinas redondeadas */
 }
-/* Ítems transparentes sobre el blanco del panel; hover/foco en warm gray. */
+/* Ítems transparentes sobre el blanco del panel; hover/foco en lavanda
+   (--bg-blue), para igualar el resaltado del menú de usuario (.usermenu). */
 .totaraNav_prim .navExpand--list_item,
 .totaraNav_prim .navExpand--list_item_link {
   background: transparent !important;
 }
 .totaraNav_prim .navExpand--list_item_link:hover,
 .totaraNav_prim .navExpand--list_item_link:focus {
-  background: var(--warm-gray, #FAF4EE) !important;
+  background: var(--bg-blue, #DCE6FF) !important;
+}
+
+
+/* ============================================================
+   CABECERA — Unificación de desplegables (2026-09-03)
+   Todos los menús desplegables de la cabecera comparten el look del
+   menú de usuario: panel blanco redondeado (10px) + borde suave +
+   hover lavanda (--bg-blue). Complementa el desplegable "Mi LFE"
+   (arriba, .totaraNav_prim) y el badge de recuento (§1.8, ya en light blue).
+   Marcado de referencia:
+     - Mensajes/Notificaciones: bloques/3-codigo-actual/main-navigation.html
+     - QuickAccess (rueda):     bloques/3-codigo-actual/Quick-access--menu.html
+     - Menú de perfil:          bloques/3-codigo-actual/Admin--menu.html
+   ============================================================ */
+
+/* --- Mensajes y Notificaciones (popover-region): panel + hover --- */
+#nav-message-popover-container .popover-region-container,
+#nav-notification-popover-container .popover-region-container {
+  background: #fff !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+#nav-message-popover-container .popover-region-content a:hover,
+#nav-message-popover-container .see-all-link:hover,
+#nav-notification-popover-container .popover-region-content a:hover,
+#nav-notification-popover-container .see-all-link:hover {
+  background: var(--bg-blue, #DCE6FF) !important;
+}
+
+/* --- Menú de administración (rueda / QuickAccess) ---
+   Panel SIN overflow:hidden (mega-menú alto: podría recortar si hace
+   scroll). Columnas de grupos con más separación (gap). Ítems y enlaces
+   del footer en pastilla con padding + hover lavanda. */
+#quickaccess-popover-content.totara_core__QuickAccess_menu {
+  background: #fff !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 10px !important;
+}
+#quickaccess-popover-content .totara_core__QuickAccess_flex-container {
+  gap: 24px 40px !important;
+}
+#quickaccess-popover-content .totara_core__QuickAccess_group-list li a {
+  display: block !important;
+  padding: 7px 14px !important;
+  border-radius: 8px !important;
+  transition: background-color .12s ease;
+}
+#quickaccess-popover-content .totara_core__QuickAccess_group-list li a:hover,
+#quickaccess-popover-content .totara_core__QuickAccess_group-list li a:focus {
+  background: var(--bg-blue, #DCE6FF) !important;
+}
+#quickaccess-popover-content .totara_core__QuickAccess_footer a {
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+}
+#quickaccess-popover-content .totara_core__QuickAccess_footer a:hover,
+#quickaccess-popover-content .totara_core__QuickAccess_footer a:focus {
+  background: var(--bg-blue, #DCE6FF) !important;
+}
+
+/* --- Menú de perfil / usuario (.usermenu · .menu.align-tr-br) ---
+   Panel blanco redondeado + hover lavanda de FILA completa (padding
+   cómodo). Acotado a .usermenu para no tocar otros .moodle-actionmenu
+   del sitio (ruedas de curso/informes, etc.). Si la instancia de las
+   páginas admin (action-menu-3) no colgara de .usermenu, ampliar el
+   selector a .moodle-actionmenu .menu.align-tr-br. */
+.usermenu .moodle-actionmenu .menu.align-tr-br {
+  background: #fff !important;
+  border: 1px solid var(--border-soft, #E4E2EE) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  padding: 6px 0 !important;
+}
+.usermenu .moodle-actionmenu .menu.align-tr-br > li > a.menu-action {
+  padding: 10px 18px !important;
+}
+.usermenu .moodle-actionmenu .menu.align-tr-br > li > a.menu-action:hover,
+.usermenu .moodle-actionmenu .menu.align-tr-br > li > a.menu-action:focus {
+  background: var(--bg-blue, #DCE6FF) !important;
 }
 
 
