@@ -6892,23 +6892,24 @@ body#page-totara-catalog-index .tw-selectMulti__link_close {
 }
 
 /* --- "Filtrar por sección" (botón "Todos", .tw-selectTree__current):
-   teal y más alto. El organizado lo pone azul (background var(--color-primary),
-   css-totara-organizado.css:5854) con padding 6px. --- */
+   light blue y más alto. La regla base ya lo pone en --color-primary
+   (light blue); este override sube el padding y fuerza el color de marca
+   (antes estaba en teal, 2026-09-03). Texto/flecha en blanco para contraste. --- */
 body#page-totara-catalog-index .tw-selectTree__current {
-  background: var(--teal, #0CE3C6) !important;
+  background: var(--light-blue, #004DF0) !important;
   padding-top: 12px !important;
   padding-bottom: 12px !important;
-  color: var(--navy-blue, #08004F) !important;   /* texto en navy (antes blanco) */
+  color: #fff !important;   /* texto blanco sobre light blue */
 }
 body#page-totara-catalog-index .tw-selectTree__current:hover {
-  background: #0AC4AA !important;   /* teal un punto más oscuro al pasar el ratón */
-  color: var(--navy-blue, #08004F) !important;
+  background: var(--blue-hover, #0038C4) !important;   /* light blue un punto más oscuro */
+  color: #fff !important;
 }
-/* Etiqueta ("Todos") y flecha del botón → navy */
+/* Etiqueta ("Todos") y flecha del botón → blanco */
 body#page-totara-catalog-index .tw-selectTree__current_label,
 body#page-totara-catalog-index .tw-selectTree__current_icon {
-  color: var(--navy-blue, #08004F) !important;
-  fill: var(--navy-blue, #08004F) !important;
+  color: #fff !important;
+  fill: #fff !important;
 }
 
 /* --- Buscador (.tw-selectSearchText__field): borde visible, un poco más
