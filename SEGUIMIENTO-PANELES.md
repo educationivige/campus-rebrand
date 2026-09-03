@@ -83,8 +83,9 @@ por **cada URL vieja** y en **cada entorno** (PRE y PRO).
 | Imagen / icono | Cambio | PRE | PRO |
 |---|---|---|---|
 | **Iconos de compatibilidad de cursos** | `…/additionalimages/0/iconos-compatibilidad.png` → `…/iconos-compatibilidad-IVI-cursos.png` | ☐ | ☐ |
-| **Icono de coordinador** | *(confirmar nombre de archivo actual)* → nuevo | ☐ | ☐ |
-| **Icono de duración (reloj)** | *(confirmar nombre de archivo actual)* → nuevo | ☐ | ☐ |
+| **Icono de coordinador** | *(confirmar nombre de archivo actual)* → `cordi-icon-IVI.svg` | ☐ | ☐ |
+| **Icono de créditos** (cajas de detalle del curso) | `…/additionalimages/0/creditos-orange.svg` → `…/creditos-…-IVI.svg` *(confirmar nombre exacto -IVI en ivirmacampus)* | ☐ | ☐ |
+| **Icono de duración / reloj** (cajas de detalle del curso) | `…/additionalimages/0/duracion-orange.svg` → `…/duracion-…-IVI.svg` *(confirmar nombre exacto -IVI en ivirmacampus)* | ☐ | ☐ |
 
 > Alternativa a la sustitución en BD: **sobrescribir el archivo con el mismo nombre** en
 > `local_uploadfiles` (la URL no cambia y se actualiza en todos sitios sin tocar la BD).
