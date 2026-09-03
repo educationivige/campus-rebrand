@@ -549,6 +549,37 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 blocks.forEach(block => this.processBlock(block, true));
             }, 600);
+        },
+
+        /**
+         * Previsualización de certificados en la página de PERFIL de usuario
+         * (/user/profile.php). Ahí DashboardFunctions.init() NO lanza los
+         * módulos (la ruta no casa con pathPatterns), por eso la miniatura no
+         * se renderizaba. Se procesan TODOS los bloques .block_mycertificates
+         * por CLASE (no por inst-id) para que valga para TODOS los usuarios y
+         * en cualquier entorno. Solo miniatura (no añade botones), que es lo
+         * pedido; reutiliza renderThumb (pdf.js ya se carga en el head).
+         */
+        initProfile: function() {
+            const isProfile = document.body.id === 'page-user-profile' ||
+                window.location.pathname.indexOf('/user/profile.php') !== -1;
+            if (!isProfile) return;
+
+            const self = this;
+            const run = function() {
+                const items = document.querySelectorAll('.block_mycertificates .certificateitem');
+                items.forEach(function(item) {
+                    if (item.dataset.certThumb === '1') return;
+                    const link = item.querySelector('a[href]');
+                    if (!link) return;
+                    item.dataset.certThumb = '1';
+                    self.renderThumb(link.getAttribute('href'), link.querySelector('img'));
+                });
+                return items.length;
+            };
+
+            if (!run()) setTimeout(run, 600);
+            Utils.log('Mis certificados', 'Perfil: miniaturas de certificados procesadas');
         }
     };
 
@@ -2022,6 +2053,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Iniciar todas las funcionalidades
     DashboardFunctions.init();
+
+    // Certificados también en el PERFIL de usuario (/user/profile.php), fuera
+    // de los dashboards, donde DashboardFunctions.init no lanza los módulos.
+    CertificatesModule.initProfile();
 
     // Función para limpiar recursos al salir
     window.addEventListener('beforeunload', () => {
@@ -4399,6 +4434,101 @@ table.appendChild(tfoot);
         if (apply()) return;
         var tries = 0;
         var timer = setInterval(function () { tries++; if (apply() || tries > 20) clearInterval(timer); }, 300);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
+/**************** DONUT DE PROGRESO DEL CURSO — COLOR POR ESTADO ****************/
+/* Colorea el anillo de progreso (.contenidordonut .circle) de la cabecera de
+   curso/actividad según el % de avance:
+     no iniciado (0%)   → --color-background #f1f5fc (en la PISTA: a 0% no hay arco)
+     en progreso (1–99%)→ teal              #0CE3C6
+     completado (100%)  → light-blue         #004DF0
+   El texto del % (.percent) pasa a navy #08004F; la pista (.fonscircle) se
+   deja neutra salvo en "no iniciado", donde toma --color-background.
+   La plantilla del curso fija el verde legacy con un <style> incrustado
+   (.path-course/.path-mod .ascabecera .circle{stroke:#85C99C}); se gana con
+   estilo inline !important en cada elemento. El arco lo dibuja el tema algo
+   después → reintentos + MutationObserver sobre la cabecera. */
+(function () {
+    var COLOR = {
+        notStarted:  'var(--color-background, #f1f5fc)',  // azul muy claro
+        inProgress:  '#0CE3C6',  // --teal
+        completed:   '#004DF0',  // --light-blue
+        percentText: '#08004F'   // --navy-blue
+    };
+
+    function colorFor(pct) {
+        if (pct >= 100) return COLOR.completed;
+        if (pct <= 0)   return COLOR.notStarted;
+        return COLOR.inProgress;
+    }
+
+    function readPercent(cont) {
+        var el = cont.querySelector('.percent');
+        if (el) {
+            var n = parseInt((el.textContent || '').replace(/[^0-9]/g, ''), 10);
+            if (!isNaN(n)) return n;
+        }
+        // Fallback: stroke-dasharray="X, 100" del arco
+        var circle = cont.querySelector('.circle');
+        if (circle) {
+            var da = circle.getAttribute('stroke-dasharray');
+            if (da) { var v = parseFloat(da); if (!isNaN(v)) return v; }
+        }
+        return NaN;
+    }
+
+    function paint(cont) {
+        var pct = readPercent(cont);
+        if (isNaN(pct)) return false;
+        var color = colorFor(pct);
+        var notStarted = (pct <= 0);
+
+        var circle = cont.querySelector('.circle');   // arco de progreso
+        if (circle && circle.getAttribute('data-ivi-donut') !== color) {
+            circle.style.setProperty('stroke', color, 'important');
+            circle.setAttribute('data-ivi-donut', color);
+        }
+        // A 0% la plantilla no dibuja arco → pintamos la PISTA con el color de
+        // "no iniciado" para que el estado se vea; en el resto se deja neutra.
+        var track = cont.querySelector('.fonscircle');
+        if (track) {
+            var want = notStarted ? COLOR.notStarted : 'none';
+            if (track.getAttribute('data-ivi-donut-track') !== want) {
+                if (notStarted) track.style.setProperty('stroke', COLOR.notStarted, 'important');
+                else track.style.removeProperty('stroke');
+                track.setAttribute('data-ivi-donut-track', want);
+            }
+        }
+        var percentEl = cont.querySelector('.percent');
+        if (percentEl && percentEl.getAttribute('data-ivi-donut') !== '1') {
+            percentEl.style.setProperty('color', COLOR.percentText, 'important');
+            percentEl.setAttribute('data-ivi-donut', '1');
+        }
+        return !!circle || notStarted;   // "hecho" cuando hay arco o es 0%
+    }
+
+    function apply() {
+        var donuts = document.querySelectorAll('.contenidordonut');
+        if (!donuts.length) return false;
+        var anyArc = false;
+        donuts.forEach(function (cont) { if (paint(cont)) anyArc = true; });
+        return anyArc;
+    }
+
+    function boot() {
+        apply();
+        var tries = 0;
+        var timer = setInterval(function () { tries++; if (apply() || tries > 20) clearInterval(timer); }, 300);
+
+        var host = document.querySelector('.ascabecera');
+        if (host) {
+            // Solo childList/subtree: setear .style/atributos no dispara bucle
+            new MutationObserver(function () { apply(); }).observe(host, { childList: true, subtree: true });
+        }
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

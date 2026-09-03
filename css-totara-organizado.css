@@ -120,7 +120,7 @@
 }
 
 #inst8291.block_totara_featured_links .content.block-content {
-  background-color: var(--color-gray-light);
+  background-color: transparent;   /* antes --color-gray-light (2026-09-03) */
   box-shadow: none;
 }
 
@@ -200,6 +200,15 @@ html body .ascabecera .asinfoelem i.fa-calendar {
 }
 html body .ascabecera .asinfoelem i.fa-calendar::before {
   content: "calendar_month" !important;
+}
+
+/* Teal legacy inline (#006975) → navy, GENERAL. No se puede seleccionar
+   "por color computado"; se cazan los style="" inline que contienen #006975
+   (case-insensitive) y se fuerza el texto a navy. Cubre el uso habitual
+   (texto: títulos de curso, iconos). Si algún elemento usa #006975 como
+   fondo/borde inline, necesitaría una regla propia. 2026-09-03. */
+[style*="#006975" i] {
+  color: var(--navy-blue, #08004F) !important;
 }
 
 .block_slickslider .slick-prev:before,
@@ -3675,7 +3684,7 @@ width:95%;
 .course-description .detalles .icon-text {
   flex: 1;
   min-width: 180px;
-  background: var(--color-gray-light) !important;
+  background: var(--color-background) !important;   /* antes --color-gray-light */
   padding: var(--spacing-medium);
   border-radius: var(--border-radius);
   display: flex;
@@ -3693,12 +3702,12 @@ width:95%;
 
 .course-description .detalles .icon-text .text-box span {
   font-weight: bold !important;
-  color: #e39282 !important;
+  color: var(--navy-blue) !important;   /* antes #e39282 (naranja) */
   text-transform: uppercase;
 }
 
 .course-description .accreditation {
-  background-color: var(--color-gray-light) !important;
+  background-color: var(--color-background) !important;   /* antes --color-gray-light */
   padding: 1em 0 0 1em;
   border-radius: var(--border-radius);
   display: flex;
@@ -3713,7 +3722,7 @@ width:95%;
 }
 
 .course-description .accreditation .izq b {
-  color: #2d6874 !important;
+  color: var(--light-blue) !important;   /* antes #2d6874 (teal) */
 }
 
 .course-description .accreditation .img-dcha {
