@@ -4115,6 +4115,14 @@ li.option #choice_1{
   display: none !important;
 }
 
+/* Bloques inst9 e inst10 (block_totara_user_profile): fondo warm gray
+   (2026-09-03). OJO: inst10 se oculta arriba en tenant externo → allí solo
+   se ve en inst9. */
+#page-user-profile #inst9 .content.block-content,
+#page-user-profile #inst10 .content.block-content {
+  background-color: var(--warm-gray) !important;
+}
+
 /* ============================================================
    15. CALIFICACIONES — #page-grade-report-overview-index
    ============================================================ */
