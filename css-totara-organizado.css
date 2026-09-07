@@ -7106,13 +7106,8 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
 .exp-progress--failed .exp-progress__fill { background: #c0392b; }
 .exp-progress--failed .exp-progress__label { color: #c0392b; }
 
-/* Pantallas grandes: 4 columnas.
-   Acotado a #exp-grid para no afectar al grid de one-tech. */
-@media (min-width: 1800px) {
-  #exp-grid.cyber-standalone__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
+/* El grid del Expediente usa el base .cyber-standalone__grid: 3 columnas
+   (2 en ≤900px, 1 en ≤600px). Ver rediseño 2026 más abajo. */
 
 /* --- Card del expediente (autónoma, no depende de .cyber-card) --- */
 .exp-card {
@@ -7238,6 +7233,9 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
 }
 
 .exp-filters .dai-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
@@ -7266,6 +7264,121 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
 
 .exp-filters .dai-filter-btn:focus-visible {
   box-shadow: 0 0 0 3px rgba(0, 77, 240, 0.25);
+}
+
+/* ------------------------------------------------------------
+   Expediente 2026 — rediseño de las cards. Todo acotado a #exp-grid
+   para NO afectar a Monthly Seminars (#ms-grid), que reutiliza .exp-*.
+   Incluye: título compacto, imagen más alta, color por estado
+   (badge = barra), badge de recuento en las tabs y paginación cliente.
+   Los 4 estados: Finalizada / En curso / No iniciada (progreso 0) /
+   No superada.
+   ------------------------------------------------------------ */
+
+/* Título compacto, sin negrita */
+#exp-grid .exp-card__title {
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Encuadre: mostrar la parte superior de la foto (retratos) */
+#exp-grid .exp-card__bg {
+  background-position: center 20%;
+}
+
+/* La imagen ocupa más alto y absorbe el espacio sobrante de la card:
+   en las cards con título corto crece en vez de dejar hueco blanco. */
+#exp-grid .exp-card__image {
+  height: auto;
+  min-height: 230px;
+  flex: 1 0 auto;
+}
+#exp-grid .exp-card__body {
+  flex: 0 0 auto;
+}
+
+/* Color por estado: el badge y la barra comparten color, alineados con
+   la paleta del donut de estado-cursos. */
+#exp-grid .exp-status--done       { background: var(--navy-blue, #08004F); color: #ffffff; }
+#exp-grid .exp-status--pending    { background: var(--teal, #0CE3C6); color: var(--navy-blue, #08004F); }
+#exp-grid .exp-status--notstarted { background: var(--light-blue, #004DF0); color: #ffffff; }
+#exp-grid .exp-status--failed     { background: var(--red, #B4084A); color: #ffffff; }
+
+#exp-grid .exp-progress--done       .exp-progress__fill { background: var(--navy-blue, #08004F); }
+#exp-grid .exp-progress--encurso    .exp-progress__fill { background: var(--teal, #0CE3C6); }
+#exp-grid .exp-progress--noiniciada .exp-progress__fill { background: var(--light-blue, #004DF0); }
+#exp-grid .exp-progress--failed     .exp-progress__fill { background: var(--red, #B4084A); }
+#exp-grid .exp-progress--failed     .exp-progress__label { color: var(--red, #B4084A); }
+
+/* Badge blanco con el nº de cursos dentro de cada botón del selector.
+   (.exp-filters .dai-filter-btn ya es inline-flex con gap, más arriba.) */
+.exp-filters .dai-filter-btn__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--navy-blue, #08004F);
+  border: 1px solid var(--border-soft, #E4E2EE);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+/* En la pestaña activa (fondo navy) el badge blanco resalta con texto navy */
+.exp-filters .dai-filter-btn.active .dai-filter-btn__count {
+  border-color: #ffffff;
+}
+
+/* Paginación cliente de las cards (misma pauta que la de PNTs) */
+.exp-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 8px 4px 4px;
+  margin-top: 8px;
+}
+.exp-pagination__list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.exp-pagination__item a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-soft, #E4E2EE);
+  background: var(--white, #fff);
+  color: var(--navy-blue, #08004F);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.exp-pagination__item a:hover {
+  border-color: var(--light-blue, #004DF0);
+  color: var(--light-blue, #004DF0);
+}
+.exp-pagination__item.active a {
+  background: var(--light-blue, #004DF0);
+  border-color: var(--light-blue, #004DF0);
+  color: var(--white, #fff);
+}
+.exp-pagination__item.disabled a {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* ============================================================
