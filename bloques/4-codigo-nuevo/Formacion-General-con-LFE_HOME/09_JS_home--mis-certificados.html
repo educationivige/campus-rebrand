@@ -16,6 +16,23 @@
         if (CONFIG.debug) console.log('[Mis certificados] ' + message, data || '');
     }
 
+    // i18n (6 idiomas del campus): botones Ver/Descargar, el enlace "Ver todo"
+    // (a.seeall, que Totara sirve fijo en inglés) y el aviso de vacío.
+    const I18N = {
+        es: { view: 'Ver', download: 'Descargar', seeall: 'Ver todo', empty: 'No hay certificados disponibles para mostrar.' },
+        en: { view: 'View', download: 'Download', seeall: 'See all', empty: 'No certificates available to display.' },
+        it: { view: 'Visualizza', download: 'Scarica', seeall: 'Vedi tutti', empty: 'Nessun certificato disponibile da mostrare.' },
+        pt: { view: 'Ver', download: 'Transferir', seeall: 'Ver tudo', empty: 'Não há certificados disponíveis para mostrar.' },
+        cs: { view: 'Zobrazit', download: 'Stáhnout', seeall: 'Zobrazit vše', empty: 'Nejsou k dispozici žádné certifikáty.' },
+        sv: { view: 'Visa', download: 'Ladda ner', seeall: 'Visa alla', empty: 'Inga certifikat tillgängliga att visa.' }
+    };
+    function currentLang() {
+        var l = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+        if (!l && window.M && window.M.cfg && window.M.cfg.language) l = String(window.M.cfg.language).toLowerCase();
+        return l.slice(0, 2) || 'es';
+    }
+    const t = I18N[currentLang()] || I18N.es;
+
     const blobCache = {};
     // Descarga el PDF como blob (cacheado) y valida que sea un PDF
     function fetchPdfBlob(url) {
@@ -85,12 +102,12 @@
         view.href = url;
         view.target = '_blank';
         view.rel = 'noopener';
-        view.innerHTML = '<i class="fa-regular fa-eye"></i> Ver';
+        view.innerHTML = '<i class="fa-regular fa-eye"></i> ' + t.view;
 
         const down = document.createElement('button');
         down.type = 'button';
         down.className = 'ivi-btn ivi-btn--ghost ivi-btn--sm ivi-btn--pill';
-        down.innerHTML = '<i class="fa-solid fa-download"></i> Descargar';
+        down.innerHTML = '<i class="fa-solid fa-download"></i> ' + t.download;
         down.addEventListener('click', function () { downloadPdf(url); });
 
         wrap.appendChild(view);
@@ -118,7 +135,7 @@
                    '<span class="dai-empty-notice__icon">' +
                        '<i class="fa fa-info-circle" aria-hidden="true"></i>' +
                    '</span>' +
-                   'No hay certificados disponibles para mostrar.' +
+                   t.empty +
                '</div>';
     }
 
@@ -137,9 +154,17 @@
         content.insertAdjacentHTML('beforeend', emptyNoticeHtml());
     }
 
+    // Traduce el enlace nativo "See all" (Totara lo sirve fijo en inglés)
+    function translateSeeAll(block) {
+        const link = block.querySelector('a.seeall');
+        if (link && link.textContent.trim() !== t.seeall) link.textContent = t.seeall;
+    }
+
     function init() {
         const block = document.querySelector('.block_mycertificates');
         if (!block) { log('No hay bloque de certificados en esta página, omitiendo'); return; }
+
+        translateSeeAll(block);
 
         const items = block.querySelectorAll('.certificateitem');
         if (!items.length) {
