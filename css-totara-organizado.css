@@ -3295,23 +3295,13 @@ h2#instance-8378-header {
   display: none;
 }
 
-.lang-en #page-totara-catalog-index [data-tw-selectmulti-key="cfp_menu_filtrobloquemla_39281"] .tw-selectMulti__list li:not(:nth-child(4)) {
-  display: none;
-}
-
-.lang-cs #page-totara-catalog-index [data-tw-selectmulti-key="cfp_menu_filtrobloquemla_39281"] .tw-selectMulti__list li:not(:nth-child(4)) {
-  display: none;
-}
-
-.lang-pt #page-totara-catalog-index [data-tw-selectmulti-key="cfp_menu_filtrobloquemla_39281"] .tw-selectMulti__list li:not(:nth-child(3)) {
-  display: none;
-}
-
-.lang-it #page-totara-catalog-index [data-tw-selectmulti-key="cfp_menu_filtrobloquemla_39281"] .tw-selectMulti__list li:not(:nth-child(2)) {
-  display: none;
-}
-
-.lang-es #page-totara-catalog-index [data-tw-selectmulti-key="cfp_menu_filtrobloquemla_39281"] .tw-selectMulti__list li:not(:first-child) {
+/* Filtro "Filtro_bloque" (custom field filtrobloquemla): dejar visible SOLO la
+   opción "Curso de Excelencia LFE" en los 6 idiomas. Se targetea por su optionkey
+   estable (NO por posición): así no depende del orden alfabético —que cambia por
+   idioma— ni de la clase .lang-XX del body (que iba con combinador descendiente y
+   no casaba). Mismo patrón que el filtro de idiomas de arriba. El sufijo del id
+   (_39281) puede cambiar entre entornos → se usa ^= sobre el prefijo estable. */
+#page-totara-catalog-index [data-tw-selectmulti-key^="cfp_menu_filtrobloquemla"] .tw-selectMulti__list li:not(:has([data-tw-selectmulti-optionkey^="%7Bmlang%20es%7DCurso%20de%20Excelencia%20LFE"])) {
   display: none;
 }
 
