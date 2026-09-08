@@ -3809,8 +3809,8 @@ width:95%;
 
 .summary table.form-obligatoria thead,
 .summary table.form-excelencia thead {
-  background-color: #2d6874;
-  color: white;
+  background-color: var(--light-blue, #004DF0);
+  color: #fff;
   font-size: 18px;
 }
 
@@ -3827,15 +3827,15 @@ width:95%;
 
 .summary table.form-obligatoria tbody td:has(strong),
 .summary table.form-excelencia tbody td:has(strong) {
-  background-color: var(--color-background);
-  color: #2d6874;
+  background-color: var(--bg-blue, #DCE6FF);
+  color: var(--navy-blue, #08004F);
   text-align: left !important;
 }
 
 .summary table.form-excelencia tbody .excelencia td {
-  background-color: #52b4bb !important;
+  background-color: var(--teal, #0CE3C6) !important;
   padding: var(--spacing-small) !important;
-  color: white !important;
+  color: var(--navy-blue, #08004F) !important;
   text-transform: uppercase;
   font-size: 1em !important;
   border-radius: 0 0 var(--border-radius) var(--border-radius) !important;
@@ -3843,12 +3843,12 @@ width:95%;
 
 .summary table.form-excelencia tbody td:last-child {
   text-align: right;
-  border-left: 2px solid #f0f4f5;
+  border-left: 2px solid var(--border-soft, #E4E2EE);
 }
 
 .summary table.form-excelencia tbody .excelencia td:last-child {
   text-align: right !important;
-  border-left: 2px solid white;
+  border-left: 2px solid rgba(8, 0, 79, 0.15);
 }
 
 /* --- .course-icon-text, .icon-text --- */
