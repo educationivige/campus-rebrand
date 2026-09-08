@@ -3305,6 +3305,13 @@ h2#instance-8378-header {
   display: none;
 }
 
+/* Filtro "Área temática" (areatematicamla): ocultar la opción "OneTech".
+   Se targetea por su optionkey estable; ^= en el id cubre las dos instancias
+   del filtro (_6da85 y _16616) y sobrevive al cambio de sufijo entre entornos */
+#page-totara-catalog-index [data-tw-selectmulti-key^="cfp_menu_areatematicamla"] .tw-selectMulti__list li:has([data-tw-selectmulti-optionkey="OneTech"]) {
+  display: none;
+}
+
 #page-totara-catalog-index .tw-selectMulti__link_active,
 #page-totara-catalog-index .tw-selectMulti__link:hover {
   background: #fcefec;

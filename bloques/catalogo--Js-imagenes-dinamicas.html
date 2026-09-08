@@ -399,3 +399,161 @@
     }
 })();
 </script>
+
+<script>
+/* ── Metadatos de la ficha de curso: Duración / Fecha inicio / Fecha fin ──────
+   Con "Incluir etiqueta" activado, cada línea llega como "Etiqueta: valor"
+   (p. ej. "Duración (horas): 7.0", "Fecha de inicio del curso: 9 de marzo de
+   2026", "Fecha de finalización del curso: " —a veces vacía—). Este script:
+     · Reetiqueta en corto y en los 6 idiomas: "Duración:", "Fecha inicio:",
+       "Fecha fin:".
+     · Formatea la duración: horas enteras → "7 h"; menos de 1 h → minutos
+       ("0.5" → "30 min"); mixto → "1 h 30 min". Si es 0 → oculta la línea.
+     · Oculta la línea (fecha fin o la que sea) si no tiene dato.
+   Funciona en las DOS vistas: cuadros (Narrow) y listado (Wide).
+   Los ICONOS los pone el CSS por posición (dur=schedule, inicio=calendar_month);
+   aquí se inyecta un <style> que reactiva la 3.ª línea (antes la ocupaba
+   id_netex y estaba oculta) y le da su icono (event). La detección es por VALOR
+   (número vs fecha vs vacío), no por el texto de la etiqueta, así que es
+   independiente del idioma. Traducciones it/pt/cs/sv pendientes de revisar. */
+(function () {
+    'use strict';
+
+    var LABELS = {
+        es: { dur: 'Duración', start: 'Fecha inicio',    end: 'Disponible hasta'   },
+        en: { dur: 'Duration', start: 'Start date',      end: 'Available until'    },
+        it: { dur: 'Durata',   start: 'Data inizio',     end: 'Disponibile fino al' },
+        pt: { dur: 'Duração',  start: 'Data de início',  end: 'Disponível até'     },
+        cs: { dur: 'Délka',    start: 'Datum zahájení',  end: 'Dostupné do'        },
+        sv: { dur: 'Längd',    start: 'Startdatum',      end: 'Tillgänglig till'   }
+    };
+
+    function lang() {
+        var l = (document.documentElement.lang || 'es').slice(0, 2).toLowerCase();
+        if (l === 'cz') l = 'cs';                 // Totara a veces usa "cz" para checo
+        return LABELS[l] ? l : 'es';
+    }
+    function L(key) { return LABELS[lang()][key]; }
+
+    // Inyecta el CSS de soporte una sola vez: reactiva la 3.ª línea (Fecha fin),
+    // que estaba oculta cuando ese hueco lo ocupaba id_netex, y le da su icono.
+    function injectStyle() {
+        if (document.getElementById('ivi-cat-meta-style')) return;
+        var css = [
+            /* Panel lateral: ocultar la opción "One Tech" dentro del filtro "Área temática" */
+            'body#page-totara-catalog-index [data-tw-selectmulti-key^="cfp_menu_areatematicamla"] .tw-selectMulti__list li:has([data-tw-selectmulti-optionkey="OneTech"]){display:none!important;}',
+            /* Reactivar la 3.ª línea (Fecha fin): ese hueco lo ocupaba id_netex y estaba oculto */
+            'body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(3){display:flex!important;visibility:visible!important;opacity:1!important;height:auto!important;width:auto!important;position:static!important;overflow:visible!important;pointer-events:auto!important;clip:auto!important;}',
+            'body#page-totara-catalog-index .tw-catalogItemWide__textarea_group_item:nth-child(3){display:flex!important;}',
+            /* Mostrar la fecha de inicio también a tenant-user */
+            '.tenant-user #page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(2){display:flex!important;}',
+            /* Icono de la 3.ª línea (Fecha fin) → event */
+            "body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(3)::before,body#page-totara-catalog-index .tw-catalogItemWide__textarea_group_item:nth-child(3)::before{font-family:'Material Symbols Outlined'!important;font-weight:normal!important;font-size:16px!important;line-height:1!important;vertical-align:middle!important;margin-right:6px!important;color:var(--light-blue,#004DF0)!important;content:'event'!important;font-feature-settings:'liga'!important;-webkit-font-feature-settings:'liga'!important;}",
+            /* El grid: filas automáticas (crecen con el contenido) y tarjetas estiradas a la misma altura */
+            'body#page-totara-catalog-index .tw-grid{align-items:stretch!important;grid-auto-rows:auto!important;}',
+            /* La tarjeta rellena el alto de su celda (misma altura por fila) sin recortar */
+            'body#page-totara-catalog-index .tw-catalogItemNarrow,body#page-totara-catalog-index .tw-catalogItemWide{height:100%!important;max-height:none!important;min-height:0!important;}',
+            /* Celda y contenido: sin recorte ni altura fija — cuadros y listado */
+            'body#page-totara-catalog-index .tw-grid__item,body#page-totara-catalog-index .tw-catalogItemNarrow__content,body#page-totara-catalog-index .tw-catalogItemNarrow__textarea_group,body#page-totara-catalog-index .tw-catalogItemWide__content,body#page-totara-catalog-index .tw-catalogItemWide__textarea_group{height:auto!important;max-height:none!important;overflow:visible!important;}',
+            /* Respiro inferior para que la última línea no quede pegada al borde */
+            'body#page-totara-catalog-index .tw-catalogItemNarrow__content,body#page-totara-catalog-index .tw-catalogItemWide__content{padding-bottom:14px!important;}',
+            /* Meta en dos líneas: etiqueta arriba, valor debajo (icono a la izquierda) */
+            'body#page-totara-catalog-index .ivi-meta{display:flex!important;align-items:center!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0 0 10px 0!important;white-space:normal!important;}',
+            'body#page-totara-catalog-index .ivi-meta:last-child{margin-bottom:0!important;}',
+            /* interlineado ajustado entre etiqueta y valor (con aire para no recortar) */
+            'body#page-totara-catalog-index .ivi-meta .ivi-meta-t{display:flex!important;flex-direction:column!important;line-height:15px!important;min-width:0!important;height:auto!important;max-height:none!important;overflow:visible!important;}',
+            'body#page-totara-catalog-index .ivi-meta .ivi-meta-l{font-size:11px!important;font-weight:600!important;line-height:15px!important;color:var(--text-gray,#8A8A9E)!important;overflow:visible!important;}',
+            'body#page-totara-catalog-index .ivi-meta .ivi-meta-v{font-size:11px!important;line-height:15px!important;color:var(--text-gray,#8A8A9E)!important;overflow:visible!important;}'
+        ].join('');
+        var s = document.createElement('style');
+        s.id = 'ivi-cat-meta-style';
+        s.textContent = css;
+        document.head.appendChild(s);
+    }
+
+    // Valor = lo que va después del primer ":" (las etiquetas lo llevan; las
+    // fechas y los números no contienen ":", así que si no hay etiqueta vale igual)
+    function valueOf(text) {
+        var i = text.indexOf(':');
+        return (i >= 0 ? text.slice(i + 1) : text).trim();
+    }
+
+    function fmtDur(value) {
+        var h = parseFloat(value.replace(',', '.'));
+        if (isNaN(h)) return null;
+        var m = Math.round(h * 60);
+        if (m <= 0) return null;                  // 0 → ocultar
+        if (m < 60) return m + ' min';
+        if (m % 60 === 0) return (m / 60) + ' h';
+        return Math.floor(m / 60) + ' h ' + (m % 60) + ' min';
+    }
+
+    function hide(item) { item.style.setProperty('display', 'none', 'important'); }
+
+    function esc(s) {
+        return String(s).replace(/[&<>]/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+        });
+    }
+
+    // Etiqueta arriba, valor debajo (dos líneas), con el icono ::before a la izq.
+    function render(item, label, value, type) {
+        item.innerHTML = '<span class="ivi-meta-t">' +
+            '<span class="ivi-meta-l">' + esc(label) + '</span>' +
+            '<span class="ivi-meta-v">' + esc(value) + '</span></span>';
+        item.classList.add('ivi-meta');
+        item.dataset.iviMeta = type;
+    }
+
+    function processItems(items) {
+        var dateSeen = 0;
+        items.forEach(function (item) {
+            if (item.classList.contains('itemtype')) return;
+            if (item.dataset.iviMeta) {           // ya procesado: solo contar fechas
+                if (item.dataset.iviMeta === 'start' || item.dataset.iviMeta === 'end') dateSeen++;
+                return;
+            }
+            var val = valueOf(item.textContent.trim());
+            if (!val) { hide(item); item.dataset.iviMeta = 'hidden'; return; }
+            if (/^[\d.,\s]+$/.test(val)) {        // número → duración
+                var out = fmtDur(val);
+                if (out === null) { hide(item); item.dataset.iviMeta = 'hidden'; return; }
+                render(item, L('dur'), out, 'dur');
+            } else {                              // texto → fecha (1.ª = inicio, 2.ª = fin)
+                dateSeen++;
+                var type = dateSeen === 1 ? 'start' : 'end';
+                render(item, L(type), val, type);
+            }
+        });
+    }
+
+    function formatMeta() {
+        injectStyle();
+        document.querySelectorAll('.tw-catalogItemNarrow').forEach(function (card) {
+            processItems(Array.prototype.slice.call(
+                card.querySelectorAll('.tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item')));
+        });
+        document.querySelectorAll('.tw-catalogItemWide').forEach(function (card) {
+            processItems(Array.prototype.slice.call(
+                card.querySelectorAll('.tw-catalogItemWide__textarea_group_item')));
+        });
+    }
+
+    function init() {
+        formatMeta();
+        [400, 1000, 2000].forEach(function (ms) { setTimeout(formatMeta, ms); });
+        var scope = document.querySelector('.tw-catalog') || document.body;
+        var t;
+        new MutationObserver(function () {
+            clearTimeout(t); t = setTimeout(formatMeta, 150);
+        }).observe(scope, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    window.addEventListener('load', formatMeta);
+})();
+</script>
