@@ -557,3 +557,283 @@
     window.addEventListener('load', formatMeta);
 })();
 </script>
+
+<script>
+/* ── Contador real → badge "N cursos disponibles" ─────────────────────────────
+   Tanto "Hasta artículos de N" como data-tw-pagination-maxcount son cifras
+   APROXIMADAS en Totara: incluyen elementos que después pueden descartarse por
+   visibilidad. Para obtener el total real, contamos la primera página y pedimos
+   las páginas restantes en segundo plano con el mismo servicio del catálogo.
+   No se añaden esas tarjetas al DOM ni se pulsa visualmente "Carga más".
+
+   Mientras termina el recuento mostramos un mínimo cierto (p. ej. 60+), nunca
+   el 500/422 aproximado. Cuando el servidor llega al final se pinta el total
+   exacto (p. ej. 79). Se recalcula al cambiar filtros o búsqueda. */
+(function () {
+    'use strict';
+
+    var state = { key: '', count: null, exact: false, pending: false, run: 0, timer: null };
+
+    var I18N = {
+        es: { one: 'curso disponible',  many: 'cursos disponibles' },
+        en: { one: 'course available',  many: 'courses available'  },
+        it: { one: 'corso disponibile', many: 'corsi disponibili'   },
+        pt: { one: 'curso disponível',  many: 'cursos disponíveis'  },
+        cs: { one: 'dostupný kurz', few: 'dostupné kurzy', many: 'dostupných kurzů' },
+        sv: { one: 'tillgänglig kurs',  many: 'tillgängliga kurser' }
+    };
+
+    function lang() {
+        var l = (document.documentElement.lang || 'es').slice(0, 2).toLowerCase();
+        if (l === 'cz') l = 'cs';                 // Totara a veces usa "cz" para checo
+        return I18N[l] ? l : 'es';
+    }
+
+    function label(n, lg) {
+        var t = I18N[lg] || I18N.es;
+        if (lg === 'cs' && (n % 100 < 12 || n % 100 > 14)) {
+            if (n % 10 >= 2 && n % 10 <= 4) return t.few;
+        }
+        return n === 1 ? t.one : t.many;
+    }
+
+    function formatNumber(n, lg) {
+        try { return new Intl.NumberFormat(lg).format(n); }
+        catch (e) { return String(n); }
+    }
+
+    function catalogKey() {
+        return window.location.pathname + window.location.search;
+    }
+
+    function gridItems(root) {
+        return (root || document).querySelectorAll('[data-tw-grid] > [data-tw-grid-item]');
+    }
+
+    function addItemIds(root, ids, prefix) {
+        var items = gridItems(root);
+        for (var i = 0; i < items.length; i++) {
+            var id = items[i].getAttribute('data-tw-grid-item-id');
+            ids[id ? 'id:' + id : prefix + ':' + i] = true;
+        }
+    }
+
+    function objectSize(obj) {
+        return Object.keys(obj).length;
+    }
+
+    function pagerData(root) {
+        var pager = (root || document).querySelector('[data-tw-pagination-trigger]');
+        if (!pager) return null;
+        return {
+            limitfrom: pager.getAttribute('data-tw-pagination-limitfrom'),
+            maxcount: pager.getAttribute('data-tw-pagination-maxcount')
+        };
+    }
+
+    function requestArgs(page) {
+        var args = {
+            debug: false,
+            filterparams: {},
+            limitfrom: page.limitfrom,
+            maxcount: page.maxcount,
+            orderbykey: 'featured',
+            request: Date.now(),
+            resultsonly: true,
+            itemstyle: 'narrow'
+        };
+        var params = new URLSearchParams(window.location.search);
+        params.forEach(function (value, originalKey) {
+            var key = originalKey.replace(/\[\]$/, '');
+            if (key === 'orderbykey' || key === 'itemstyle') {
+                args[key] = value;
+            } else if (key !== 'lang' && key !== 'edit' && key !== 'sesskey' && key !== 'debug') {
+                if (originalKey.slice(-2) === '[]') {
+                    if (!Array.isArray(args.filterparams[key])) args.filterparams[key] = [];
+                    args.filterparams[key].push(value);
+                } else {
+                    args.filterparams[key] = value;
+                }
+            }
+        });
+        return args;
+    }
+
+    function resultsHost(node) {
+        while (node && node !== document.body) {
+            if ((' ' + node.className + ' ').indexOf(' tw-catalogResultsCount ') !== -1) {
+                return node;
+            }
+            node = node.parentNode;
+        }
+        return null;
+    }
+
+    function renderBadge() {
+        var p = document.querySelector('.tw-catalogResultsCount__text');
+        if (!p) return;
+        var host = resultsHost(p);
+        if (!host) return;
+        var badge = host.querySelector('.ivi-results-badge');
+        var key = catalogKey();
+        var n = state.key === key ? state.count : null;
+
+        // Fail-safe: si aún no conocemos ni siquiera la cantidad cargada,
+        // dejamos el texto original visible en vez de mostrar un hueco vacío.
+        if (n === null) {
+            host.classList.remove('ivi-results-badge-ready');
+            if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
+            p.removeAttribute('aria-hidden');
+            return;
+        }
+
+        var lg = lang();
+        var count = formatNumber(n, lg) + (state.exact ? '' : '+');
+        var text = label(n, lg);
+        var exact = state.exact ? '1' : '0';
+
+        // Totara conserva y actualiza este nodo; solo se oculta para accesibilidad
+        // después de haber leído el total.
+        // Idempotente: si ya está el mismo número e idioma, no tocar el DOM (evita bucle)
+        if (badge && badge.getAttribute('data-n') === String(n) &&
+                badge.getAttribute('data-lang') === lg &&
+                badge.getAttribute('data-exact') === exact) {
+            host.classList.add('ivi-results-badge-ready');
+            p.setAttribute('aria-hidden', 'true');
+            return;
+        }
+
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'ivi-results-badge';
+            host.appendChild(badge);
+        }
+        badge.setAttribute('data-n', String(n));
+        badge.setAttribute('data-lang', lg);
+        badge.setAttribute('data-exact', exact);
+        badge.innerHTML = '<span class="ivi-results-badge__n">' + count + '</span>' +
+                          '<span class="ivi-results-badge__l">' + text + '</span>';
+        host.classList.add('ivi-results-badge-ready');
+        p.setAttribute('aria-hidden', 'true');
+    }
+
+    function publish(key, ids, exact) {
+        if (key !== catalogKey()) return;
+        state.key = key;
+        state.count = objectSize(ids);
+        state.exact = exact;
+        renderBadge();
+    }
+
+    function countRemaining(key, run, ids, firstPage) {
+        function stopCounting() {
+            if (run !== state.run || key !== catalogKey()) return;
+            state.pending = false;
+            publish(key, ids, false);
+        }
+
+        if (typeof window.require !== 'function') {
+            stopCounting();
+            return;
+        }
+
+        window.require(['core/ajax', 'core/templates'], function (ajax, templates) {
+            function next(page, pageNumber) {
+                if (run !== state.run || key !== catalogKey() || !page) return;
+                if (pageNumber > 100) {
+                    stopCounting();
+                    return;
+                }
+
+                var calls = [{
+                    methodname: 'totara_catalog_external_get_catalog_template_data',
+                    args: requestArgs(page)
+                }];
+                var request = ajax.call(calls, true, true)[0];
+
+                request.then(function (data) {
+                    if (run !== state.run || key !== catalogKey()) return;
+                    templates.render('totara_core/grid', data.grid_template_data).then(function (html) {
+                        var gridHolder = document.createElement('div');
+                        gridHolder.innerHTML = html;
+                        addItemIds(gridHolder, ids, 'page-' + pageNumber);
+
+                        templates.render('totara_catalog/pagination', data.pagination_template_data).then(function (pagerHtml) {
+                            var pagerHolder = document.createElement('div');
+                            pagerHolder.innerHTML = pagerHtml;
+                            var following = pagerData(pagerHolder);
+
+                            state.pending = !!following;
+                            publish(key, ids, !following);
+                            if (following && following.limitfrom !== page.limitfrom) {
+                                next(following, pageNumber + 1);
+                            } else if (following) {
+                                stopCounting();
+                            }
+                        }, stopCounting);
+                    }, stopCounting);
+                }, function () {
+                    // Conservamos el mínimo cierto (N+) si falla una petición.
+                    stopCounting();
+                });
+            }
+
+            next(firstPage, 1);
+        });
+    }
+
+    function calculateCount() {
+        var catalog = document.querySelector('.tw-catalog');
+        var grid = catalog && catalog.querySelector('[data-tw-grid]');
+        if (!catalog || !grid) return;
+
+        var key = catalogKey();
+        if (state.key === key && (state.exact || state.pending)) {
+            renderBadge();
+            return;
+        }
+
+        var run = ++state.run;
+        var ids = {};
+        addItemIds(grid, ids, 'initial');
+        var page = pagerData(catalog);
+
+        state.pending = !!page;
+        publish(key, ids, !page);
+        if (page) countRemaining(key, run, ids, page);
+    }
+
+    function scheduleCount(delay) {
+        clearTimeout(state.timer);
+        state.timer = setTimeout(calculateCount, delay || 180);
+    }
+
+    function init() {
+        calculateCount();
+        [300, 800, 1500, 2500].forEach(function (ms) {
+            setTimeout(function () { scheduleCount(0); }, ms);
+        });
+        var t;
+        new MutationObserver(function () {
+            clearTimeout(t);
+            t = setTimeout(function () {
+                renderBadge();
+                scheduleCount(80);
+            }, 120);
+        }).observe(document.body, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true,
+            attributeFilter: ['data-tw-pagination-maxcount']
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    window.addEventListener('load', function () { scheduleCount(0); });
+})();
+</script>
