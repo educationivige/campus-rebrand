@@ -1,0 +1,579 @@
+<!-- ============================================================
+     HOME INTERNA (dashboard-9) — cursos ordenados por fecha límite
+
+     Instalación:
+     - Crear un bloque HTML en el dashboard 9.
+     - Pegar este archivo completo.
+     - Asignar al bloque la clase CSS "bloque-codigo" para ocultar su marco.
+     - FUENTE DE LA FECHA (requisito): el script ordena y pinta el badge con la
+       "Fecha de finalización del curso". OJO: esa fecha es la de FIN NATIVA del
+       curso, NO un campo personalizado del bloque (no está en "Mostrar campos
+       personalizados del curso"), así que hay que aportarla por un INFORME
+       OCULTO en la misma home:
+         · Columnas: Nombre del curso (enlace) + Fecha de finalización del curso
+           (fecha de fin del curso).
+         · Que liste los mismos cursos que el bloque Current Learning y SIN
+           paginar (mostrar todas las filas).
+         · El bloque puede ir oculto (display:none / clase bloque-fechas-cursos):
+           el script lee igualmente las tablas ocultas y cruza por URL de curso.
+       El bloque Current Learning se deja tal cual (no hace falta liberar ningún
+       campo personalizado). Sin el informe no hay fecha que leer y NO se pinta
+       ningún badge (los cursos sin fecha quedan al final). Se conserva además el
+       soporte de item.customfields por si algún día la fecha llega por ahí.
+
+     Qué hace:
+     - Procesa los cursos que Totara carga en Current Learning/Programs.
+     - Ordena el array completo antes de paginar cuando el módulo AMD ya está
+       disponible, y siempre reordena las tarjetas renderizadas.
+     - Conserva cada tarjeta y sus eventos; solo cambia el orden de los <li>.
+     - Ordena por fecha límite ascendente y deja al final los cursos sin fecha.
+     - Convierte la fecha nativa en un badge corporativo según su urgencia.
+     - Soporta es, en, it, pt, cs y sv.
+     - Observa recargas AJAX de filtros/paginación. Idempotente.
+
+     Estilos de prueba: bloques/css-adicional.css.
+     ============================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var SCRIPT_VERSION = '2026-09-10.3';
+    if (window.__iviHomeDueUrgencyVersion === SCRIPT_VERSION) return;
+    window.__iviHomeDueUrgencyVersion = SCRIPT_VERSION;
+    window.__iviHomeDueUrgencyActive = true;
+
+    /* El bloque solo se instala en esta Home. La clase evita depender del
+       ID distinto que pueda tener el dashboard entre PRE y producción. */
+    if (document.body) document.body.classList.add('ivi-home-due-active');
+
+    /* Misma leyenda por días restantes que el dashboard-33 de PNTs (4 estados:
+       success >6 meses · warning <6 meses · orange <1 mes · danger vencido).
+       El texto es el mismo de esa leyenda, en los 6 idiomas del campus. */
+    var COPY = {
+        es: {
+            locale: 'es-ES',
+            due: 'Fecha límite',
+            success: 'Aún dispones de más de 6 meses para su realización en plazo.',
+            warning: 'Dispones de menos de 6 meses para su realización en plazo.',
+            orange: 'Dispones de menos de 1 mes para su realización en plazo.',
+            danger: 'Fuera del plazo establecido, pero el curso aún puede completarse.'
+        },
+        en: {
+            locale: 'en-GB',
+            due: 'Due date',
+            success: 'You still have more than 6 months to complete it on time.',
+            warning: 'You have less than 6 months to complete it on time.',
+            orange: 'You have less than 1 month to complete it on time.',
+            danger: 'Outside the established deadline, but the course can still be completed.'
+        },
+        it: {
+            locale: 'it-IT',
+            due: 'Data limite',
+            success: 'Hai ancora più di 6 mesi per completarlo nei tempi.',
+            warning: 'Hai meno di 6 mesi per completarlo nei tempi.',
+            orange: 'Hai meno di 1 mese per completarlo nei tempi.',
+            danger: 'Fuori dal termine stabilito, ma il corso può ancora essere completato.'
+        },
+        pt: {
+            locale: 'pt-PT',
+            due: 'Data limite',
+            success: 'Ainda dispõe de mais de 6 meses para o concluir dentro do prazo.',
+            warning: 'Dispõe de menos de 6 meses para o concluir dentro do prazo.',
+            orange: 'Dispõe de menos de 1 mês para o concluir dentro do prazo.',
+            danger: 'Fora do prazo estabelecido, mas o curso ainda pode ser concluído.'
+        },
+        cs: {
+            locale: 'cs-CZ',
+            due: 'Termín',
+            success: 'Stále máte více než 6 měsíců na dokončení v termínu.',
+            warning: 'Máte méně než 6 měsíců na dokončení v termínu.',
+            orange: 'Máte méně než 1 měsíc na dokončení v termínu.',
+            danger: 'Mimo stanovený termín, ale kurz lze stále dokončit.'
+        },
+        sv: {
+            locale: 'sv-SE',
+            due: 'Sista datum',
+            success: 'Du har fortfarande mer än 6 månader kvar för att slutföra i tid.',
+            warning: 'Du har mindre än 6 månader kvar för att slutföra i tid.',
+            orange: 'Du har mindre än 1 månad kvar för att slutföra i tid.',
+            danger: 'Utanför fastställd tidsfrist, men kursen kan fortfarande slutföras.'
+        }
+    };
+
+    var MONTHS = {
+        enero: 0, ene: 0, january: 0, jan: 0, gennaio: 0, gen: 0,
+        janeiro: 0, led: 0, ledna: 0, januari: 0,
+        febrero: 1, feb: 1, february: 1, febbraio: 1, fevereiro: 1,
+        unor: 1, uno: 1, unora: 1, februari: 1,
+        marzo: 2, mar: 2, march: 2, marco: 2, bre: 2, brezna: 2, mars: 2,
+        abril: 3, abr: 3, april: 3, apr: 3, aprile: 3, dub: 3, dubna: 3,
+        mayo: 4, may: 4, maggio: 4, mag: 4, maio: 4, mai: 4,
+        kve: 4, kvetna: 4, maj: 4,
+        junio: 5, jun: 5, june: 5, giugno: 5, giu: 5, junho: 5,
+        cvn: 5, cervna: 5, juni: 5,
+        julio: 6, jul: 6, july: 6, luglio: 6, lug: 6, julho: 6,
+        cvc: 6, cervence: 6, juli: 6,
+        agosto: 7, ago: 7, august: 7, aug: 7, srp: 7, srpna: 7, augusti: 7,
+        septiembre: 8, sept: 8, sep: 8, setiembre: 8, set: 8,
+        september: 8, settembre: 8, zari: 8,
+        octubre: 9, oct: 9, october: 9, ottobre: 9, ott: 9,
+        outubro: 9, out: 9, rij: 9, rijna: 9, oktober: 9, okt: 9,
+        noviembre: 10, nov: 10, november: 10, listopadu: 10, lis: 10,
+        diciembre: 11, dic: 11, december: 11, dec: 11, dicembre: 11,
+        dezembro: 11, dez: 11, prosince: 11, pro: 11
+    };
+
+    var DAY_MS = 24 * 60 * 60 * 1000;
+    var debounceTimer = null;
+    var dueByCourseUrl = {};
+
+    function currentLang() {
+        var raw = document.documentElement.getAttribute('lang') || '';
+        if (!raw && window.M && window.M.cfg) {
+            raw = window.M.cfg.language || window.M.cfg.lang || '';
+        }
+        raw = String(raw).toLowerCase().replace('_', '-').split('-')[0];
+        return COPY[raw] ? raw : 'es';
+    }
+
+    function normalise(value) {
+        var text = String(value || '').toLowerCase().replace(/\u00a0/g, ' ');
+        if (text.normalize) {
+            text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+        return text.replace(/[.,]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function validDate(year, month, day) {
+        var date = new Date(year, month, day, 0, 0, 0, 0);
+        if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) {
+            return null;
+        }
+        return date;
+    }
+
+    function parseDate(value) {
+        var raw = String(value || '').trim();
+        if (!raw) return null;
+
+        if (/^\d{10,13}$/.test(raw)) {
+            var timestamp = parseInt(raw, 10);
+            if (raw.length === 10) timestamp *= 1000;
+            var timestampDate = new Date(timestamp);
+            if (!isNaN(timestampDate.getTime())) return timestampDate;
+        }
+
+        var iso = raw.match(/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/);
+        if (iso) return validDate(parseInt(iso[1], 10), parseInt(iso[2], 10) - 1, parseInt(iso[3], 10));
+
+        var numeric = raw.match(/\b(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})\b/);
+        if (numeric) return validDate(parseInt(numeric[3], 10), parseInt(numeric[2], 10) - 1, parseInt(numeric[1], 10));
+
+        var text = normalise(raw);
+        var dayFirst = text.match(/\b(\d{1,2})\s+([a-z]+)\s+(\d{4})\b/);
+        if (dayFirst && MONTHS[dayFirst[2]] !== undefined) {
+            return validDate(parseInt(dayFirst[3], 10), MONTHS[dayFirst[2]], parseInt(dayFirst[1], 10));
+        }
+
+        var monthFirst = text.match(/\b([a-z]+)\s+(\d{1,2})\s+(\d{4})\b/);
+        if (monthFirst && MONTHS[monthFirst[1]] !== undefined) {
+            return validDate(parseInt(monthFirst[3], 10), MONTHS[monthFirst[1]], parseInt(monthFirst[2], 10));
+        }
+
+        return null;
+    }
+
+    function dateFromDueInfo(dueInfo) {
+        if (!dueInfo) return null;
+        return parseDate(dueInfo.tooltip) || parseDate(dueInfo.duetext);
+    }
+
+    /* La fecha de finalización del curso llega como CAMPO PERSONALIZADO del
+       curso (mismo mecanismo que idnetex/obligatorio/lfe), tanto en el JSON de
+       init AMD (item.customfields = [{clau, valor}]) como en el DOM oculto de
+       la tarjeta. No hay una clau fiable en el DOM, así que se detecta por
+       VALOR: el primer campo cuyo texto parsee como fecha (los demás son texto
+       o números cortos y parseDate los descarta). */
+    function dateFromCustomfields(fields) {
+        if (!Array.isArray(fields)) return null;
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            if (!field) continue;
+            var value = typeof field === 'string' ? field : field.valor;
+            var date = parseDate(value);
+            if (date) return date;
+        }
+        return null;
+    }
+
+    /* Fecha de un item del bloque: primero el vencimiento nativo (dueinfo),
+       si no, la fecha de finalización que viaje entre sus campos. */
+    function dateFromItem(item) {
+        if (!item) return null;
+        return dateFromDueInfo(item.dueinfo) || dateFromCustomfields(item.customfields);
+    }
+
+    function normaliseUrl(value) {
+        if (!value) return '';
+        try {
+            var url = new URL(value, window.location.href);
+            return url.pathname + url.search;
+        } catch (error) {
+            return String(value);
+        }
+    }
+
+    function rememberDueDates(items) {
+        if (!Array.isArray(items)) return;
+        items.forEach(function (item) {
+            var date = dateFromItem(item);
+            var key = normaliseUrl(item && item.url_view);
+            if (date && key) dueByCourseUrl[key] = date.getTime();
+        });
+    }
+
+    /* Lee una fecha de una celda del informe (atributos de orden o texto). */
+    function dateFromCell(cell) {
+        if (!cell) return null;
+        return parseDate(cell.getAttribute('data-timestamp')) ||
+            parseDate(cell.getAttribute('data-value')) ||
+            parseDate(cell.getAttribute('data-sortvalue')) ||
+            parseDate(cell.getAttribute('title')) ||
+            parseDate(cell.textContent);
+    }
+
+    /* Plan B: informe oculto de la misma página (Curso enlazado + fecha de
+       finalización del curso). La fecha de finalización NO es un campo
+       personalizado del bloque, es la fecha de fin nativa del curso, así que
+       llega por aquí. Primero se busca la columna típica de fin de curso; si el
+       informe la nombra de otro modo, se escanea la fila y se toma la primera
+       celda (que no sea el enlace del curso) cuyo contenido parsee como fecha.
+       Los datos del propio bloque (item.customfields) tienen prioridad. */
+    function rememberDueDatesFromReports() {
+        var rows = document.querySelectorAll(
+            'table.reportbuilder-table tbody > tr,' +
+            '.block_totara_report_table table tbody > tr'
+        );
+
+        Array.prototype.forEach.call(rows, function (row) {
+            var link = row.querySelector(
+                'td.course_courselink a[href], td.course_courselinkicon a[href],' +
+                'a[href*="/course/view.php?id="]'
+            );
+            if (!link) return;
+
+            var key = normaliseUrl(link.getAttribute('href'));
+            if (!key || dueByCourseUrl[key] !== undefined) return;
+
+            /* 1) Columna preferente: fin de curso / vencimiento. */
+            var date = dateFromCell(row.querySelector(
+                'td.course_enddate, td[class*="enddate"], td[class*="end_date"],' +
+                'td.course_completion_duedate, td[class*="duedate"],' +
+                'td[class*="expectedcompletion"]'
+            ));
+
+            /* 2) Si no, la primera celda con fecha que no sea el enlace. */
+            if (!date) {
+                var cells = row.querySelectorAll('td');
+                for (var i = 0; i < cells.length && !date; i++) {
+                    if (cells[i].querySelector('a[href*="/course/view.php?id="]')) continue;
+                    date = dateFromCell(cells[i]);
+                }
+            }
+
+            if (date) dueByCourseUrl[key] = date.getTime();
+        });
+    }
+
+    /* Época de finalización de un item: dato propio del bloque y, si falta,
+       lo aportado por el informe oculto (indexado por URL del curso). */
+    function epochForItem(item) {
+        var date = dateFromItem(item);
+        if (date) return date.getTime();
+        var key = normaliseUrl(item && item.url_view);
+        if (key && dueByCourseUrl[key] !== undefined) return dueByCourseUrl[key];
+        return null;
+    }
+
+    function sortItemsByDueDate(items) {
+        rememberDueDates(items);
+        if (!Array.isArray(items) || items.length < 2) return items;
+
+        return items.map(function (item, index) {
+            return {
+                item: item,
+                index: index,
+                epoch: epochForItem(item)
+            };
+        }).sort(function (a, b) {
+            if (a.epoch === null && b.epoch === null) return a.index - b.index;
+            if (a.epoch === null) return 1;
+            if (b.epoch === null) return -1;
+            if (a.epoch === b.epoch) return a.index - b.index;
+            return a.epoch - b.epoch;
+        }).map(function (entry) {
+            return entry.item;
+        });
+    }
+
+    function prepareTotaraConfig(options) {
+        if (!options || typeof options !== 'object') return options;
+
+        /* El informe oculto ya está en el HTML del servidor: se lee antes de
+           ordenar para que el orden abarque TODAS las páginas, no solo las
+           tarjetas visibles. */
+        rememberDueDatesFromReports();
+
+        if (Array.isArray(options.learningitems)) {
+            options.learningitems = sortItemsByDueDate(options.learningitems);
+        }
+
+        /* Totara conserva otra copia del listado dentro de contextdata. */
+        if (typeof options.contextdata === 'string' && options.contextdata) {
+            try {
+                var context = JSON.parse(options.contextdata);
+                if (Array.isArray(context.learningitems)) {
+                    context.learningitems = sortItemsByDueDate(context.learningitems);
+                    options.contextdata = JSON.stringify(context);
+                }
+            } catch (error) {
+                /* Si el formato cambia, el orden del DOM sigue funcionando. */
+            }
+        }
+        return options;
+    }
+
+    function wrapTotaraModule(module) {
+        if (!module || typeof module.init !== 'function' || module.__iviDueOrderWrapped) return;
+
+        var originalInit = module.init;
+        module.init = function (options) {
+            return originalInit.call(this, prepareTotaraConfig(options));
+        };
+        module.__iviDueOrderWrapped = true;
+    }
+
+    function installDataSortInterceptors() {
+        if (typeof window.require !== 'function') return;
+
+        window.require([
+            'block_current_learningas/current_learningas_tiles',
+            'block_current_programsas/current_programsas_tiles'
+        ], function (currentLearning, currentPrograms) {
+            wrapTotaraModule(currentLearning);
+            wrapTotaraModule(currentPrograms);
+        });
+    }
+
+    function dateFromBadge(badge) {
+        if (!badge) return null;
+        var candidates = [
+            badge.getAttribute('data-timestamp'),
+            badge.getAttribute('data-value'),
+            badge.getAttribute('data-original-title'),
+            badge.getAttribute('title'),
+            badge.textContent
+        ];
+
+        for (var i = 0; i < candidates.length; i++) {
+            var date = parseDate(candidates[i]);
+            if (date) return date;
+        }
+        return null;
+    }
+
+    function formatDate(date, locale) {
+        try {
+            return new Intl.DateTimeFormat(locale, {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            }).format(date);
+        } catch (error) {
+            return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+        }
+    }
+
+    /* Mismos tramos que la leyenda de PNTs (dashboard-33):
+       vencido → danger; <1 mes → orange; <6 meses → warning; resto → success. */
+    function urgencyFor(date) {
+        var days = Math.ceil((date.getTime() - Date.now()) / DAY_MS);
+        if (days < 0) return 'danger';
+        if (days <= 30) return 'orange';
+        if (days <= 180) return 'warning';
+        return 'success';
+    }
+
+    function processTile(tile, lang, strings) {
+        var badge = tile.querySelector(
+            '.block_current_learningas-tile__content_duedate_text,' +
+            '.block_current_programsas-tile__content_duedate_text,' +
+            '[class*="tile__content_duedate_text"]'
+        );
+
+        var storedEpoch = parseInt(tile.getAttribute('data-home-due-epoch'), 10);
+        var dueDate = isNaN(storedEpoch) ? dateFromBadge(badge) : new Date(storedEpoch);
+
+        /* Fallback: fecha capturada del item (dueinfo o campo) antes de paginar,
+           indexada por la URL del curso. */
+        if (!dueDate) {
+            var courseLink = tile.querySelector('a.block_current_learningas-tile__link, a.block_current_programsas-tile__link');
+            var courseKey = normaliseUrl(courseLink && courseLink.getAttribute('href'));
+            if (courseKey && dueByCourseUrl[courseKey] !== undefined) {
+                dueDate = new Date(dueByCourseUrl[courseKey]);
+            }
+        }
+
+        /* Último recurso: leer la fecha de los campos ocultos del propio tile
+           (si la intercepción AMD no llegó a tiempo). Solo hay valores, sin
+           clau, así que se detecta por VALOR. */
+        if (!dueDate) {
+            var fieldNodes = tile.querySelectorAll(
+                '.block_current_learningas-customfield,' +
+                '.block_current_programsas-customfield'
+            );
+            for (var fi = 0; fi < fieldNodes.length && !dueDate; fi++) {
+                dueDate = parseDate(fieldNodes[fi].textContent);
+            }
+        }
+
+        if (!dueDate || isNaN(dueDate.getTime())) {
+            tile.setAttribute('data-home-due-missing', '1');
+            return null;
+        }
+
+        /* Si la plantilla no imprimió el badge nativo, lo creamos. */
+        if (!badge) {
+            var mainContent = tile.querySelector(
+                '.block_current_learningas-tile__maincontent,' +
+                '.block_current_programsas-tile__maincontent'
+            );
+            var titleLink = tile.querySelector(
+                'a.block_current_learningas-tile__link,' +
+                'a.block_current_programsas-tile__link'
+            );
+            if (!mainContent) return null;
+
+            var dueWrap = document.createElement('div');
+            var isProgram = tile.classList.contains('block_current_programsas-tile');
+            dueWrap.className = isProgram
+                ? 'block_current_programsas-tile__content_duedate'
+                : 'block_current_learningas-tile__content_duedate';
+
+            badge = document.createElement('span');
+            badge.className = isProgram
+                ? 'block_current_programsas-tile__content_duedate_text'
+                : 'block_current_learningas-tile__content_duedate_text';
+            dueWrap.appendChild(badge);
+
+            if (titleLink && titleLink.parentNode === mainContent) {
+                mainContent.insertBefore(dueWrap, titleLink.nextSibling);
+            } else {
+                mainContent.appendChild(dueWrap);
+            }
+        }
+
+        var epoch = dueDate.getTime();
+        var urgency = urgencyFor(dueDate);
+        var label = strings.due + ': ' + formatDate(dueDate, strings.locale);
+        var accessibleLabel = label + '. ' + strings[urgency];
+
+        tile.setAttribute('data-home-due-epoch', String(epoch));
+        tile.removeAttribute('data-home-due-missing');
+
+        badge.classList.remove(
+            'home-due-badge--danger',
+            'home-due-badge--orange',
+            'home-due-badge--warning',
+            'home-due-badge--success'
+        );
+        badge.classList.add('home-due-badge', 'home-due-badge--' + urgency);
+
+        if (badge.getAttribute('data-home-due-lang') !== lang || badge.textContent !== label) {
+            badge.textContent = label;
+            badge.setAttribute('data-home-due-lang', lang);
+        }
+        badge.setAttribute('title', accessibleLabel);
+        badge.setAttribute('aria-label', accessibleLabel);
+
+        return epoch;
+    }
+
+    function processList(list, lang, strings) {
+        var selector = 'li.block_current_learningas-tile, li.block_current_programsas-tile';
+        var tiles = Array.prototype.slice.call(list.querySelectorAll(':scope > ' + selector));
+
+        /* Fallback para navegadores sin soporte de :scope. */
+        if (!tiles.length) {
+            tiles = Array.prototype.filter.call(list.children, function (child) {
+                return child.matches && child.matches(selector);
+            });
+        }
+        if (!tiles.length) return;
+
+        var ordered = tiles.map(function (tile, index) {
+            return {
+                tile: tile,
+                index: index,
+                epoch: processTile(tile, lang, strings)
+            };
+        });
+
+        ordered.sort(function (a, b) {
+            if (a.epoch === null && b.epoch === null) return a.index - b.index;
+            if (a.epoch === null) return 1;
+            if (b.epoch === null) return -1;
+            if (a.epoch === b.epoch) return a.index - b.index;
+            return a.epoch - b.epoch;
+        });
+
+        var changed = ordered.some(function (entry, index) {
+            return tiles[index] !== entry.tile;
+        });
+        if (!changed) return;
+
+        var fragment = document.createDocumentFragment();
+        ordered.forEach(function (entry) { fragment.appendChild(entry.tile); });
+        list.appendChild(fragment);
+    }
+
+    function processPage() {
+        var lang = currentLang();
+        var strings = COPY[lang];
+        rememberDueDatesFromReports();
+        var lists = document.querySelectorAll(
+            'body.ivi-home-due-active .block_current_learningas-tiles > ul,' +
+            'body.ivi-home-due-active .block_current_programsas-tiles > ul'
+        );
+        Array.prototype.forEach.call(lists, function (list) {
+            processList(list, lang, strings);
+        });
+    }
+
+    function scheduleProcess() {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(processPage, 120);
+    }
+
+    function init() {
+        processPage();
+
+        var root = document.getElementById('page-content') || document.body;
+        var observer = new MutationObserver(scheduleProcess);
+        observer.observe(root, { childList: true, subtree: true });
+
+        /* Totara puede completar algunos bloques después de DOMContentLoaded. */
+        window.setTimeout(processPage, 500);
+        window.setTimeout(processPage, 1500);
+    }
+
+    /* Se instala al leer el bloque, antes de la inicialización AMD del pie. */
+    installDataSortInterceptors();
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
