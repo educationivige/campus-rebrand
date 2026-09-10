@@ -3307,9 +3307,8 @@ h2#instance-8378-header {
   vertical-align: middle;
 }
 
-.tenant-user #page-totara-catalog-index .tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item:nth-child(2) {
-  display: none;
-}
+/* (Retirada la regla vieja del id_netex que ocultaba la 2.ª línea a tenant-user;
+   ahora la visibilidad de metadatos la gestiona el JS inyectado del catálogo.) */
 
 #page-totara-catalog-index .tw-catalogItemNarrow__textarea_group_item.itemtype {
   color: var(--color-secondary) !important;
@@ -3340,38 +3339,46 @@ h2#instance-8378-header {
 }
 
 /* Filtros catálogo */
-.tenant-user #page-totara-catalog-index .tw-catalog__primaryFilter .tw-selectRegionPrimary__selector .tw-selectTree {
+#page-totara-catalog-index.tenant-user .tw-catalog__primaryFilter .tw-selectRegionPrimary__selector .tw-selectTree {
   display: none;
 }
 
-.tenant-user #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_menu_acreditacionmla_c4e1f) {
+#page-totara-catalog-index.tenant-user section.tw-selectRegionPanel__selector:has([id^="cfp_menu_acreditacionmla"]) {
   display: none;
 }
 
-#page-totara-catalog-index .tw-selectRegionPanel__selector:has(#cfp_multiselect_areaextreaexter_543bf) {
+/* "Área temática" EXTERNA (areaextreaexter): oculta por defecto para todos; los
+   externos la reactivan más abajo. Por prefijo de campo (no por instancia). */
+#page-totara-catalog-index .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_areaextreaexter"]) {
   display: none;
 }
 
-.tenant-user-ext #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_multiselect_areaextreaexter_543bf) {
+/* Externos (tenant-user-ext): en el panel de filtros dejar SOLO "Área temática"
+   (la externa: areaextreaexter) e "Idioma". Se ocultan TODOS los grupos del panel
+   y se reactivan esos dos por su PREFIJO de campo estable (no por el sufijo de
+   instancia _xxxxx, que cambia entre tenants/entornos). El recuadro "FILTROS"
+   (.tw-selectRegionPanel__heading) no es un __selector, así que no se oculta. */
+#page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector {
+  display: none !important;
+}
+
+#page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_areaextreaexter"]),
+#page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_idiomamlangesid"]) {
   display: block !important;
 }
 
-.tenant-user-ext #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_menu_catalogomlanges_7fade),
-.tenant-user-ext #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_menu_filtrobloquemla_39281),
-.tenant-user-ext #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_menu_areatematicamla_16616),
-.tenant-user-ext #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_multiselect_idiomamlangesid_26ff0),
-.tenant-user-ext #page-totara-catalog-index section.tw-selectRegionPanel__selector:has(#cfp_menu_areatematicamla_6da85) {
+/* Filtros de idiomas: dejar SOLO EN y ES (por prefijo de campo, cubre cualquier
+   instancia _xxxxx del filtro Idioma en cualquier tenant) */
+#page-totara-catalog-index [data-tw-selectmulti-key^="cfp_multiselect_idiomamlangesid"] .tw-selectMulti__list li:not(:has([data-tw-selectmulti-optionkey="EN"])):not(:has([data-tw-selectmulti-optionkey="ES"])) {
   display: none;
 }
 
-/* Filtros de idiomas */
-#page-totara-catalog-index [data-tw-selectmulti-key="cfp_multiselect_idiomamlangesid_95ebc"] .tw-selectMulti__list li:not(:has([data-tw-selectmulti-optionkey="EN"])):not(:has([data-tw-selectmulti-optionkey="ES"])) {
-  display: none;
-}
-
-.tenant-user-nam #page-totara-catalog-index .tw-selectRegionPanel__selector:has(#cfp_multiselect_idiomamlangesid_95ebc),
-.tenant-user-nam #page-totara-catalog-index .tw-selectRegionPanel__selector:has(#cfp_menu_filtrobloquemla_39281) {
-  display: none;
+/* Norteamérica (tenant-user-nam): ocultar los grupos «Idioma» y «LFE/Filtro_bloque»
+   del panel (queda visible «Área temática» general, sin OneTech). Por PREFIJO de
+   campo estable, no por sufijo de instancia _xxxxx (que varía por tenant). */
+#page-totara-catalog-index.tenant-user-nam .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_idiomamlangesid"]),
+#page-totara-catalog-index.tenant-user-nam .tw-selectRegionPanel__selector:has([id^="cfp_menu_filtrobloquemla"]) {
+  display: none !important;
 }
 
 /* Filtro "Filtro_bloque" (custom field filtrobloquemla): dejar visible SOLO la
