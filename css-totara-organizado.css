@@ -3339,8 +3339,11 @@ h2#instance-8378-header {
 }
 
 /* Filtros catálogo */
-#page-totara-catalog-index.tenant-user .tw-catalog__primaryFilter .tw-selectRegionPrimary__selector .tw-selectTree {
-  display: none;
+/* Ocultar para todos los usuarios el selector primario "Filtrar por sección"
+   (campo Filtro_bloque). El prefijo del urlkey es estable entre entornos y no
+   afecta al buscador, que vive en el selector primario contiguo. */
+#page-totara-catalog-index .tw-catalog__primaryFilter .tw-selectRegionPrimary__selector:has([data-tw-selecttree-urlkey^="cfb_menu_filtrobloquemla"]) {
+  display: none !important;
 }
 
 #page-totara-catalog-index.tenant-user section.tw-selectRegionPanel__selector:has([id^="cfp_menu_acreditacionmla"]) {
@@ -6473,10 +6476,69 @@ div:has(> #region-main) > #block-region-side-post {
 }
 
 #page-totara-catalog-index .tw-selectRegionPrimary .tw-catalogResultsCount {
+  display: flex;
+  align-items: center;
+  align-self: center;
   margin: auto 26px auto auto;
   font-size: 16px;
   font-weight: 500;
-  padding-top: 5px;
+  padding-top: 0;
+}
+
+/* Badge del contador real. El JS conserva el contador nativo hasta haber
+   calculado al menos una cifra fiable; por eso solo se oculta con la clase
+   ivi-results-badge-ready. */
+#page-totara-catalog-index .tw-catalogResultsCount.ivi-results-badge-ready .tw-catalogResultsCount__text {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+#page-totara-catalog-index .tw-selectRegionPrimary .tw-catalogResultsCount.ivi-results-badge-ready > div {
+  display: none;
+}
+
+#page-totara-catalog-index .ivi-results-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--bg-blue, #DCE6FF);
+  font-family: var(--font-body, "Noto Sans", sans-serif);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--navy-blue, #08004F);
+  white-space: nowrap;
+  transform: translateY(-2px);
+}
+
+#page-totara-catalog-index .ivi-results-badge::before {
+  content: "school";
+  font-family: "Material Symbols Outlined";
+  font-size: 17px;
+  line-height: 1;
+  color: var(--light-blue, #004DF0);
+  font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+}
+
+#page-totara-catalog-index .ivi-results-badge__n {
+  font-weight: 700;
+  color: var(--light-blue, #004DF0);
+}
+
+#page-totara-catalog-index .ivi-results-badge__l {
+  font-weight: 500;
 }
 
 #page-totara-catalog-index .tw-catalogItemNarrow__progress {
