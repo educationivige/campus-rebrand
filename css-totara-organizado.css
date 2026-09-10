@@ -201,6 +201,22 @@ html body .ascabecera .asinfoelem i.fa-calendar {
 html body .ascabecera .asinfoelem i.fa-calendar::before {
   content: "calendar_month" !important;
 }
+/* Icono "Ponente" de la cabecera: Material Symbols record_voice_over en light
+   blue (sustituye el fa-user con inline #006975); mismo patrón que "Inicio".
+   Fusionado desde css-adicional.css. */
+html body .ascabecera .asinfoelem i.fa-user {
+  font-family: "Material Symbols Outlined" !important;
+  font-weight: normal;
+  color: var(--light-blue, #004DF0) !important;
+  font-size: 1.6em;
+  line-height: 1;
+  vertical-align: -0.23em;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+}
+html body .ascabecera .asinfoelem i.fa-user::before {
+  content: "record_voice_over" !important;
+}
 
 /* Teal legacy inline (#006975) → navy, GENERAL. No se puede seleccionar
    "por color computado"; se cazan los style="" inline que contienen #006975
