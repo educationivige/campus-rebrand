@@ -217,6 +217,13 @@ html body .ascabecera .asinfoelem i.fa-user {
 html body .ascabecera .asinfoelem i.fa-user::before {
   content: "record_voice_over" !important;
 }
+/* Cabecera de curso: ocultar el dato vacío (Inicio / Ponente…). El valor de
+   cada .asinfoelem va en su último <span>; si está vacío (sin fecha/valor
+   detrás de la etiqueta), se oculta toda la línea (icono + etiqueta).
+   Solo CSS (:has + :empty). Fusionado desde css-adicional.css. */
+.ascabecera .asinfoelem:has(> span > span:empty) {
+  display: none !important;
+}
 
 /* Teal legacy inline (#006975) → navy, GENERAL. No se puede seleccionar
    "por color computado"; se cazan los style="" inline que contienen #006975
@@ -278,6 +285,62 @@ html body .ascabecera .asinfoelem i.fa-user::before {
 
 .format-onetopicas ul.nav-tabs li.active a .tab_content.dimmed {
   color: var(--color-white) !important;
+}
+
+/* Nav tabs estilo botón/píldora en light blue, acotado a .tabtree (no toca
+   otros navs). Inactivas: píldora blanca con borde+texto light-blue. Activa:
+   rellena de light-blue con texto blanco. Sin barra inferior redondeada.
+   Va después de las reglas base de §1.5 + especificidad extra (.tabtree) para
+   sobrescribirlas. La variante teal de la BD de certificados (body.cmid-20259
+   .tabtree) tiene mayor especificidad y prevalece en esa página.
+   Fusionado desde css-adicional.css. */
+.tabtree .nav.nav-tabs {
+  background: transparent !important;
+  border-bottom: 3px solid var(--light-blue, #004DF0) !important;
+  border-radius: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.tabtree .nav-tabs > li {
+  margin: 0 8px 6px 0 !important;
+  border: 0 !important;
+}
+
+.tabtree .nav-tabs > li > a {
+  border: 1.5px solid transparent !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--light-blue, #004DF0) !important;
+  font-weight: 600 !important;
+  padding: 8px 18px !important;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease !important;
+}
+
+.tabtree .nav-tabs > li > a .tab_content,
+.tabtree .nav-tabs > li > a span {
+  color: inherit !important;
+}
+
+.tabtree .nav-tabs > li > a:hover,
+.tabtree .nav-tabs > li > a:focus {
+  background: var(--bg-blue, #DCE6FF) !important;
+  color: var(--light-blue, #004DF0) !important;
+}
+
+.tabtree .nav-tabs > li.active > a,
+.tabtree .nav-tabs > li.active > a:hover,
+.tabtree .nav-tabs > li.active > a:focus,
+.tabtree .nav-tabs > li.active > a:active {
+  background: var(--light-blue, #004DF0) !important;
+  border-color: var(--light-blue, #004DF0) !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 8px rgba(0, 77, 240, 0.25) !important;
+}
+
+.tabtree .nav-tabs > li.active > a .tab_content,
+.tabtree .nav-tabs > li.active > a span {
+  color: #fff !important;
 }
 
 /* --- 1.6 Estados de actividades globales --- */
