@@ -36,16 +36,16 @@
 
     var imageCache = {};
 
-    // Etiqueta "Calificación obtenida" en los 6 idiomas del campus.
-    // El JS inyecta contenido en cliente, así que {mlang} (filtro de
-    // servidor) no aplica: se elige la cadena según el idioma actual.
-    var GRADE_LABEL = {
-        es: 'Calificación obtenida',
-        en: 'Grade achieved',
-        it: 'Voto ottenuto',
-        pt: 'Nota obtida',
-        cs: 'Získané hodnocení',
-        sv: 'Uppnått betyg'
+    // Textos que inyecta el JS en los 6 idiomas del campus. Como se crean
+    // en cliente, el filtro {mlang} no aplica: se seleccionan por el idioma
+    // activo del documento/Totara.
+    var TEXT = {
+        es: { grade: 'Calificación obtenida', completed: 'Finalizado', enrolment: 'Inscripción' },
+        en: { grade: 'Grade achieved', completed: 'Completed', enrolment: 'Enrolment' },
+        it: { grade: 'Voto ottenuto', completed: 'Completato', enrolment: 'Iscrizione' },
+        pt: { grade: 'Nota obtida', completed: 'Concluído', enrolment: 'Inscrição' },
+        cs: { grade: 'Získané hodnocení', completed: 'Dokončeno', enrolment: 'Zápis' },
+        sv: { grade: 'Uppnått betyg', completed: 'Slutförd', enrolment: 'Registrering' }
     };
 
     function currentLang() {
@@ -53,11 +53,14 @@
         if (!l && window.M && window.M.cfg && window.M.cfg.language) {
             l = String(window.M.cfg.language).toLowerCase();
         }
-        return l.slice(0, 2) || 'es';
+        l = l.slice(0, 2) || 'es';
+        if (l === 'cz') l = 'cs';
+        return TEXT[l] ? l : 'en';
     }
 
-    function gradeLabel() {
-        return GRADE_LABEL[currentLang()] || GRADE_LABEL.en || GRADE_LABEL.es;
+    function translated(key) {
+        var strings = TEXT[currentLang()] || TEXT.en;
+        return strings[key] || TEXT.en[key];
     }
 
     function log(msg, data) {
@@ -75,6 +78,17 @@
         var cell = row.querySelector('td.' + columnClass);
         if (!cell) return '';
         return (cell.textContent || '').replace(/ /g, ' ').trim();
+    }
+
+    // Totara suele devolver la nota como "100,00%" / "100.00%". Se conserva
+    // el porcentaje, pero se muestra como entero para evitar decimales visuales.
+    function formatGrade(value) {
+        var raw = String(value || '').replace(/ /g, ' ').trim();
+        var match = raw.match(/-?\d+(?:[.,]\d+)?/);
+        if (!match) return raw;
+        var numeric = Number(match[0].replace(',', '.'));
+        if (!isFinite(numeric)) return raw;
+        return String(Math.round(numeric)) + (raw.indexOf('%') !== -1 ? '%' : '');
     }
 
     // Fecha de finalización: prueba varias columnas del informe
@@ -149,7 +163,7 @@
                 tipo:         category(row),
                 inscripcion:  enrolDate(row),
                 finalizacion: completionDate(row),
-                calificacion: cellText(row, 'course_completion_grade'),
+                calificacion: formatGrade(cellText(row, 'course_completion_grade')),
                 progress:     progress,
                 imagen:       ''
             });
@@ -204,10 +218,11 @@
         if (course.tipo) badges.push(badge('type', 'fa-regular fa-folder-open', course.tipo));
         if (course.inscripcion) {
             badges.push(badge('enrol', 'fa-regular fa-calendar-plus',
-                'Inscripción: ' + course.inscripcion));
+                translated('enrolment') + ': ' + course.inscripcion));
         }
 
-        var statusText = 'Finalizado' + (course.finalizacion ? ': ' + course.finalizacion : '');
+        var statusText = translated('completed') +
+            (course.finalizacion ? ': ' + course.finalizacion : '');
         var statusBadge =
             '<span class="exp-status exp-status--done">' +
                 '<i class="fa-regular fa-circle-check"></i> ' + escapeHtml(statusText) +
@@ -222,7 +237,7 @@
             ? '<div class="exp-badges">' +
                   '<span class="exp-badge exp-badge--grade">' +
                       '<i class="fa-solid fa-medal"></i> ' +
-                      escapeHtml(gradeLabel() + ': ' + course.calificacion) +
+                      escapeHtml(translated('grade') + ': ' + course.calificacion) +
                   '</span>' +
               '</div>'
             : '';
