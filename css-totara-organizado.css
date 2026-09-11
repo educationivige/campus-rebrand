@@ -10748,3 +10748,233 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
   font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }
+
+/* ============================================================
+   30. FUSIONADO DESDE css-adicional (2026-09-11)
+   - Monthly Seminars: badges de vencimiento (#inst287) y estados
+     «completado» de las cards clon-Expediente (#ms-grid).
+   - Learning for Excellence: ilustración de Presentación 2026.
+   - Home interna (dashboard-9): badge de fecha de INSCRIPCIÓN en navy
+     (JS 10_JS_home--orden-inscripcion-cursos.html) y barras de progreso
+     con la paleta del Expediente (pista beige, relleno teal, % navy).
+   OJO ids de PRE (#inst287, dashboard-9/11, #inst11511): revisar en PRO.
+   ============================================================ */
+
+/* --- Monthly Seminars — Mis cursos (#inst287): badges de vencimiento --- */
+
+/* Base compartida: píldora compacta y completamente redondeada. */
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate_text {
+  display: inline-flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+  padding: 5px 13px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  box-shadow: none !important;
+}
+
+/* Curso vigente: azul suave + texto azul corporativo. */
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate_text-label-info {
+  background: var(--bg-blue, #DCE6FF) !important;
+  color: var(--light-blue, #004DF0) !important;
+}
+
+/* Curso fuera de plazo: rosa suave + rojo corporativo. */
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate_text-label-danger {
+  background: #FBE0EA !important;
+  color: var(--red, #B4084A) !important;
+}
+
+/* Quitar los adornos legacy que Totara añade a las etiquetas. */
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate::before,
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate::after,
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate_text::before,
+#page-totara-dashboard-11 #inst287 .block_current_learningas-tile__content_duedate_text::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* --- Monthly Seminars — Completados (#ms-grid) ---
+   Misma leyenda del Expediente: completado/finalizado = navy.
+   El badge lima de calificación no se modifica. --- */
+#page-totara-dashboard-11 #ms-grid .exp-status--done {
+  background: var(--navy-blue, #08004F) !important;
+  color: #ffffff !important;
+}
+
+#page-totara-dashboard-11 #ms-grid .exp-progress--done .exp-progress__fill {
+  background: var(--navy-blue, #08004F) !important;
+}
+
+#page-totara-dashboard-11 #ms-grid .exp-progress--done .exp-progress__label {
+  color: var(--navy-blue, #08004F) !important;
+}
+
+/* --- Learning for Excellence — Presentación 2026 ---
+   La imagen cubre por completo el recuadro azul y respeta su radio. --- */
+.preslfe .content.block-content .no-overflow .preslfe-ilus {
+  position: relative !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 10px !important;
+}
+
+.preslfe .content.block-content .no-overflow .preslfe-ilus img {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+@media (max-width: 767px) {
+  .preslfe .content.block-content .no-overflow .preslfe-ilus {
+    min-height: 220px !important;
+  }
+}
+
+/* --- Home interna (dashboard-9) — badge de fecha de inscripción ---
+   JS: 10_JS_home--orden-inscripcion-cursos.html --- */
+
+/* Maincontent en columna (como el tema): CURSO, título, fecha y, al pie, el
+   bloque .__content con la barra de progreso. NO se fuerza el crecimiento de
+   maincontent ni de .__content: el tema ya reparte la altura y el progreso
+   queda dentro de la tarjeta. */
+body.ivi-home-due-active .block_current_learningas-tile__maincontent,
+body.ivi-home-due-active .block_current_programsas-tile__maincontent {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* El contenedor de la fecha crece para ocupar el hueco entre el título y el
+   progreso; en columna, justify-content:center centra el badge verticalmente
+   dentro de ese hueco (align-items:flex-start lo mantiene a la izquierda).
+   Solo se toca este contenedor -> el progreso no se ve afectado. */
+body.ivi-home-due-active .block_current_learningas-tile__content_duedate,
+body.ivi-home-due-active .block_current_programsas-tile__content_duedate {
+  position: static !important;
+  display: flex !important;
+  flex: 1 1 auto !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  min-height: 0 !important;
+  /* Separación mínima garantizada con el título (aunque la tarjeta sea baja);
+     el centrado sigue equilibrando el badge en tarjetas más altas. */
+  margin: 24px 0 0 !important;
+}
+
+/* Cursos sin fecha (badge oculto): el progreso queda igualmente al pie. */
+body.ivi-home-due-active [data-home-due-missing="1"] .block_current_learningas-tile__content,
+body.ivi-home-due-active [data-home-due-missing="1"] .block_current_programsas-tile__content {
+  margin-top: auto !important;
+}
+
+/* Totara conserva un contenedor vacío cuando no publica ninguna fecha. */
+body.ivi-home-due-active [data-home-due-missing="1"]
+  .block_current_learningas-tile__content_duedate,
+body.ivi-home-due-active [data-home-due-missing="1"]
+  .block_current_programsas-tile__content_duedate {
+  display: none !important;
+  margin: 0 !important;
+}
+
+/* Color ÚNICO para todos los badges (no cambia por urgencia): borde y texto
+   navy sobre fondo transparente. */
+body.ivi-home-due-active .home-due-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  padding: 6px 12px !important;
+  border: 1.5px solid var(--navy-blue, #08004F) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--navy-blue, #08004F) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.01em !important;
+  white-space: normal !important;
+  box-shadow: none !important;
+}
+
+/* Icono común; sustituye los indicadores legacy de Totara. */
+body.ivi-home-due-active .home-due-badge::before {
+  content: "event" !important;
+  display: inline-block !important;
+  flex: 0 0 auto !important;
+  font-family: "Material Symbols Outlined" !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  font-feature-settings: "liga" !important;
+}
+
+body.ivi-home-due-active .home-due-badge::after,
+body.ivi-home-due-active .block_current_learningas-tile__content_duedate::before,
+body.ivi-home-due-active .block_current_learningas-tile__content_duedate::after,
+body.ivi-home-due-active .block_current_programsas-tile__content_duedate::before,
+body.ivi-home-due-active .block_current_programsas-tile__content_duedate::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Las variantes de urgencia (el JS sigue añadiendo --danger/--orange/--warning/
+   --success) se fuerzan al MISMO estilo navy -> el color no cambia con el tiempo. */
+body.ivi-home-due-active .home-due-badge--danger,
+body.ivi-home-due-active .home-due-badge--orange,
+body.ivi-home-due-active .home-due-badge--warning,
+body.ivi-home-due-active .home-due-badge--success {
+  background: transparent !important;
+  border-color: var(--navy-blue, #08004F) !important;
+  color: var(--navy-blue, #08004F) !important;
+}
+
+/* --- Home interna (dashboard-9) — barras de progreso paleta Expediente ---
+   Pista beige, relleno teal, porcentaje navy (en vez del naranja global de la
+   secc. de cards current_learning). Se sube la especificidad con
+   body.ivi-home-due-active para ganar al !important de `.block_current_learningas
+   ... .bar`. --- */
+
+/* Pista (fondo) beige y redondeada, como .exp-progress__track. Sin
+   overflow:hidden: el porcentaje de Totara (.progressbar__text) va DENTRO de la
+   barra y se recortaría a 0%; el relleno ya se redondea por sí mismo. */
+body.ivi-home-due-active .block_current_learningas .progressbar_container .progress,
+body.ivi-home-due-active .block_current_programsas .progressbar_container .progress {
+  background: var(--track-beige, #ECE9E2) !important;
+  border-radius: 999px !important;
+}
+
+/* Relleno teal y liso (el shorthand `background` ya quita el rayado). */
+body.ivi-home-due-active .block_current_learningas .progressbar_container .progress .bar,
+body.ivi-home-due-active .block_current_programsas .progressbar_container .progress .bar {
+  background: var(--teal, #0CE3C6) !important;
+  background-image: none !important;
+  border-radius: 999px !important;
+}
+
+/* Porcentaje en navy y en negrita, como .exp-progress__label. */
+body.ivi-home-due-active .block_current_learningas .progressbar__text,
+body.ivi-home-due-active .block_current_programsas .progressbar__text {
+  color: var(--navy-blue, #08004F) !important;
+  font-weight: 700 !important;
+}
+
+/* Informe auxiliar (Curso + fecha de inscripción). Presente en el DOM para que
+   el script lo lea, pero oculto visualmente (#inst11511 en PRE — revisar en PRO). */
+.bloque-fechas-cursos,
+#inst11511 {
+  display: none !important;
+}

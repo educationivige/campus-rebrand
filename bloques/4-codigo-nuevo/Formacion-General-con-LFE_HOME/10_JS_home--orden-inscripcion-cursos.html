@@ -1,33 +1,33 @@
 <!-- ============================================================
-     HOME INTERNA (dashboard-9) — cursos ordenados por fecha límite
+     HOME INTERNA (dashboard-9) — cursos ordenados por fecha de inscripción
 
      Instalación:
      - Crear un bloque HTML en el dashboard 9.
      - Pegar este archivo completo.
      - Asignar al bloque la clase CSS "bloque-codigo" para ocultar su marco.
      - FUENTE DE LA FECHA (requisito): el script ordena y pinta el badge con la
-       "Fecha de finalización del curso". OJO: esa fecha es la de FIN NATIVA del
-       curso, NO un campo personalizado del bloque (no está en "Mostrar campos
-       personalizados del curso"), así que hay que aportarla por un INFORME
-       OCULTO en la misma home:
-         · Columnas: Nombre del curso (enlace) + Fecha de finalización del curso
-           (fecha de fin del curso).
+       "Fecha de inscripción" del curso. Esa fecha NO es un campo personalizado
+       del bloque, así que hay que aportarla por un INFORME OCULTO en la misma
+       home:
+         · Columnas: Nombre del curso (enlace) + Fecha de inscripción
+           (fuente course_completion → "Fecha de inscripción"/enrolleddate).
          · Que liste los mismos cursos que el bloque Current Learning y SIN
            paginar (mostrar todas las filas).
+         · Deja SOLO esa columna de fecha; si el informe expone también la de
+           finalización, quítala (el script toma la primera fecha de la fila).
          · El bloque puede ir oculto (display:none / clase bloque-fechas-cursos):
            el script lee igualmente las tablas ocultas y cruza por URL de curso.
-       El bloque Current Learning se deja tal cual (no hace falta liberar ningún
-       campo personalizado). Sin el informe no hay fecha que leer y NO se pinta
-       ningún badge (los cursos sin fecha quedan al final). Se conserva además el
-       soporte de item.customfields por si algún día la fecha llega por ahí.
+       Sin el informe no hay fecha que leer y NO se pinta ningún badge (los
+       cursos sin fecha quedan al final).
 
      Qué hace:
      - Procesa los cursos que Totara carga en Current Learning/Programs.
      - Ordena el array completo antes de paginar cuando el módulo AMD ya está
        disponible, y siempre reordena las tarjetas renderizadas.
      - Conserva cada tarjeta y sus eventos; solo cambia el orden de los <li>.
-     - Ordena por fecha límite ascendente y deja al final los cursos sin fecha.
-     - Convierte la fecha nativa en un badge corporativo según su urgencia.
+     - Ordena por fecha de inscripción ASCENDENTE (las más antiguas primero) y
+       deja al final los cursos sin fecha.
+     - Pinta la fecha de inscripción en un badge corporativo (color único navy).
      - Soporta es, en, it, pt, cs y sv.
      - Observa recargas AJAX de filtros/paginación. Idempotente.
 
@@ -37,7 +37,7 @@
 (function () {
     'use strict';
 
-    var SCRIPT_VERSION = '2026-09-10.3';
+    var SCRIPT_VERSION = '2026-09-11.1';
     if (window.__iviHomeDueUrgencyVersion === SCRIPT_VERSION) return;
     window.__iviHomeDueUrgencyVersion = SCRIPT_VERSION;
     window.__iviHomeDueUrgencyActive = true;
@@ -46,58 +46,16 @@
        ID distinto que pueda tener el dashboard entre PRE y producción. */
     if (document.body) document.body.classList.add('ivi-home-due-active');
 
-    /* Misma leyenda por días restantes que el dashboard-33 de PNTs (4 estados:
-       success >6 meses · warning <6 meses · orange <1 mes · danger vencido).
-       El texto es el mismo de esa leyenda, en los 6 idiomas del campus. */
+    /* Etiqueta del badge en los 6 idiomas del campus (it/pt/cs/sv por revisar
+       con hablante nativo). El color del badge es único (navy), no depende de
+       la fecha. */
     var COPY = {
-        es: {
-            locale: 'es-ES',
-            due: 'Fecha límite',
-            success: 'Aún dispones de más de 6 meses para su realización en plazo.',
-            warning: 'Dispones de menos de 6 meses para su realización en plazo.',
-            orange: 'Dispones de menos de 1 mes para su realización en plazo.',
-            danger: 'Fuera del plazo establecido, pero el curso aún puede completarse.'
-        },
-        en: {
-            locale: 'en-GB',
-            due: 'Due date',
-            success: 'You still have more than 6 months to complete it on time.',
-            warning: 'You have less than 6 months to complete it on time.',
-            orange: 'You have less than 1 month to complete it on time.',
-            danger: 'Outside the established deadline, but the course can still be completed.'
-        },
-        it: {
-            locale: 'it-IT',
-            due: 'Data limite',
-            success: 'Hai ancora più di 6 mesi per completarlo nei tempi.',
-            warning: 'Hai meno di 6 mesi per completarlo nei tempi.',
-            orange: 'Hai meno di 1 mese per completarlo nei tempi.',
-            danger: 'Fuori dal termine stabilito, ma il corso può ancora essere completato.'
-        },
-        pt: {
-            locale: 'pt-PT',
-            due: 'Data limite',
-            success: 'Ainda dispõe de mais de 6 meses para o concluir dentro do prazo.',
-            warning: 'Dispõe de menos de 6 meses para o concluir dentro do prazo.',
-            orange: 'Dispõe de menos de 1 mês para o concluir dentro do prazo.',
-            danger: 'Fora do prazo estabelecido, mas o curso ainda pode ser concluído.'
-        },
-        cs: {
-            locale: 'cs-CZ',
-            due: 'Termín',
-            success: 'Stále máte více než 6 měsíců na dokončení v termínu.',
-            warning: 'Máte méně než 6 měsíců na dokončení v termínu.',
-            orange: 'Máte méně než 1 měsíc na dokončení v termínu.',
-            danger: 'Mimo stanovený termín, ale kurz lze stále dokončit.'
-        },
-        sv: {
-            locale: 'sv-SE',
-            due: 'Sista datum',
-            success: 'Du har fortfarande mer än 6 månader kvar för att slutföra i tid.',
-            warning: 'Du har mindre än 6 månader kvar för att slutföra i tid.',
-            orange: 'Du har mindre än 1 månad kvar för att slutföra i tid.',
-            danger: 'Utanför fastställd tidsfrist, men kursen kan fortfarande slutföras.'
-        }
+        es: { locale: 'es-ES', enrolled: 'Fecha de inscripción' },
+        en: { locale: 'en-GB', enrolled: 'Enrolment date' },
+        it: { locale: 'it-IT', enrolled: 'Data di iscrizione' },
+        pt: { locale: 'pt-PT', enrolled: 'Data de inscrição' },
+        cs: { locale: 'cs-CZ', enrolled: 'Datum zápisu' },
+        sv: { locale: 'sv-SE', enrolled: 'Inskrivningsdatum' }
     };
 
     var MONTHS = {
@@ -123,7 +81,6 @@
         dezembro: 11, dez: 11, prosince: 11, pro: 11
     };
 
-    var DAY_MS = 24 * 60 * 60 * 1000;
     var debounceTimer = null;
     var dueByCourseUrl = {};
 
@@ -242,13 +199,11 @@
             parseDate(cell.textContent);
     }
 
-    /* Plan B: informe oculto de la misma página (Curso enlazado + fecha de
-       finalización del curso). La fecha de finalización NO es un campo
-       personalizado del bloque, es la fecha de fin nativa del curso, así que
-       llega por aquí. Primero se busca la columna típica de fin de curso; si el
+    /* Informe oculto de la misma página (Curso enlazado + Fecha de inscripción).
+       La fecha de inscripción no es un campo personalizado del bloque, así que
+       llega por aquí. Primero se busca la columna típica de inscripción; si el
        informe la nombra de otro modo, se escanea la fila y se toma la primera
-       celda (que no sea el enlace del curso) cuyo contenido parsee como fecha.
-       Los datos del propio bloque (item.customfields) tienen prioridad. */
+       celda (que no sea el enlace del curso) cuyo contenido parsee como fecha. */
     function rememberDueDatesFromReports() {
         var rows = document.querySelectorAll(
             'table.reportbuilder-table tbody > tr,' +
@@ -265,11 +220,11 @@
             var key = normaliseUrl(link.getAttribute('href'));
             if (!key || dueByCourseUrl[key] !== undefined) return;
 
-            /* 1) Columna preferente: fin de curso / vencimiento. */
+            /* 1) Columna preferente: fecha de inscripción. */
             var date = dateFromCell(row.querySelector(
-                'td.course_enddate, td[class*="enddate"], td[class*="end_date"],' +
-                'td.course_completion_duedate, td[class*="duedate"],' +
-                'td[class*="expectedcompletion"]'
+                'td.course_completion_enrolleddate, td[class*="enrolleddate"],' +
+                'td[class*="enrolled_date"], td[class*="enroldate"],' +
+                'td[class*="timeenrolled"], td[class*="enrolment"], td[class*="enrolmentdate"]'
             ));
 
             /* 2) Si no, la primera celda con fecha que no sea el enlace. */
@@ -394,16 +349,6 @@
         }
     }
 
-    /* Mismos tramos que la leyenda de PNTs (dashboard-33):
-       vencido → danger; <1 mes → orange; <6 meses → warning; resto → success. */
-    function urgencyFor(date) {
-        var days = Math.ceil((date.getTime() - Date.now()) / DAY_MS);
-        if (days < 0) return 'danger';
-        if (days <= 30) return 'orange';
-        if (days <= 180) return 'warning';
-        return 'success';
-    }
-
     function processTile(tile, lang, strings) {
         var badge = tile.querySelector(
             '.block_current_learningas-tile__content_duedate_text,' +
@@ -474,27 +419,27 @@
         }
 
         var epoch = dueDate.getTime();
-        var urgency = urgencyFor(dueDate);
-        var label = strings.due + ': ' + formatDate(dueDate, strings.locale);
-        var accessibleLabel = label + '. ' + strings[urgency];
+        var label = strings.enrolled + ': ' + formatDate(dueDate, strings.locale);
 
         tile.setAttribute('data-home-due-epoch', String(epoch));
         tile.removeAttribute('data-home-due-missing');
 
+        /* Color único (navy): se quitan las variantes de urgencia por si algún
+           render anterior las dejó puestas; solo se aplica la clase base. */
         badge.classList.remove(
             'home-due-badge--danger',
             'home-due-badge--orange',
             'home-due-badge--warning',
             'home-due-badge--success'
         );
-        badge.classList.add('home-due-badge', 'home-due-badge--' + urgency);
+        badge.classList.add('home-due-badge');
 
         if (badge.getAttribute('data-home-due-lang') !== lang || badge.textContent !== label) {
             badge.textContent = label;
             badge.setAttribute('data-home-due-lang', lang);
         }
-        badge.setAttribute('title', accessibleLabel);
-        badge.setAttribute('aria-label', accessibleLabel);
+        badge.setAttribute('title', label);
+        badge.setAttribute('aria-label', label);
 
         return epoch;
     }
