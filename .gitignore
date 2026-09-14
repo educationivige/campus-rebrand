@@ -31,6 +31,10 @@ bloques/2-actual/*
 # Documento interno de flujo de trabajo (no se versiona)
 FLUJO-DE-TRABAJO.md
 
+# Documentos internos de seguimiento de cambios (no se versionan)
+CAMBIOS-CAMPUS-IVI.md
+Cambios-Campus-IVI.xlsx
+
 # CSS en pruebas: se pega a mano en "CSS adicional" del tema; al verificar
 # la sección se fusiona en css-totara-organizado.css (no se versiona)
 bloques/css-adicional.css
