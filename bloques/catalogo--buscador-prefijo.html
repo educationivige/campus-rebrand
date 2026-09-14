@@ -1,0 +1,124 @@
+<!-- ============================================================
+     CATÁLOGO — Búsqueda por prefijo (parte de palabra) desde N caracteres
+
+     PROBLEMA: el buscador del catálogo (#catalog_fts_input, urlkey
+     "catalog_fts") es full-text del SERVIDOR. En modo "natural language"
+     casa PALABRAS COMPLETAS (escribir «cardio» no encuentra «cardiología»)
+     e ignora palabras por debajo de la longitud mínima de token de la BD.
+
+     QUÉ HACE (solo front-end, sin tocar la BD): intercepta la petición AJAX
+     del catálogo y añade un comodín «*» a cada término de búsqueda
+     (cardio -> cardio*). Si el full-text del servidor admite modo boolean
+     con prefijo, eso convierte la búsqueda en "empieza por…", así que casa
+     a partir de 3 caracteres y con parte de palabra, EN TODO el catálogo
+     (no solo en las tarjetas ya cargadas). El input visible NO cambia (el
+     «*» solo viaja en la petición).
+
+     LÍMITES: si el servidor está en modo natural language o sanea el «*»,
+     la búsqueda no cambia (no rompe nada). En ese caso hay que ir a un
+     filtro en cliente (dímelo y lo hago). El prefijo mínimo depende de la
+     BD (InnoDB innodb_ft_min_token_size=3 → funciona desde 3 letras;
+     MyISAM ft_min_word_len=4 → desde 4).
+
+     Instalación: pegar en el "HTML adicional" del catálogo (NO va por CDN).
+     Para PROBAR: abre DevTools → Network, escribe 3+ letras en el buscador
+     y mira la petición del catálogo: el valor de "catalog_fts" debe llegar
+     como «tuTermino*». Si aparece con «*» pero no salen prefijos, es que el
+     servidor no admite el comodín → filtro en cliente.
+     ============================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var VERSION = '2026-09-11.1';
+    if (window.__iviCatalogPrefixVersion === VERSION) return;
+    window.__iviCatalogPrefixVersion = VERSION;
+
+    /* Solo en la página del catálogo: evita parchear fetch/XHR en otras
+       páginas si el "HTML adicional" fuese global. */
+    function onCatalog() {
+        return !!(document.getElementById('catalog_fts_input') ||
+                  (document.body && document.body.id === 'page-totara-catalog-index'));
+    }
+    if (!onCatalog()) return;
+
+    var MIN_LEN = 3;          // nº mínimo de caracteres del término
+    var DEBUG = false;        // pon true para ver en consola cada reescritura
+
+    /* Añade «*» a cada término de ≥ MIN_LEN que no lo lleve ya. Respeta los
+       operadores boolean (+ - " ( )). No toca términos cortos. */
+    function addWildcards(value) {
+        if (!value) return value;
+        return String(value).split(/\s+/).map(function (token) {
+            if (!token) return token;
+            var core = token.replace(/^[+\-~<>(]+/, '');   // sin prefijos boolean
+            // ya termina en comodín/comilla, o es demasiado corto → se deja
+            if (/[*")]$/.test(token)) return token;
+            if (core.length < MIN_LEN) return token;
+            if (!/[0-9A-Za-zÀ-ÿ]/.test(core)) return token; // solo términos con letra/dígito
+            return token + '*';
+        }).join(' ');
+    }
+
+    /* Reescribe el valor de catalog_fts dentro de un cuerpo de petición,
+       tanto si es JSON ("catalog_fts":"…") como form-urlencoded
+       (catalog_fts=…). Devuelve el cuerpo modificado o null si no aplica. */
+    function rewriteBody(body) {
+        if (typeof body !== 'string' || body.indexOf('catalog_fts') === -1) return null;
+        var changed = false;
+
+        // 1) JSON: "catalog_fts":"valor"
+        body = body.replace(/("catalog_fts"\s*:\s*")([^"]*)(")/g, function (m, p1, val, p3) {
+            var out = addWildcards(val);
+            if (out !== val) changed = true;
+            return p1 + out + p3;
+        });
+
+        // 2) form-urlencoded: catalog_fts=valor (valor percent-encoded)
+        body = body.replace(/(catalog_fts=)([^&]*)/g, function (m, p1, val) {
+            var decoded;
+            try { decoded = decodeURIComponent(val.replace(/\+/g, ' ')); }
+            catch (e) { decoded = val; }
+            var out = addWildcards(decoded);
+            if (out === decoded) return m;
+            changed = true;
+            return p1 + encodeURIComponent(out);
+        });
+
+        if (!changed) return null;
+        if (DEBUG) { try { console.info('[catálogo] fts reescrito →', body); } catch (e) {} }
+        return body;
+    }
+
+    /* --- Parche de fetch (core/ajax moderno) --- */
+    if (typeof window.fetch === 'function' && !window.fetch.__iviPrefixWrapped) {
+        var origFetch = window.fetch;
+        var wrapped = function (input, init) {
+            try {
+                if (init && typeof init.body === 'string') {
+                    var nb = rewriteBody(init.body);
+                    if (nb !== null) { init = Object.assign({}, init, { body: nb }); }
+                }
+            } catch (e) { /* ante cualquier duda, no tocar la petición */ }
+            return origFetch.call(this, input, init);
+        };
+        wrapped.__iviPrefixWrapped = true;
+        window.fetch = wrapped;
+    }
+
+    /* --- Parche de XMLHttpRequest (jQuery/core.ajax clásico) --- */
+    if (window.XMLHttpRequest && !XMLHttpRequest.prototype.__iviPrefixWrapped) {
+        var origSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.send = function (body) {
+            try {
+                if (typeof body === 'string') {
+                    var nb = rewriteBody(body);
+                    if (nb !== null) body = nb;
+                }
+            } catch (e) { /* no bloquear el envío */ }
+            return origSend.call(this, body);
+        };
+        XMLHttpRequest.prototype.__iviPrefixWrapped = true;
+    }
+})();
+</script>
