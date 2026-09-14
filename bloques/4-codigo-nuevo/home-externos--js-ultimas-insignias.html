@@ -1,7 +1,7 @@
 <!-- MIS ÚLTIMAS INSIGNIAS — activa el layout definido en
-     css-totara-organizado.css y aplica el sistema IVI al enlace
-     nativo "Ver todos". Pegar en un bloque HTML/JS de la Home
-     de externos. Instancia actual: #inst355. -->
+     css-totara-organizado.css y aplica el sistema IVI (botón azul tipo píldora)
+     al enlace nativo "Ver todos" / "Mostrar todos". Pegar en un bloque HTML/JS
+     de la Home de externos. Instancia actual: #inst355. -->
 <script>
 (function () {
     'use strict';
@@ -20,16 +20,32 @@
     }
 
     function findSeeAll(block) {
-        const direct = block.querySelector('a.seeall, .footer a');
+        // 1) Enlace explícito por clase o pie del bloque.
+        const direct = block.querySelector(
+            'a.seeall, .footer a, .card-footer a, .block-footer a'
+        );
         if (direct) return direct;
 
+        // 2) Por etiqueta de texto en los 6 idiomas del campus. Totara usa
+        //    "Mostrar todos" (no "Ver todos") en el bloque de insignias.
         const labels = [
-            'ver todos', 'ver todo', 'see all', 'visualizza tutti',
-            'zobrazit vše', 'visa alla'
+            'ver todos', 'ver todo', 'mostrar todos', 'mostrar todo',
+            'see all', 'show all', 'show all badges',
+            'visualizza tutti', 'mostra tutti',
+            'ver tudo', 'mostrar tudo',
+            'zobrazit vše', 'zobrazit vse',
+            'visa alla'
         ];
-
-        return Array.from(block.querySelectorAll('a')).find(function (link) {
+        const byLabel = Array.from(block.querySelectorAll('a')).find(function (link) {
             return labels.includes(normaliseText(link.textContent));
+        });
+        if (byLabel) return byLabel;
+
+        // 3) Fallback agnóstico de idioma: un enlace que NO sea de una insignia
+        //    (fuera de ul.badges) y apunte a la página de insignias.
+        return Array.from(block.querySelectorAll('a')).find(function (link) {
+            if (link.closest('ul.badges')) return false;
+            return /badge/i.test(link.getAttribute('href') || '');
         }) || null;
     }
 
