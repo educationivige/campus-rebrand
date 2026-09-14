@@ -1861,33 +1861,17 @@ html .has-full-page-slider #block-region-top {
   max-height: none !important;
 }
 
+/* Monthly (#inst287): badge de vencimiento rojo. Externos (#inst352) YA NO
+   lleva estilo de vencimiento: usa el badge de "Fecha de inscripción"
+   (.home-due-badge, §30), igual que la home de internos. Por eso se quitó
+   #inst352 de estas reglas (su especificidad de id + !important tapaba el navy
+   de .home-due-badge, incluido el icono ::before). */
 #inst287 .block_current_learningas-tile__content_duedate_text,
-#inst287 #current_learningas .block_current_learningas-tile__content_duedate_text,
-#inst352 .block_current_learningas-tile__content_duedate_text,
-#inst352 #current_learningas .block_current_learningas-tile__content_duedate_text {
+#inst287 #current_learningas .block_current_learningas-tile__content_duedate_text {
   background: var(--red) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
   border: none !important;
-}
-
-/* "Mi formación" de externos (#inst352): badge de vencimiento tipo pill,
-   sin el punto rojo legacy, y progreso pegado al pie de cada tarjeta. */
-#inst352 .block_current_learningas-tile__content_duedate_text,
-#inst352 #current_learningas .block_current_learningas-tile__content_duedate_text {
-  display: inline-block !important;
-  border-radius: 999px !important;
-  padding: 5px 14px !important;
-}
-
-#inst352 .block_current_learningas-tile__content_duedate::before,
-#inst352 .block_current_learningas-tile__content_duedate::after,
-#inst352 .block_current_learningas-tile__content_duedate_text::before,
-#inst352 .block_current_learningas-tile__content_duedate_text::after,
-#inst352 .block_current_learningas-tile__content_duedate_text-label-danger::before,
-#inst352 .block_current_learningas-tile__content_duedate_text-label-danger::after {
-  display: none !important;
-  content: none !important;
 }
 
 #page-totara-dashboard-6 #inst352 li.block_current_learningas-tile,
@@ -10973,8 +10957,12 @@ body.ivi-home-due-active .block_current_programsas .progressbar__text {
 }
 
 /* Informe auxiliar (Curso + fecha de inscripción). Presente en el DOM para que
-   el script lo lea, pero oculto visualmente (#inst11511 en PRE — revisar en PRO). */
+   el script lo lea, pero oculto visualmente. Se oculta por la CLASE
+   .bloque-fechas-cursos (sirve para ambas homes: basta asignarla al bloque).
+   Los ids son de PRE (revisar en PRO): #inst11511 = informe de internos
+   (dashboard-9); #inst11513 = informe de externos (dashboard-6). */
 .bloque-fechas-cursos,
-#inst11511 {
+#inst11511,
+#inst11513 {
   display: none !important;
 }
