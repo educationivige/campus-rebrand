@@ -2162,7 +2162,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var SELECTOR = '.ivi-external-courses[data-loader="fast-v2"]';
     var SOURCE_ORIGIN = 'https://iviglobaleducation.com';
-    var CACHE_KEY = 'ivi-external-courses-fast-v2';
+    var CACHE_KEY = 'ivi-external-courses-fast-v3';
     var CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
     var REQUEST_TIMEOUT = 20000;
     var MAX_CARDS = 10;
@@ -2344,14 +2344,14 @@ document.addEventListener('DOMContentLoaded', function() {
             var course = byId[program.id];
             if (!course) return program;
 
-            var typeNames = getTerms(course, 'type').map(function (term) { return term.name; });
             var creditNames = getTerms(course, 'credit').map(function (term) { return term.name; });
             var areaSlugs = getTerms(course, 'area').map(function (term) { return term.slug; });
             var modeNames = getTerms(course, 'mode').map(function (term) { return term.name; });
+            var durationHours = String((course.metas && course.metas.teoricas) || '').trim();
             var details = [];
 
             details.push(program.upcoming ? copy(root, 'start') + ' ' + displayDate(program.date) : copy(root, 'soon'));
-            if (typeNames.length) details.push(typeNames.join(' · '));
+            if (durationHours) details.push(copy(root, 'duration') + ' ' + durationHours + 'h');
             if (creditNames.length) details.push(creditNames.join(' · '));
 
             var rawPrice = course.metas && course.metas.precio;
@@ -2403,8 +2403,8 @@ document.addEventListener('DOMContentLoaded', function() {
         content.appendChild(makeElement('h3', '', course.title));
         var details = makeElement('div', 'datos');
         var values = partial && !course.details.length ? [copy(root, 'start') + ' ' + displayDate(course.date)] : course.details;
-        var iconNames = ['calendar_month', 'laptop_chromebook', 'workspace_premium'];
-        var detailClasses = ['fecha-inicio', 'course-type', 'ecmecs'];
+        var iconNames = ['calendar_month', 'schedule', 'workspace_premium'];
+        var detailClasses = ['fecha-inicio', 'course-duration', 'ecmecs'];
         values.forEach(function (value, index) {
             var row = makeElement('p', 'ivi-course-detail ' + (detailClasses[index] || ''));
             var icon = makeElement('span', 'material-symbols-outlined', iconNames[index] || 'info');
@@ -2549,7 +2549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     per_page: '100',
                     include: ids,
                     context: 'view',
-                    _fields: 'id,title,metas.precio,metas.from_date,metas.imagen_principal,taxonomias'
+                    _fields: 'id,title,metas.precio,metas.from_date,metas.teoricas,metas.imagen_principal,taxonomias'
                 });
 
                 return fetchJson(coursesUrl).then(function (courses) {
