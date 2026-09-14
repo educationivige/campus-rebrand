@@ -426,20 +426,20 @@ a[href*="/message/edit.php"] {
    a la derecha del original */
 .totara_core__QuickAccess_icon .flex-icon.tfont-var-gear::before {
   margin-right: 8px;
-  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
-  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
+  -webkit-mask-image: url("https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
+  mask-image: url("https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
 }
 
 /* Mensajes (sobre del botón del topbar) */
 .popover-region-messages .popover-region-toggle .flex-icon.email.actua-icon::before {
-  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
-  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
+  -webkit-mask-image: url("https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
+  mask-image: url("https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
 }
 
 /* Notificaciones (campana del botón del topbar) */
 .popover-region-notifications .popover-region-toggle .flex-icon.notification-non-filled.actua-icon::before {
-  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
-  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
+  -webkit-mask-image: url("https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
+  mask-image: url("https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
 }
 
 /* --- 1.11 Breadcrumbs --- */
@@ -9243,7 +9243,7 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 
    El código/contenido (bloque de presentación con clases ivi-cert-*)
    se añade desde la página de ajustes del módulo:
-   https://ivirma.actuatxp.com/course/modedit.php?update=20259&return=1
+   https://ivipre.actuatxp.com/course/modedit.php?update=20259&return=1
    ============================================================ */
 
 /* Contenedor general */

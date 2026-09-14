@@ -3530,7 +3530,7 @@ table.appendChild(tfoot);
 
     // ── Badge LFE ─────────────────────────────────────────────────────────
     const LFE_BADGE = {
-        url:    'https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/LFE-badge.png',
+        url:    'https://ivipre.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/LFE-badge.png',
         width:  '72px',   // ← cambia este valor para ajustar el tamaño
         top:    '8px',
         left:   '8px'
