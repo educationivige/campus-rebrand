@@ -1,8 +1,22 @@
 <!-- ============================================================
-     HOME INTERNA (dashboard-9) — cursos ordenados por fecha de inscripción
+     HOME (internos dashboard-9 y externos dashboard-6) — cursos de
+     "Current Learning" ordenados por fecha de inscripción (más antiguo primero)
 
-     Instalación:
-     - Crear un bloque HTML en el dashboard 9.
+     El MISMO archivo sirve para las dos homes: el script es genérico y no
+     depende del id del dashboard ni del inst-id del bloque. Se autoactiva
+     (añade la clase ivi-home-due-active al body), intercepta el módulo AMD del
+     bloque por NOMBRE (block_current_learningas / block_current_programsas) y
+     lee cualquier informe reportbuilder de la página.
+       · Externos: dashboard-6, bloque current_learningas #inst226 (PRE, dato
+         de Bea; un volcado antiguo mostraba #inst352 — confirmar en vivo).
+       · Internos: dashboard-9, bloque current_learningas (PRE; confirmar id).
+     El script NO usa el inst-id (intercepta el módulo AMD por nombre), así que
+     el id solo importa para apuntar CSS. En externos el current_learningas es
+     el ÚNICO de la página ("cursos que te pueden interesar" es otro tipo de
+     bloque), así que no se reordena por error.
+
+     Instalación (repetir en CADA dashboard, el 9 y el 6):
+     - Crear un bloque HTML en el dashboard.
      - Pegar este archivo completo.
      - Asignar al bloque la clase CSS "bloque-codigo" para ocultar su marco.
      - FUENTE DE LA FECHA (requisito): el script ordena y pinta el badge con la
@@ -17,6 +31,13 @@
            finalización, quítala (el script toma la primera fecha de la fila).
          · El bloque puede ir oculto (display:none / clase bloque-fechas-cursos):
            el script lee igualmente las tablas ocultas y cruza por URL de curso.
+       ES EL MISMO INFORME en las dos homes: se usa la MISMA definición guardada,
+       embebida en un bloque de cada dashboard (9 y 6). No hay que crear un
+       informe por dashboard: como se autofiltra al usuario que lo mira
+       ("del alumno"), cada persona (interno o externo) ve sus propias
+       inscripciones. Requisito para externos: que ese informe sea ACCESIBLE a
+       los usuarios de tenant externos (revisar restricciones de audiencia/
+       visibilidad por tenant; si está limitado al tenant interno, no se verá).
        Sin el informe no hay fecha que leer y NO se pinta ningún badge (los
        cursos sin fecha quedan al final).
 
@@ -37,7 +58,7 @@
 (function () {
     'use strict';
 
-    var SCRIPT_VERSION = '2026-09-11.1';
+    var SCRIPT_VERSION = '2026-09-14.1';
     if (window.__iviHomeDueUrgencyVersion === SCRIPT_VERSION) return;
     window.__iviHomeDueUrgencyVersion = SCRIPT_VERSION;
     window.__iviHomeDueUrgencyActive = true;
@@ -243,10 +264,14 @@
     /* Época de finalización de un item: dato propio del bloque y, si falta,
        lo aportado por el informe oculto (indexado por URL del curso). */
     function epochForItem(item) {
-        var date = dateFromItem(item);
-        if (date) return date.getTime();
+        /* La "Fecha de inscripción" del INFORME manda: tiene prioridad sobre el
+           vencimiento nativo del item (dueinfo), que es OTRA fecha distinta.
+           En externos muchos cursos traen "Vencimiento el ..."; sin esta
+           prioridad se ordenaría por vencimiento en vez de por inscripción. */
         var key = normaliseUrl(item && item.url_view);
         if (key && dueByCourseUrl[key] !== undefined) return dueByCourseUrl[key];
+        var date = dateFromItem(item);
+        if (date) return date.getTime();
         return null;
     }
 
@@ -357,10 +382,11 @@
         );
 
         var storedEpoch = parseInt(tile.getAttribute('data-home-due-epoch'), 10);
-        var dueDate = isNaN(storedEpoch) ? dateFromBadge(badge) : new Date(storedEpoch);
+        var dueDate = isNaN(storedEpoch) ? null : new Date(storedEpoch);
 
-        /* Fallback: fecha capturada del item (dueinfo o campo) antes de paginar,
-           indexada por la URL del curso. */
+        /* 1) Fuente autoritativa de esta home: la "Fecha de inscripción" del
+           INFORME oculto, indexada por la URL del curso. Tiene prioridad sobre
+           el badge de vencimiento nativo (dueinfo), que es OTRA fecha. */
         if (!dueDate) {
             var courseLink = tile.querySelector('a.block_current_learningas-tile__link, a.block_current_programsas-tile__link');
             var courseKey = normaliseUrl(courseLink && courseLink.getAttribute('href'));
@@ -369,7 +395,10 @@
             }
         }
 
-        /* Último recurso: leer la fecha de los campos ocultos del propio tile
+        /* 2) Sin informe: el badge nativo de vencimiento (fallback). */
+        if (!dueDate) dueDate = dateFromBadge(badge);
+
+        /* 3) Último recurso: leer la fecha de los campos ocultos del propio tile
            (si la intercepción AMD no llegó a tiempo). Solo hay valores, sin
            clau, así que se detecta por VALOR. */
         if (!dueDate) {
