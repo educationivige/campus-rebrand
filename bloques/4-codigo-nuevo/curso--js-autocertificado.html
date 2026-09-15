@@ -1,0 +1,86 @@
+<!-- ============================================================
+     CURSO — Auto-emisión de certificado (mod_customcert)
+
+     Problema que resuelve:
+     Cuando un alumno completa un curso, el certificado personalizado
+     (mod_customcert / "¡Descarga tu certificado!") solo se emite si el
+     usuario hace clic en ese enlace. Si lo ignora, el certificado nunca
+     aparece en su expediente.
+
+     Qué hace este script:
+     Al cargar la página del curso, busca cualquier actividad
+     mod_customcert cuyo enlace esté DESBLOQUEADO (sin las clases
+     "dimmed" ni "conditionalhidden"). Si lo encuentra, hace un fetch
+     en background a esa URL para que Totara emita el certificado
+     server-side, sin que el usuario tenga que hacer nada.
+
+     Instalación para pruebas:
+     - Crear un bloque HTML en el curso que quieras probar.
+     - Pegar este archivo completo.
+     - Asignar al bloque la clase CSS "bloque-codigo" para ocultar su marco.
+     - El bloque puede ir en cualquier región de la página del curso.
+
+     Requisito:
+     El usuario debe visitar la página del curso DESPUÉS de haber
+     completado las actividades previas (normalmente Totara redirige
+     aquí al salir del SCORM, así que en la práctica se cumple).
+
+     Integración final:
+     Una vez verificado, mover la función al additional-html-footer.js
+     (repo campus-rebrand). El guard "page-course-view" garantiza que
+     solo corre en páginas de curso, no en home ni catálogo.
+     ============================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var SCRIPT_VERSION = '2026-09-15.3';
+    if (window.__iviAutoCertVersion === SCRIPT_VERSION) return;
+    window.__iviAutoCertVersion = SCRIPT_VERSION;
+
+    /* Solo corre en páginas de curso (body id empieza por page-course-view). */
+    if (!/^page-course-view/.test(document.body.id)) return;
+
+    function autoIssueCerts() {
+        /* Busca enlaces de customcert que estén accesibles (sin candado).
+           La clase "dimmed" o "conditionalhidden" indica que el prerequisito
+           aún no se ha cumplido; sin esas clases el enlace está libre. */
+        var links = document.querySelectorAll(
+            '.modtype_customcert a[href*="/mod/customcert/view.php"]' +
+            ':not(.dimmed):not(.conditionalhidden)'
+        );
+
+        if (!links.length) return;
+
+        Array.prototype.forEach.call(links, function (link) {
+            var href = link.getAttribute('href');
+            if (!href) return;
+
+            /* GET con downloadown=1: este es el parámetro que Totara usa para
+               generar el PDF y crear el registro customcert_issues.
+               La respuesta es el PDF en sí, que ignoramos; solo importa
+               que el servidor procese la solicitud y emita el certificado. */
+            var issueUrl = href + (href.indexOf('?') !== -1 ? '&' : '?') + 'downloadown=1';
+
+            fetch(issueUrl, {
+                credentials: 'same-origin',
+                redirect:    'follow'
+            }).then(function (response) {
+                if (response.ok) {
+                    console.log('[ivi-autocert] Certificado emitido:', issueUrl);
+                } else {
+                    console.warn('[ivi-autocert] Respuesta inesperada:', response.status, issueUrl);
+                }
+            }).catch(function (err) {
+                console.warn('[ivi-autocert] Error al emitir certificado:', err, issueUrl);
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', autoIssueCerts);
+    } else {
+        autoIssueCerts();
+    }
+})();
+</script>
