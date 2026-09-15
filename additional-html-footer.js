@@ -2144,6 +2144,496 @@ document.addEventListener('DOMContentLoaded', function() {
         LanguageSelector.init();
     }
 })();
+
+/**************** HOME EXTERNOS — LOADER RÁPIDO Y PROGRESIVO (PRE1) ****************/
+/*
+ * Sustituye la página renderizada (lenta) por tres consultas REST ligeras:
+ *   1. grupos-programa: identifica los 38 programas españoles publicados y
+ *      su próxima edición; con esto ya se pintan las primeras tarjetas.
+ *   2. cursos: completa en una sola petición área, modalidad, precio y créditos.
+ *   3. media: añade las imágenes en una sola petición.
+ *
+ * Todos los filtros trabajan en memoria y muestran como máximo 10 tarjetas.
+ * La copia persistente permite pintar inmediatamente en visitas posteriores,
+ * pero la información se vuelve a consultar siempre en segundo plano.
+ ************************************************************************************/
+(function () {
+    'use strict';
+
+    var SELECTOR = '.ivi-external-courses[data-loader="fast-v2"]';
+    var SOURCE_ORIGIN = 'https://iviglobaleducation.com';
+    var CACHE_KEY = 'ivi-external-courses-fast-v3';
+    var CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+    var REQUEST_TIMEOUT = 20000;
+    var MAX_CARDS = 10;
+
+    function textOf(element) {
+        return element ? (element.textContent || '').replace(/\s+/g, ' ').trim() : '';
+    }
+
+    function copy(root, key) {
+        return textOf(root.querySelector('[data-copy="' + key + '"]'));
+    }
+
+    function decodeHtml(value) {
+        var parsed = new DOMParser().parseFromString(String(value || ''), 'text/html');
+        return textOf(parsed.body);
+    }
+
+    function cleanGroupTitle(value) {
+        return decodeHtml(value)
+            .replace(/^Curso online\s*(?::|sobre)?\s*/i, '')
+            .replace(/^Curso\s+(?=[A-ZÁÉÍÓÚÜÑ])/i, '')
+            .trim();
+    }
+
+    function safeSourceUrl(value) {
+        if (!value) return '';
+        try {
+            var url = new URL(value, SOURCE_ORIGIN);
+            if (url.protocol !== 'https:' || url.origin !== SOURCE_ORIGIN) return '';
+            return url.href;
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function isSpanishUrl(value) {
+        var url = safeSourceUrl(value);
+        if (!url) return false;
+        return new URL(url).pathname.toLowerCase().indexOf('/en/') !== 0;
+    }
+
+    function madridToday() {
+        try {
+            return new Intl.DateTimeFormat('sv-SE', {
+                timeZone: 'Europe/Madrid',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(new Date()).replace(/-/g, '');
+        } catch (error) {
+            var now = new Date();
+            return String(now.getFullYear()) +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0');
+        }
+    }
+
+    function displayDate(value) {
+        var match = String(value || '').match(/^(\d{4})(\d{2})(\d{2})$/);
+        return match ? match[3] + '/' + match[2] + '/' + match[1] : '';
+    }
+
+    function makeElement(tag, className, value) {
+        var element = document.createElement(tag);
+        if (className) element.className = className;
+        if (typeof value === 'string') element.textContent = value;
+        return element;
+    }
+
+    function getTerms(course, taxonomy) {
+        var values = course && course.taxonomias && course.taxonomias[taxonomy];
+        return Array.isArray(values) ? values : [];
+    }
+
+    function fetchJson(url) {
+        var controller = typeof AbortController === 'function' ? new AbortController() : null;
+        var timeout = window.setTimeout(function () {
+            if (controller) controller.abort();
+        }, REQUEST_TIMEOUT);
+
+        return fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'omit',
+            headers: { Accept: 'application/json' },
+            signal: controller ? controller.signal : undefined
+        }).then(function (response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        }).then(function (payload) {
+            window.clearTimeout(timeout);
+            return payload;
+        }, function (error) {
+            window.clearTimeout(timeout);
+            throw error;
+        });
+    }
+
+    function readCache() {
+        try {
+            var raw = window.localStorage.getItem(CACHE_KEY);
+            if (!raw) return [];
+            var cached = JSON.parse(raw);
+            if (!cached || !Array.isArray(cached.courses)) return [];
+            if (Date.now() - Number(cached.savedAt || 0) > CACHE_MAX_AGE) return [];
+            return cached.courses;
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function writeCache(courses) {
+        try {
+            window.localStorage.setItem(CACHE_KEY, JSON.stringify({
+                savedAt: Date.now(),
+                courses: courses
+            }));
+        } catch (error) {
+            // La carga en vivo no depende del almacenamiento local.
+        }
+    }
+
+    function selectPrograms(groups) {
+        var today = madridToday();
+        var selected = [];
+
+        (Array.isArray(groups) ? groups : []).forEach(function (group, index) {
+            var link = safeSourceUrl(group && group.link);
+            var visible = group && group.metas && group.metas.mostrar_curso_online;
+            if (!link || !isSpanishUrl(link) || !(visible === true || String(visible) === '1')) return;
+
+            var editions = Array.isArray(group.ediciones) ? group.ediciones.filter(function (edition) {
+                return edition && edition.status === 'publish' && /^\d{8}$/.test(String(edition.from_date || ''));
+            }) : [];
+            if (!editions.length) return;
+
+            var future = editions.filter(function (edition) {
+                return String(edition.from_date) >= today;
+            }).sort(function (a, b) {
+                return String(a.from_date).localeCompare(String(b.from_date));
+            });
+            var edition = future[0] || editions.sort(function (a, b) {
+                return String(b.from_date).localeCompare(String(a.from_date));
+            })[0];
+
+            selected.push({
+                id: Number(edition.id),
+                href: link,
+                title: cleanGroupTitle(group.title && group.title.rendered),
+                date: String(edition.from_date),
+                upcoming: String(edition.from_date) >= today,
+                sourceOrder: index,
+                mode: '',
+                details: [],
+                areas: [],
+                priceLabel: '',
+                price: '',
+                image: '',
+                imageId: 0,
+                cta: ''
+            });
+        });
+
+        selected.sort(function (a, b) {
+            if (a.upcoming !== b.upcoming) return a.upcoming ? -1 : 1;
+            if (a.upcoming && a.date !== b.date) return a.date.localeCompare(b.date);
+            return a.sourceOrder - b.sourceOrder;
+        });
+        return selected;
+    }
+
+    function enrichPrograms(root, programs, courses) {
+        var byId = {};
+        (Array.isArray(courses) ? courses : []).forEach(function (course) {
+            byId[Number(course.id)] = course;
+        });
+
+        return programs.map(function (program) {
+            var course = byId[program.id];
+            if (!course) return program;
+
+            var creditNames = getTerms(course, 'credit').map(function (term) { return term.name; });
+            var areaSlugs = getTerms(course, 'area').map(function (term) { return term.slug; });
+            var modeNames = getTerms(course, 'mode').map(function (term) { return term.name; });
+            var durationHours = String((course.metas && course.metas.teoricas) || '').trim();
+            var details = [];
+
+            details.push(program.upcoming ? copy(root, 'start') + ' ' + displayDate(program.date) : copy(root, 'soon'));
+            if (durationHours) details.push(copy(root, 'duration') + ' ' + durationHours + 'h');
+            if (creditNames.length) details.push(creditNames.join(' · '));
+
+            var rawPrice = course.metas && course.metas.precio;
+            return Object.assign({}, program, {
+                title: decodeHtml(course.title && course.title.rendered) || program.title,
+                mode: modeNames.join(' · '),
+                details: details,
+                areas: areaSlugs,
+                priceLabel: copy(root, 'enrollment'),
+                price: rawPrice !== undefined && rawPrice !== null && String(rawPrice) !== '' ? String(rawPrice) + ' €' : '',
+                imageId: Number(course.metas && course.metas.imagen_principal) || 0,
+                cta: copy(root, 'more-info')
+            });
+        });
+    }
+
+    function addImages(programs, media) {
+        var images = {};
+        (Array.isArray(media) ? media : []).forEach(function (item) {
+            var sizes = item && item.media_details && item.media_details.sizes;
+            var optimized = sizes && ((sizes.medium && sizes.medium.source_url) ||
+                (sizes.medium_large && sizes.medium_large.source_url));
+            images[Number(item.id)] = safeSourceUrl(optimized || item.source_url);
+        });
+        return programs.map(function (program) {
+            return Object.assign({}, program, { image: images[program.imageId] || program.image || '' });
+        });
+    }
+
+    function makeCard(root, course, partial) {
+        var card = makeElement('article', 'carousel-card' + (partial ? ' is-partial' : ''));
+        card.setAttribute('role', 'listitem');
+
+        var media = makeElement('div', 'ivi-course-card__media');
+        if (course.image) {
+            var image = document.createElement('img');
+            image.src = safeSourceUrl(course.image);
+            image.alt = '';
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.width = 464;
+            image.height = 270;
+            media.appendChild(image);
+        }
+        if (course.mode) media.appendChild(makeElement('span', 'ivi-course-mode', course.mode));
+        card.appendChild(media);
+
+        var content = makeElement('div', 'card-content');
+        content.appendChild(makeElement('h3', '', course.title));
+        var details = makeElement('div', 'datos');
+        var values = partial && !course.details.length ? [copy(root, 'start') + ' ' + displayDate(course.date)] : course.details;
+        var iconNames = ['calendar_month', 'schedule', 'workspace_premium'];
+        var detailClasses = ['fecha-inicio', 'course-duration', 'ecmecs'];
+        values.forEach(function (value, index) {
+            var row = makeElement('p', 'ivi-course-detail ' + (detailClasses[index] || ''));
+            var icon = makeElement('span', 'material-symbols-outlined', iconNames[index] || 'info');
+            icon.setAttribute('aria-hidden', 'true');
+            row.appendChild(icon);
+            row.appendChild(makeElement('span', '', value));
+            details.appendChild(row);
+        });
+        content.appendChild(details);
+        card.appendChild(content);
+
+        var footer = makeElement('div', 'card-footer');
+        var price = makeElement('span', 'matricula');
+        if (course.priceLabel) price.appendChild(makeElement('span', 'ivi-course-price-label', course.priceLabel));
+        if (course.price) price.appendChild(makeElement('strong', '', course.price));
+        footer.appendChild(price);
+
+        var more = makeElement('a', 'btn-info', course.cta || copy(root, 'more-info'));
+        more.href = safeSourceUrl(course.href);
+        more.target = '_blank';
+        more.rel = 'noopener noreferrer';
+        footer.appendChild(more);
+        card.appendChild(footer);
+        return card;
+    }
+
+    function init(root) {
+        if (!root || root.getAttribute('data-ivi-fast-ready') === '1') return;
+        root.setAttribute('data-ivi-fast-ready', '1');
+
+        var carousel = root.querySelector('.carousel');
+        var container = root.querySelector('.carousel-container');
+        var previous = root.querySelector('.carousel-btn.prev');
+        var next = root.querySelector('.carousel-btn.next');
+        var filters = root.querySelectorAll('.ivi-course-filter');
+        var sourceUrl = safeSourceUrl(root.getAttribute('data-source-url'));
+        var currentArea = '';
+        var allCourses = readCache();
+        var dataReady = allCourses.length > 0;
+        var resizeFrame = null;
+
+        if (!carousel || !container || !previous || !next) return;
+
+        function setFiltersEnabled(enabled) {
+            Array.prototype.forEach.call(filters, function (button) {
+                button.disabled = !enabled;
+            });
+        }
+
+        function setActiveFilter(area) {
+            Array.prototype.forEach.call(filters, function (button) {
+                var active = (button.getAttribute('data-area') || '') === area;
+                button.classList.toggle('is-active', active);
+                button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+        }
+
+        function updateArrows() {
+            var maxScroll = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+            previous.disabled = carousel.scrollLeft <= 2;
+            next.disabled = maxScroll <= 2 || carousel.scrollLeft >= maxScroll - 2;
+        }
+
+        function renderStatus(key, withLink) {
+            carousel.innerHTML = '';
+            var status = makeElement('div', 'ivi-course-status ' + (key === 'loading' ? 'is-loading' : 'is-message'));
+            status.setAttribute('role', key === 'error' ? 'alert' : 'status');
+            if (key === 'loading') {
+                var spinner = makeElement('span', 'ivi-course-spinner');
+                spinner.setAttribute('aria-hidden', 'true');
+                status.appendChild(spinner);
+            }
+            status.appendChild(makeElement('span', '', copy(root, key)));
+            if (withLink && sourceUrl) {
+                var link = makeElement('a', 'ivi-course-source-link', copy(root, 'source-link'));
+                link.href = sourceUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                status.appendChild(link);
+            }
+            carousel.appendChild(status);
+            container.setAttribute('aria-busy', key === 'loading' ? 'true' : 'false');
+            updateArrows();
+        }
+
+        function visibleCourses() {
+            var filtered = currentArea ? allCourses.filter(function (course) {
+                return Array.isArray(course.areas) && course.areas.indexOf(currentArea) !== -1;
+            }) : allCourses;
+            return filtered.slice(0, MAX_CARDS);
+        }
+
+        function render(partial) {
+            var courses = visibleCourses();
+            carousel.innerHTML = '';
+            if (!courses.length) {
+                renderStatus('empty', false);
+                return;
+            }
+            var fragment = document.createDocumentFragment();
+            courses.forEach(function (course) {
+                fragment.appendChild(makeCard(root, course, partial));
+            });
+            carousel.appendChild(fragment);
+            carousel.scrollLeft = 0;
+            container.setAttribute('aria-busy', partial ? 'true' : 'false');
+            window.requestAnimationFrame(updateArrows);
+        }
+
+        function requestUrl(base, parameters) {
+            var url = new URL(base);
+            Object.keys(parameters).forEach(function (key) {
+                url.searchParams.set(key, parameters[key]);
+            });
+            return url.href;
+        }
+
+        function refresh() {
+            var groupsApi = root.getAttribute('data-groups-api');
+            var coursesApi = root.getAttribute('data-courses-api');
+            var mediaApi = root.getAttribute('data-media-api');
+            if (!groupsApi || !coursesApi || !mediaApi) return;
+
+            var groupsUrl = requestUrl(groupsApi, {
+                per_page: '100',
+                context: 'view',
+                _fields: 'id,link,title,metas,ediciones'
+            });
+
+            fetchJson(groupsUrl).then(function (groups) {
+                var programs = selectPrograms(groups);
+                if (!programs.length) throw new Error('No hay programas públicos');
+
+                if (!dataReady) {
+                    allCourses = programs;
+                    currentArea = '';
+                    render(true);
+                }
+
+                var ids = programs.map(function (program) { return program.id; }).join(',');
+                var coursesUrl = requestUrl(coursesApi, {
+                    per_page: '100',
+                    include: ids,
+                    context: 'view',
+                    _fields: 'id,title,metas.precio,metas.from_date,metas.teoricas,metas.imagen_principal,taxonomias'
+                });
+
+                return fetchJson(coursesUrl).then(function (courses) {
+                    allCourses = enrichPrograms(root, programs, courses);
+                    dataReady = true;
+                    setFiltersEnabled(true);
+                    render(false);
+
+                    var mediaIds = allCourses.map(function (course) { return course.imageId; })
+                        .filter(function (id, index, values) { return id && values.indexOf(id) === index; });
+                    if (!mediaIds.length) {
+                        writeCache(allCourses);
+                        return null;
+                    }
+
+                    var mediaUrl = requestUrl(mediaApi, {
+                        per_page: '100',
+                        include: mediaIds.join(','),
+                        context: 'view',
+                        _fields: 'id,source_url,media_details'
+                    });
+                    return fetchJson(mediaUrl).then(function (media) {
+                        allCourses = addImages(allCourses, media);
+                        writeCache(allCourses);
+                        render(false);
+                    }, function () {
+                        writeCache(allCourses);
+                    });
+                });
+            }).catch(function () {
+                if (!dataReady) {
+                    setFiltersEnabled(false);
+                    renderStatus('error', true);
+                } else {
+                    container.setAttribute('aria-busy', 'false');
+                }
+            });
+        }
+
+        function scrollStep(direction) {
+            var firstCard = carousel.querySelector('.carousel-card');
+            var styles = window.getComputedStyle(carousel);
+            var gap = parseFloat(styles.columnGap || styles.gap) || 16;
+            var distance = firstCard ? firstCard.getBoundingClientRect().width + gap : carousel.clientWidth;
+            carousel.scrollBy({ left: direction * distance, behavior: 'smooth' });
+        }
+
+        Array.prototype.forEach.call(filters, function (button) {
+            button.addEventListener('click', function () {
+                currentArea = button.getAttribute('data-area') || '';
+                setActiveFilter(currentArea);
+                render(false);
+            });
+        });
+        previous.addEventListener('click', function () { scrollStep(-1); });
+        next.addEventListener('click', function () { scrollStep(1); });
+        carousel.addEventListener('scroll', function () {
+            if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+            resizeFrame = window.requestAnimationFrame(updateArrows);
+        }, { passive: true });
+        window.addEventListener('resize', function () {
+            if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+            resizeFrame = window.requestAnimationFrame(updateArrows);
+        });
+
+        setActiveFilter('');
+        if (dataReady) {
+            setFiltersEnabled(true);
+            render(false);
+        } else {
+            setFiltersEnabled(false);
+            renderStatus('loading', false);
+        }
+        refresh();
+    }
+
+    function boot() {
+        var blocks = document.querySelectorAll(SELECTOR);
+        Array.prototype.forEach.call(blocks, init);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
 // Script para detectar idioma e insertar contenido HTML según el idioma detectado
 const EnrollmentPageHandler = {
     init: function() {
@@ -4574,6 +5064,335 @@ table.appendChild(tfoot);
                 });
             });
         }).observe(document.body, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
+/**************** HOME EXTERNOS — CURSOS DINÁMICOS DE IVI GLOBAL EDUCATION ****************/
+/*
+ * Completa el bloque .ivi-external-courses con el listado ya depurado que
+ * publica /curso-online. El endpoint REST de la página ejecuta el mismo
+ * shortcode que la web y acepta ?area=<slug>, por lo que fechas, precios,
+ * imágenes, orden y filtros se mantienen sincronizados sin guardar cursos en
+ * Totara. La REST devuelve también los cursos ingleses fuera del contexto del
+ * front; se excluyen por su URL /en/ para reproducir la página española.
+ *
+ * PRE1/PRE2 y producción están autorizados por el CORS de la web de formación.
+ * sessionStorage se usa solo como respaldo: siempre se solicita la versión
+ * actual y la copia anterior aparece únicamente mientras llega o si falla.
+ ************************************************************************************/
+(function () {
+    'use strict';
+
+    var SOURCE_ORIGIN = 'https://iviglobaleducation.com';
+    var CACHE_PREFIX = 'ivi-external-courses-v1-';
+    var REQUEST_TIMEOUT = 45000;
+
+    function textOf(element) {
+        return element ? (element.textContent || '').replace(/\s+/g, ' ').trim() : '';
+    }
+
+    function copy(root, key) {
+        return textOf(root.querySelector('[data-copy="' + key + '"]'));
+    }
+
+    function safeSourceUrl(value) {
+        if (!value) return '';
+        try {
+            var url = new URL(value, SOURCE_ORIGIN);
+            if (url.protocol !== 'https:' || url.origin !== SOURCE_ORIGIN) return '';
+            return url.href;
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function isEnglishCourse(url) {
+        try {
+            return new URL(url, SOURCE_ORIGIN).pathname.toLowerCase().indexOf('/en/') === 0;
+        } catch (error) {
+            return true;
+        }
+    }
+
+    function parseCourses(renderedHtml) {
+        var parsed = new DOMParser().parseFromString(renderedHtml, 'text/html');
+        var cards = parsed.querySelectorAll('.course-cards__item');
+        var courses = [];
+
+        Array.prototype.forEach.call(cards, function (card) {
+            var link = card.querySelector('.course-cards__item__bottom__derecha a');
+            var href = safeSourceUrl(link && link.getAttribute('href'));
+            var title = textOf(card.querySelector('.course-cards__item__info h2'));
+
+            if (!href || !title || isEnglishCourse(href)) return;
+
+            var sourceImage = card.querySelector('.course-cards__item__cabecera img');
+            var image = safeSourceUrl(sourceImage && (
+                sourceImage.getAttribute('data-src') || sourceImage.getAttribute('src')
+            ));
+            var detailNodes = card.querySelectorAll('.grid-card-info__line p');
+            var details = [];
+
+            Array.prototype.forEach.call(detailNodes, function (detail) {
+                var value = textOf(detail);
+                if (value) details.push(value);
+            });
+
+            courses.push({
+                title: title,
+                image: image,
+                mode: textOf(card.querySelector('.course-cards__item__cabecera p')),
+                details: details,
+                priceLabel: textOf(card.querySelector('.course-cards__item__bottom__izquierda h5')),
+                price: textOf(card.querySelector('.course-cards__item__bottom__izquierda p')),
+                href: href,
+                cta: textOf(link) || 'Más info'
+            });
+        });
+
+        return courses;
+    }
+
+    function makeElement(tag, className, value) {
+        var element = document.createElement(tag);
+        if (className) element.className = className;
+        if (typeof value === 'string') element.textContent = value;
+        return element;
+    }
+
+    function makeCard(course) {
+        var card = makeElement('article', 'carousel-card');
+        card.setAttribute('role', 'listitem');
+
+        var media = makeElement('div', 'ivi-course-card__media');
+        if (course.image) {
+            var image = document.createElement('img');
+            image.src = course.image;
+            image.alt = '';
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.width = 464;
+            image.height = 270;
+            media.appendChild(image);
+        }
+        if (course.mode) media.appendChild(makeElement('span', 'ivi-course-mode', course.mode));
+        card.appendChild(media);
+
+        var content = makeElement('div', 'card-content');
+        content.appendChild(makeElement('h3', '', course.title));
+
+        var details = makeElement('div', 'datos');
+        var iconNames = ['calendar_month', 'laptop_chromebook', 'workspace_premium'];
+        var detailClasses = ['fecha-inicio', 'course-type', 'ecmecs'];
+        course.details.forEach(function (value, index) {
+            var row = makeElement('p', 'ivi-course-detail ' + (detailClasses[index] || ''));
+            var icon = makeElement('span', 'material-symbols-outlined', iconNames[index] || 'info');
+            icon.setAttribute('aria-hidden', 'true');
+            row.appendChild(icon);
+            row.appendChild(makeElement('span', '', value));
+            details.appendChild(row);
+        });
+        content.appendChild(details);
+        card.appendChild(content);
+
+        var footer = makeElement('div', 'card-footer');
+        var price = makeElement('span', 'matricula');
+        if (course.priceLabel) price.appendChild(makeElement('span', 'ivi-course-price-label', course.priceLabel));
+        if (course.price) price.appendChild(makeElement('strong', '', course.price));
+        footer.appendChild(price);
+
+        var more = makeElement('a', 'btn-info', course.cta);
+        more.href = course.href;
+        more.target = '_blank';
+        more.rel = 'noopener noreferrer';
+        footer.appendChild(more);
+        card.appendChild(footer);
+
+        return card;
+    }
+
+    function cacheKey(area) {
+        return CACHE_PREFIX + (area || 'all');
+    }
+
+    function readCache(area) {
+        try {
+            var cached = window.sessionStorage.getItem(cacheKey(area));
+            if (!cached) return null;
+            var parsed = JSON.parse(cached);
+            return parsed && typeof parsed.html === 'string' ? parsed.html : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function writeCache(area, html) {
+        try {
+            window.sessionStorage.setItem(cacheKey(area), JSON.stringify({ html: html }));
+        } catch (error) {
+            // El carrusel sigue funcionando si el navegador bloquea el almacenamiento.
+        }
+    }
+
+    function init(root) {
+        if (!root || root.getAttribute('data-ivi-ready') === '1') return;
+        root.setAttribute('data-ivi-ready', '1');
+
+        var carousel = root.querySelector('.carousel');
+        var container = root.querySelector('.carousel-container');
+        var previous = root.querySelector('.carousel-btn.prev');
+        var next = root.querySelector('.carousel-btn.next');
+        var filters = root.querySelectorAll('.ivi-course-filter');
+        var apiUrl = root.getAttribute('data-api-url');
+        var sourceUrl = safeSourceUrl(root.getAttribute('data-source-url'));
+        var requestNumber = 0;
+        var controller = null;
+        var resizeFrame = null;
+
+        if (!carousel || !container || !previous || !next || !apiUrl) return;
+
+        function setActiveFilter(area) {
+            Array.prototype.forEach.call(filters, function (button) {
+                var active = (button.getAttribute('data-area') || '') === area;
+                button.classList.toggle('is-active', active);
+                button.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+        }
+
+        function updateArrows() {
+            var maxScroll = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+            previous.disabled = carousel.scrollLeft <= 2;
+            next.disabled = maxScroll <= 2 || carousel.scrollLeft >= maxScroll - 2;
+        }
+
+        function renderCourses(courses) {
+            carousel.innerHTML = '';
+            if (!courses.length) {
+                renderStatus('empty', false);
+                return;
+            }
+
+            var fragment = document.createDocumentFragment();
+            courses.forEach(function (course) {
+                fragment.appendChild(makeCard(course));
+            });
+            carousel.appendChild(fragment);
+            carousel.scrollLeft = 0;
+            container.setAttribute('aria-busy', 'false');
+            window.requestAnimationFrame(updateArrows);
+        }
+
+        function renderStatus(key, withLink) {
+            carousel.innerHTML = '';
+            var status = makeElement('div', 'ivi-course-status ' + (key === 'loading' ? 'is-loading' : 'is-message'));
+            status.setAttribute('role', key === 'error' ? 'alert' : 'status');
+
+            if (key === 'loading') {
+                var spinner = makeElement('span', 'ivi-course-spinner');
+                spinner.setAttribute('aria-hidden', 'true');
+                status.appendChild(spinner);
+            }
+            status.appendChild(makeElement('span', '', copy(root, key)));
+
+            if (withLink && sourceUrl) {
+                var externalLink = makeElement('a', 'ivi-course-source-link', copy(root, 'source-link'));
+                externalLink.href = sourceUrl;
+                externalLink.target = '_blank';
+                externalLink.rel = 'noopener noreferrer';
+                status.appendChild(externalLink);
+            }
+
+            carousel.appendChild(status);
+            container.setAttribute('aria-busy', key === 'loading' ? 'true' : 'false');
+            updateArrows();
+        }
+
+        function loadArea(area) {
+            var currentRequest = ++requestNumber;
+            var cachedHtml = readCache(area);
+            var cachedCourses = cachedHtml ? parseCourses(cachedHtml) : [];
+
+            setActiveFilter(area);
+            if (cachedCourses.length) renderCourses(cachedCourses);
+            else renderStatus('loading', false);
+
+            if (controller) controller.abort();
+            var requestController = typeof AbortController === 'function' ? new AbortController() : null;
+            controller = requestController;
+
+            var endpoint = new URL(apiUrl);
+            endpoint.searchParams.set('context', 'view');
+            endpoint.searchParams.set('_fields', 'content');
+            endpoint.searchParams.set('lang', 'es');
+            if (area) endpoint.searchParams.set('area', area);
+
+            var timeout = window.setTimeout(function () {
+                if (requestController) requestController.abort();
+            }, REQUEST_TIMEOUT);
+
+            fetch(endpoint.href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit',
+                headers: { Accept: 'application/json' },
+                signal: requestController ? requestController.signal : undefined
+            })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function (payload) {
+                    var html = payload && payload.content && payload.content.rendered;
+                    if (typeof html !== 'string') throw new Error('Respuesta sin contenido renderizado');
+                    if (currentRequest !== requestNumber) return;
+
+                    writeCache(area, html);
+                    renderCourses(parseCourses(html));
+                })
+                .catch(function (error) {
+                    if (currentRequest !== requestNumber) return;
+                    if (!cachedCourses.length) renderStatus('error', true);
+                    else container.setAttribute('aria-busy', 'false');
+                })
+                .then(function () {
+                    window.clearTimeout(timeout);
+                });
+        }
+
+        function scrollStep(direction) {
+            var firstCard = carousel.querySelector('.carousel-card');
+            var styles = window.getComputedStyle(carousel);
+            var gap = parseFloat(styles.columnGap || styles.gap) || 16;
+            var distance = firstCard ? firstCard.getBoundingClientRect().width + gap : carousel.clientWidth;
+            carousel.scrollBy({ left: direction * distance, behavior: 'smooth' });
+        }
+
+        Array.prototype.forEach.call(filters, function (button) {
+            button.addEventListener('click', function () {
+                loadArea(button.getAttribute('data-area') || '');
+            });
+        });
+        previous.addEventListener('click', function () { scrollStep(-1); });
+        next.addEventListener('click', function () { scrollStep(1); });
+        carousel.addEventListener('scroll', function () {
+            if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+            resizeFrame = window.requestAnimationFrame(updateArrows);
+        }, { passive: true });
+        window.addEventListener('resize', function () {
+            if (resizeFrame) window.cancelAnimationFrame(resizeFrame);
+            resizeFrame = window.requestAnimationFrame(updateArrows);
+        });
+
+        loadArea('');
+    }
+
+    function boot() {
+        // Loader legacy conservado temporalmente durante la prueba de PRE1.
+        var blocks = document.querySelectorAll('.ivi-external-courses[data-loader="rendered-page"]');
+        Array.prototype.forEach.call(blocks, init);
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

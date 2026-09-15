@@ -1,131 +1,203 @@
-{mlang es}<div class="carousel-container">
-    <button class="carousel-btn prev">❮</button>
-    <div class="carousel">
-        <div class="carousel-card">
-            <img src="https://iviglobaleducation.com/wp-content/uploads/adobestock_497483653.png" alt="Curso 1" width="464" height="270" role="presentation" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Dolor Pélvico Crónico en Ginecología</h3>
-                <div class="datos"><p class="fecha-inicio">Duración: <b>50h</b></p> 
-<p class="ecmecs">&nbsp;50 ECMEC´s</p></div>
-            </div>
-            <div class="card-footer">
-                <span class="matricula">Matrícula: <b>330€</b></span>
-                <a href="https://iviglobaleducation.com/program/dolor-pelvico-cronico-en-ginecologia" class="btn-info" target="_blank" rel="noopener noreferrer">Más info</a>
-            </div>
-        </div>
-        <div class="carousel-card">
-            <img src="https://iviglobaleducation.com/wp-content/uploads/22_adobestock_487120048-scaled.jpg" alt="Curso 2" width="464" height="270" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Avanzado en Estimulación Ovárica y Transferencia Embrionaria</h3>
-                 <div class="datos"><p class="fecha-inicio">Duración: <b>25h</b></p>
-<p class="ecmecs">&nbsp;25 ECMEC´s</p> </div>
-            </div>
-              <div class="card-footer">
-                <span class="matricula">Matrícula: <b>480€</b></span>
-                 <a href="https://iviglobaleducation.com/program/curso-online-avanzado-en-estimulacion-ovarica-y-transferencia-embrionaria" class="btn-info" target="_blank" rel="noopener noreferrer">Más info</a>
-            </div>
-        </div>
-        <div class="carousel-card">
-            <img src="https://iviglobaleducation.com/wp-content/uploads/microsoftteams-image-47.png" alt="Curso 3" width="479" height="282" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Inmunología y Hematología de la Reproducción Asistida</h3>
-                 <div class="datos"><p class="fecha-inicio">Duración:&nbsp;<b>5h</b></p> 
-<p class="ecmecs">&nbsp;5 ECMEC´s</p>  </div>  
-            </div>
-              <div class="card-footer">
-                <span class="matricula">Matrícula: <b>250€</b></span>
-                <a href="https://iviglobaleducation.com/program/inmunologia-y-reproduccion-asistida" class="btn-info" target="_blank" rel="noopener noreferrer">Más info</a>
-            </div>
-        </div>
-        <div class="carousel-card">
-            <img src="https://iviglobaleducation.com/wp-content/uploads/grande2.jpg" alt="Curso 1" width="479" height="282" role="presentation" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Teórico-Práctico de Especialización en Reproducción Asistida para Técnicos de Laboratorio</h3>
-                <div class="datos"><p class="fecha-inicio">Duración: <b>25h</b></p> 
-<p class="ecmecs">25 ECMEC´s</p></div>
-            </div>
-            <div class="card-footer">
-                <span class="matricula">Matrícula: <b>900€</b></span>
-                <a href="https://iviglobaleducation.com/program/curso-teorico-practico-de-reproduccion-asistida-para-tecnicos-de-laboratorio" class="btn-info" target="_blank" rel="noopener noreferrer">Más info</a>
-            </div>
-        </div>
+<!--
+  Bloque Home externos: cursos de IVI Global Education.
+  La estructura se completa desde additional-html-footer.js usando la salida
+  pública de https://iviglobaleducation.com/curso-online.
+  Clase CSS del bloque en Totara: externos
+-->
+<div class="ivi-external-courses"
+     data-loader="fast-v2"
+     data-groups-api="https://iviglobaleducation.com/wp-json/wp/v2/grupos-programa"
+     data-courses-api="https://iviglobaleducation.com/wp-json/wp/v2/cursos"
+     data-media-api="https://iviglobaleducation.com/wp-json/wp/v2/media"
+     data-source-url="https://iviglobaleducation.com/curso-online">
+    <div class="ivi-course-filters" role="group">
+        <span class="sr-only">
+            {mlang es}Filtrar cursos por área{mlang}
+            {mlang en}Filter courses by area{mlang}
+            {mlang it}Filtra i corsi per area{mlang}
+            {mlang pt}Filtrar cursos por área{mlang}
+            {mlang cs}Filtrovat kurzy podle oblasti{mlang}
+            {mlang sv}Filtrera kurser efter område{mlang}
+        </span>
+
+        <button type="button" class="ivi-course-filter is-active" data-area="" aria-pressed="true">
+            {mlang es}Todos los cursos{mlang}
+            {mlang en}All courses{mlang}
+            {mlang it}Tutti i corsi{mlang}
+            {mlang pt}Todos os cursos{mlang}
+            {mlang cs}Všechny kurzy{mlang}
+            {mlang sv}Alla kurser{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="ginecologia" aria-pressed="false">
+            {mlang es}Ginecología{mlang}
+            {mlang en}Gynecology{mlang}
+            {mlang it}Ginecologia{mlang}
+            {mlang pt}Ginecologia{mlang}
+            {mlang cs}Gynekologie{mlang}
+            {mlang sv}Gynekologi{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="reproduccion" aria-pressed="false">
+            {mlang es}Reproducción Asistida{mlang}
+            {mlang en}Assisted Reproduction{mlang}
+            {mlang it}Riproduzione assistita{mlang}
+            {mlang pt}Reprodução Assistida{mlang}
+            {mlang cs}Asistovaná reprodukce{mlang}
+            {mlang sv}Assisterad reproduktion{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="embriologia" aria-pressed="false">
+            {mlang es}Embriología{mlang}
+            {mlang en}Embryology{mlang}
+            {mlang it}Embriologia{mlang}
+            {mlang pt}Embriologia{mlang}
+            {mlang cs}Embryologie{mlang}
+            {mlang sv}Embryologi{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="genetica" aria-pressed="false">
+            {mlang es}Genética{mlang}
+            {mlang en}Genetics{mlang}
+            {mlang it}Genetica{mlang}
+            {mlang pt}Genética{mlang}
+            {mlang cs}Genetika{mlang}
+            {mlang sv}Genetik{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="psicologia" aria-pressed="false">
+            {mlang es}Psicología{mlang}
+            {mlang en}Psychology{mlang}
+            {mlang it}Psicologia{mlang}
+            {mlang pt}Psicologia{mlang}
+            {mlang cs}Psychologie{mlang}
+            {mlang sv}Psykologi{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="investigacion" aria-pressed="false">
+            {mlang es}Investigación{mlang}
+            {mlang en}Research{mlang}
+            {mlang it}Ricerca{mlang}
+            {mlang pt}Investigação{mlang}
+            {mlang cs}Výzkum{mlang}
+            {mlang sv}Forskning{mlang}
+        </button>
+        <button type="button" class="ivi-course-filter" data-area="enfermeria" aria-pressed="false">
+            {mlang es}Enfermería{mlang}
+            {mlang en}Nursing{mlang}
+            {mlang it}Infermieristica{mlang}
+            {mlang pt}Enfermagem{mlang}
+            {mlang cs}Ošetřovatelství{mlang}
+            {mlang sv}Omvårdnad{mlang}
+        </button>
     </div>
-    <button class="carousel-btn next">❯</button>
-</div>{mlang}
-{mlang en}<div class="carousel-container">
-    <button class="carousel-btn prev">❮</button>
-    <div class="carousel">
-        <div class="carousel-card">
-            <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/lab-managers@3x.png" alt="Curso 1" width="464" height="270" role="presentation" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Optimizing Quality and Performance in IVF Laboratories</h3>
-                <div class="datos"><p class="fecha-inicio">Duration: <b>1</b><b>5h</b></p> 
-<p class="ecmecs">&nbsp;15 ECMEC´s</p></div>
-            </div>
-            <div class="card-footer">
-                <span class="matricula">Enrollment: <b>350€</b></span>
-                <a href="https://iviglobaleducation.com/en/teaching/online-course-optimizing-quality-and-performance-in-ivf-laboratories-32468" class="btn-info" target="_blank" rel="noopener noreferrer">More info</a>
-            </div>
-        </div>
-        <div class="carousel-card">
-            <img src="https://iviglobaleducation.com/wp-content/uploads/22_adobestock_487120048-scaled.jpg" alt="Curso 2" width="464" height="270" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Ovarian Stimulation and Embryo Transfer</h3>
-                 <div class="datos"><p class="fecha-inicio">Duration: <b>25h</b></p>
-<p class="ecmecs">&nbsp;25 ECMEC´s</p> </div>
-            </div>
-              <div class="card-footer">
-                <span class="matricula">Enrollment: <b>540€</b></span>
-                 <a href="https://iviglobaleducation.com/en/program/online-course-ovarian-stimulation-and-embryo-transfer" class="btn-info" target="_blank" rel="noopener noreferrer">More info</a>
+
+    <div class="carousel-container" aria-busy="true">
+        <button type="button" class="carousel-btn prev" disabled>
+            <span aria-hidden="true">❮</span>
+            <span class="sr-only">
+                {mlang es}Cursos anteriores{mlang}
+                {mlang en}Previous courses{mlang}
+                {mlang it}Corsi precedenti{mlang}
+                {mlang pt}Cursos anteriores{mlang}
+                {mlang cs}Předchozí kurzy{mlang}
+                {mlang sv}Föregående kurser{mlang}
+            </span>
+        </button>
+
+        <div class="carousel" role="list" tabindex="0" aria-live="polite">
+            <div class="ivi-course-status is-loading" role="status">
+                <span class="ivi-course-spinner" aria-hidden="true"></span>
+                <span>
+                    {mlang es}Cargando cursos…{mlang}
+                    {mlang en}Loading courses…{mlang}
+                    {mlang it}Caricamento dei corsi…{mlang}
+                    {mlang pt}A carregar cursos…{mlang}
+                    {mlang cs}Načítání kurzů…{mlang}
+                    {mlang sv}Laddar kurser…{mlang}
+                </span>
             </div>
         </div>
-        <div class="carousel-card">
-            <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/genetics.png" alt="Curso 3" width="479" height="282" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Fundamentals in Reproductive Genetics</h3>
-                 <div class="datos"><p class="fecha-inicio">Duration: <b>10h</b></p> 
-<p class="ecmecs">&nbsp;10 ECMEC´s</p>  </div>  
-            </div>
-              <div class="card-footer">
-                <span class="matricula">Enrollment: <b>100€</b></span>
-                <a href="https://iviglobaleducation.com/en/program/online-course-fundamentals-in-reproductive-genetics" class="btn-info" target="_blank" rel="noopener noreferrer">More info</a>
-            </div>
-        </div>
-        <div class="carousel-card">
-            <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/managers-2.png" alt="Curso 1" width="479" height="282" role="presentation" class="img-responsive atto_image_button_text-bottom">
-            <div class="card-content">
-                <h3>Comprehensive Laboratory Management</h3>
-                <div class="datos"><p class="fecha-inicio">Duration: <b>15h</b></p> 
-<p class="ecmecs">&nbsp;15 ECMEC´s</p></div>
-            </div>
-            <div class="card-footer">
-                <span class="matricula">Enrollment: <b>350€</b></span>
-                <a href="https://iviglobaleducation.com/en/teaching/online-course-comprehensive-laboratory-management-32466" class="btn-info" target="_blank" rel="noopener noreferrer">More info</a>
-            </div>
-        </div>
+
+        <button type="button" class="carousel-btn next" disabled>
+            <span aria-hidden="true">❯</span>
+            <span class="sr-only">
+                {mlang es}Cursos siguientes{mlang}
+                {mlang en}Next courses{mlang}
+                {mlang it}Corsi successivi{mlang}
+                {mlang pt}Cursos seguintes{mlang}
+                {mlang cs}Další kurzy{mlang}
+                {mlang sv}Nästa kurser{mlang}
+            </span>
+        </button>
     </div>
-    <button class="carousel-btn next">❯</button>
-</div>{mlang}
 
-
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Seleccionar todos los carruseles en la página
-    const carousels = document.querySelectorAll('.carousel');
-    
-    carousels.forEach((carousel, index) => {
-        const prevBtn = carousel.parentElement.querySelector('.prev');
-        const nextBtn = carousel.parentElement.querySelector('.next');
-        
-        // Asignar eventos a los botones
-        nextBtn.addEventListener('click', () => {
-            carousel.scrollBy({ left: 300, behavior: 'smooth' });
-        });
-        
-        prevBtn.addEventListener('click', () => {
-            carousel.scrollBy({ left: -300, behavior: 'smooth' });
-        });
-    });
-});
-</script>
+    <div class="ivi-course-copy" hidden>
+        <span data-copy="loading">
+            {mlang es}Cargando cursos…{mlang}
+            {mlang en}Loading courses…{mlang}
+            {mlang it}Caricamento dei corsi…{mlang}
+            {mlang pt}A carregar cursos…{mlang}
+            {mlang cs}Načítání kurzů…{mlang}
+            {mlang sv}Laddar kurser…{mlang}
+        </span>
+        <span data-copy="empty">
+            {mlang es}No hay cursos disponibles para este filtro.{mlang}
+            {mlang en}There are no courses available for this filter.{mlang}
+            {mlang it}Non ci sono corsi disponibili per questo filtro.{mlang}
+            {mlang pt}Não existem cursos disponíveis para este filtro.{mlang}
+            {mlang cs}Pro tento filtr nejsou k dispozici žádné kurzy.{mlang}
+            {mlang sv}Det finns inga tillgängliga kurser för det här filtret.{mlang}
+        </span>
+        <span data-copy="error">
+            {mlang es}No se han podido cargar los cursos. Puedes consultarlos en IVI Global Education.{mlang}
+            {mlang en}Courses could not be loaded. You can view them on IVI Global Education.{mlang}
+            {mlang it}Non è stato possibile caricare i corsi. Puoi consultarli su IVI Global Education.{mlang}
+            {mlang pt}Não foi possível carregar os cursos. Pode consultá-los na IVI Global Education.{mlang}
+            {mlang cs}Kurzy se nepodařilo načíst. Můžete si je prohlédnout na IVI Global Education.{mlang}
+            {mlang sv}Kurserna kunde inte läsas in. Du kan se dem på IVI Global Education.{mlang}
+        </span>
+        <span data-copy="start">
+            {mlang es}Inicio:{mlang}
+            {mlang en}Start:{mlang}
+            {mlang it}Inizio:{mlang}
+            {mlang pt}Início:{mlang}
+            {mlang cs}Začátek:{mlang}
+            {mlang sv}Start:{mlang}
+        </span>
+        <span data-copy="soon">
+            {mlang es}Próximamente{mlang}
+            {mlang en}Coming soon{mlang}
+            {mlang it}Prossimamente{mlang}
+            {mlang pt}Brevemente{mlang}
+            {mlang cs}Již brzy{mlang}
+            {mlang sv}Kommer snart{mlang}
+        </span>
+        <span data-copy="duration">
+            {mlang es}Duración:{mlang}
+            {mlang en}Duration:{mlang}
+            {mlang it}Durata:{mlang}
+            {mlang pt}Duração:{mlang}
+            {mlang cs}Délka:{mlang}
+            {mlang sv}Längd:{mlang}
+        </span>
+        <span data-copy="enrollment">
+            {mlang es}Matrícula:{mlang}
+            {mlang en}Enrollment:{mlang}
+            {mlang it}Iscrizione:{mlang}
+            {mlang pt}Inscrição:{mlang}
+            {mlang cs}Zápis:{mlang}
+            {mlang sv}Anmälan:{mlang}
+        </span>
+        <span data-copy="more-info">
+            {mlang es}Más info{mlang}
+            {mlang en}More info{mlang}
+            {mlang it}Maggiori informazioni{mlang}
+            {mlang pt}Mais informações{mlang}
+            {mlang cs}Více informací{mlang}
+            {mlang sv}Mer information{mlang}
+        </span>
+        <span data-copy="source-link">
+            {mlang es}Ver todos los cursos{mlang}
+            {mlang en}View all courses{mlang}
+            {mlang it}Vedi tutti i corsi{mlang}
+            {mlang pt}Ver todos os cursos{mlang}
+            {mlang cs}Zobrazit všechny kurzy{mlang}
+            {mlang sv}Visa alla kurser{mlang}
+        </span>
+    </div>
+</div>
