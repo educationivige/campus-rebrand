@@ -10747,7 +10747,7 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
    - Home externos (dashboard-6): carrusel «cursos que te pueden interesar»
      y filtros de temática (.ivi-external-courses, .ivi-course-filter/-filters,
      .ivi-course-spinner, .ivi-course-card__media, .carousel-*).
-   OJO ids de PRE (#inst287, dashboard-9/11, #inst11511/11513): revisar en PRO.
+   OJO ids de PRE (#inst287, dashboard-9/11, #inst11511/11513 PRE1; #inst12004 PRE2): revisar en PRO.
    ============================================================ */
 
 /* --- Monthly Seminars — Mis cursos (#inst287): badges de vencimiento --- */
@@ -10969,7 +10969,8 @@ body.ivi-home-due-active .block_current_programsas .progressbar__text {
    (dashboard-9); #inst11513 = informe de externos (dashboard-6). */
 .bloque-fechas-cursos,
 #inst11511,
-#inst11513 {
+#inst11513,
+#inst12004 {
   display: none !important;
 }
 
