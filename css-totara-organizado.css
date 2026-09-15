@@ -3340,17 +3340,20 @@ h2#instance-8378-header {
   display: none;
 }
 
-/* Externos (tenant-user-ext): en el panel de filtros dejar SOLO "Área temática"
-   (la externa: areaextreaexter) e "Idioma". Se ocultan TODOS los grupos del panel
-   y se reactivan esos dos por su PREFIJO de campo estable (no por el sufijo de
-   instancia _xxxxx, que cambia entre tenants/entornos). El recuadro "FILTROS"
-   (.tw-selectRegionPanel__heading) no es un __selector, así que no se oculta. */
+/* Externos (tenant-user-ext): en el panel de filtros dejar "Área temática"
+   (la externa: areaextreaexter), "Idioma" y "Acreditación". Se ocultan TODOS los
+   grupos del panel y se reactivan esos por su PREFIJO de campo estable (no por el
+   sufijo de instancia _xxxxx, que cambia entre tenants/entornos). El recuadro
+   "FILTROS" (.tw-selectRegionPanel__heading) no es un __selector, así que no se
+   oculta. La reactivación de "Acreditación" gana también a la regla general
+   .tenant-user que la ocultaba (por !important + mayor especificidad del :has). */
 #page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector {
   display: none !important;
 }
 
 #page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_areaextreaexter"]),
-#page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_idiomamlangesid"]) {
+#page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_idiomamlangesid"]),
+#page-totara-catalog-index.tenant-user-ext .tw-selectRegionPanel__selector:has([id^="cfp_menu_acreditacionmla"]) {
   display: block !important;
 }
 
