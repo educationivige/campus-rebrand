@@ -10737,14 +10737,17 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
 }
 
 /* ============================================================
-   30. FUSIONADO DESDE css-adicional (2026-09-11)
+   30. FUSIONADO DESDE css-adicional (2026-09-11 / 2026-09-15)
    - Monthly Seminars: badges de vencimiento (#inst287) y estados
      «completado» de las cards clon-Expediente (#ms-grid).
    - Learning for Excellence: ilustración de Presentación 2026.
    - Home interna (dashboard-9): badge de fecha de INSCRIPCIÓN en navy
      (JS 10_JS_home--orden-inscripcion-cursos.html) y barras de progreso
      con la paleta del Expediente (pista beige, relleno teal, % navy).
-   OJO ids de PRE (#inst287, dashboard-9/11, #inst11511): revisar en PRO.
+   - Home externos (dashboard-6): carrusel «cursos que te pueden interesar»
+     y filtros de temática (.ivi-external-courses, .ivi-course-filter/-filters,
+     .ivi-course-spinner, .ivi-course-card__media, .carousel-*).
+   OJO ids de PRE (#inst287, dashboard-9/11, #inst11511/11513): revisar en PRO.
    ============================================================ */
 
 /* --- Monthly Seminars — Mis cursos (#inst287): badges de vencimiento --- */
@@ -10968,4 +10971,262 @@ body.ivi-home-due-active .block_current_programsas .progressbar__text {
 #inst11511,
 #inst11513 {
   display: none !important;
+}
+
+/* --- Home externos (dashboard-6) — carrusel «cursos que te pueden interesar» --- */
+
+#page-totara-dashboard-6 .externos .ivi-external-courses {
+  width: 100%;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 60px 8px;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filter {
+  appearance: none;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-gray, #4B5563);
+  box-shadow: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filter:hover,
+#page-totara-dashboard-6 .externos .ivi-course-filter:focus-visible {
+  border-color: var(--light-blue, #004DF0);
+  background: var(--bg-blue, #DCE6FF);
+  color: var(--light-blue, #004DF0);
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filter.is-active {
+  border-color: var(--light-blue, #004DF0);
+  background: var(--light-blue, #004DF0);
+  color: #fff !important;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filter.is-active:hover,
+#page-totara-dashboard-6 .externos .ivi-course-filter.is-active:focus-visible {
+  border-color: var(--blue-hover, #0038C4);
+  background: var(--blue-hover, #0038C4);
+  color: #fff !important;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filter:focus-visible {
+  outline: 2px solid var(--navy-blue, #08004F);
+  outline-offset: 2px;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-filter:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+#page-totara-dashboard-6 .externos .carousel {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+#page-totara-dashboard-6 .externos .carousel:focus-visible {
+  outline: 2px solid var(--light-blue, #004DF0);
+  outline-offset: 2px;
+}
+
+#page-totara-dashboard-6 .externos .carousel-card {
+  min-height: 430px;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-card__media {
+  position: relative;
+  flex: 0 0 140px;
+  min-height: 140px;
+  overflow: hidden;
+  background: var(--color-background, #F1F5FC);
+}
+
+#page-totara-dashboard-6 .externos .carousel-card.is-partial .ivi-course-card__media {
+  background: linear-gradient(
+    100deg,
+    var(--color-background, #F1F5FC) 20%,
+    var(--bg-blue, #DCE6FF) 40%,
+    var(--color-background, #F1F5FC) 60%
+  );
+  background-size: 200% 100%;
+  animation: ivi-course-skeleton 1.2s ease-in-out infinite;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-card__media > img {
+  display: block;
+  height: 140px !important;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-mode {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--teal, #0CE3C6);
+  color: var(--navy-blue, #08004F);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+#page-totara-dashboard-6 .externos .card-content h3 {
+  min-height: 54px;
+  margin: 0;
+  line-height: 1.25;
+}
+
+#page-totara-dashboard-6 .externos .card-content .datos {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 9px !important;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  margin: 0;
+  line-height: 1.35;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-detail .material-symbols-outlined {
+  flex: 0 0 auto;
+  margin: 0 !important;
+}
+
+#page-totara-dashboard-6 .externos .card-footer {
+  gap: 12px;
+  border-top: 1px solid var(--color-background, #F1F5FC);
+}
+
+#page-totara-dashboard-6 .externos .matricula {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text-gray, #4B5563);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+#page-totara-dashboard-6 .externos .matricula strong {
+  color: var(--navy-blue, #08004F);
+  font-size: 14px;
+}
+
+#page-totara-dashboard-6 .externos .btn-info {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+#page-totara-dashboard-6 .externos .carousel-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+#page-totara-dashboard-6 .externos .carousel-btn:focus-visible {
+  outline: 2px solid var(--navy-blue, #08004F);
+  outline-offset: 2px;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-status {
+  display: flex;
+  flex: 1 0 100%;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--navy-blue, #08004F);
+  text-align: center;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-status.is-message {
+  flex-direction: column;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-background, #F1F5FC);
+  border-top-color: var(--light-blue, #004DF0);
+  border-radius: 50%;
+  animation: ivi-course-spin 0.8s linear infinite;
+}
+
+#page-totara-dashboard-6 .externos .ivi-course-source-link {
+  color: var(--light-blue, #004DF0) !important;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@keyframes ivi-course-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ivi-course-skeleton {
+  to { background-position-x: -200%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #page-totara-dashboard-6 .externos .ivi-course-spinner {
+    animation-duration: 1.6s;
+  }
+
+  #page-totara-dashboard-6 .externos .carousel-card.is-partial .ivi-course-card__media {
+    animation: none;
+  }
+}
+
+@media (max-width: 767px) {
+  #page-totara-dashboard-6 .externos .ivi-course-filters {
+    flex-wrap: nowrap;
+    gap: 14px;
+    padding: 0 42px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  #page-totara-dashboard-6 .externos .ivi-course-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  #page-totara-dashboard-6 .externos .ivi-course-filter {
+    flex: 0 0 auto;
+  }
+
+  #page-totara-dashboard-6 .externos .carousel-container {
+    padding-right: 42px !important;
+    padding-left: 42px !important;
+  }
+
+  #page-totara-dashboard-6 .externos .carousel-card {
+    min-height: 410px;
+  }
+
+  #page-totara-dashboard-6 .externos .prev {
+    left: 0 !important;
+  }
+
+  #page-totara-dashboard-6 .externos .next {
+    right: 0 !important;
+  }
 }
