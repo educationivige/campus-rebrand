@@ -410,6 +410,12 @@
      · Formatea la duración: horas enteras → "7 h"; menos de 1 h → minutos
        ("0.5" → "30 min"); mixto → "1 h 30 min". Si es 0 → oculta la línea.
      · Oculta la línea (fecha fin o la que sea) si no tiene dato.
+     · La "Fecha de finalización del curso" = FECHA LÍMITE ya NO se muestra como
+       línea gris: se pinta como BADGE debajo del título (igual que en la home).
+       En plazo -> azul "Fecha límite: <fecha>"; vencida -> rojo "No disponible"
+       + la tarjeta se apaga (opacidad + gris) y se bloquea el clic. Las tarjetas
+       se quedan EN SU SITIO (orden natural del catálogo): NO se reordenan ni se
+       auto-cargan páginas; "Carga más" funciona como siempre.
    Funciona en las DOS vistas: cuadros (Narrow) y listado (Wide).
    Los ICONOS los pone el CSS por posición (dur=schedule, inicio=calendar_month);
    aquí se inyecta un <style> que reactiva la 3.ª línea (antes la ocupaba
@@ -420,12 +426,12 @@
     'use strict';
 
     var LABELS = {
-        es: { dur: 'Duración', start: 'Fecha inicio',    end: 'Disponible hasta'   },
-        en: { dur: 'Duration', start: 'Start date',      end: 'Available until'    },
-        it: { dur: 'Durata',   start: 'Data inizio',     end: 'Disponibile fino al' },
-        pt: { dur: 'Duração',  start: 'Data de início',  end: 'Disponível até'     },
-        cs: { dur: 'Délka',    start: 'Datum zahájení',  end: 'Dostupné do'        },
-        sv: { dur: 'Längd',    start: 'Startdatum',      end: 'Tillgänglig till'   }
+        es: { dur: 'Duración', start: 'Fecha inicio',    end: 'Disponible hasta',    deadline: 'Fecha límite', unavailable: 'No disponible'   },
+        en: { dur: 'Duration', start: 'Start date',      end: 'Available until',     deadline: 'Deadline',     unavailable: 'Not available'   },
+        it: { dur: 'Durata',   start: 'Data inizio',     end: 'Disponibile fino al', deadline: 'Scadenza',     unavailable: 'Non disponibile' },
+        pt: { dur: 'Duração',  start: 'Data de início',  end: 'Disponível até',      deadline: 'Data limite',  unavailable: 'Indisponível'    },
+        cs: { dur: 'Délka',    start: 'Datum zahájení',  end: 'Dostupné do',         deadline: 'Termín',       unavailable: 'Nedostupné'      },
+        sv: { dur: 'Längd',    start: 'Startdatum',      end: 'Tillgänglig till',    deadline: 'Sista datum',  unavailable: 'Ej tillgänglig'  }
     };
 
     function lang() {
@@ -434,6 +440,90 @@
         return LABELS[l] ? l : 'es';
     }
     function L(key) { return LABELS[lang()][key]; }
+
+    // ── Fecha límite: parseo agnóstico de idioma para comparar con "hoy" ────────
+    // El VALOR mostrado (p. ej. "9 de marzo de 2026") lo sirve Totara ya
+    // formateado en el idioma de la página; para el badge se muestra tal cual y
+    // solo se parsea para saber si está vencido.
+    var MONTHS = {
+        enero: 0, ene: 0, january: 0, jan: 0, gennaio: 0, gen: 0,
+        janeiro: 0, led: 0, ledna: 0, januari: 0,
+        febrero: 1, feb: 1, february: 1, febbraio: 1, fevereiro: 1,
+        unor: 1, uno: 1, unora: 1, februari: 1,
+        marzo: 2, mar: 2, march: 2, marco: 2, bre: 2, brezna: 2, mars: 2,
+        abril: 3, abr: 3, april: 3, apr: 3, aprile: 3, dub: 3, dubna: 3,
+        mayo: 4, may: 4, maggio: 4, mag: 4, maio: 4, mai: 4,
+        kve: 4, kvetna: 4, maj: 4,
+        junio: 5, jun: 5, june: 5, giugno: 5, giu: 5, junho: 5,
+        cvn: 5, cervna: 5, juni: 5,
+        julio: 6, jul: 6, july: 6, luglio: 6, lug: 6, julho: 6,
+        cvc: 6, cervence: 6, juli: 6,
+        agosto: 7, ago: 7, august: 7, aug: 7, srp: 7, srpna: 7, augusti: 7,
+        septiembre: 8, sept: 8, sep: 8, setiembre: 8, set: 8,
+        september: 8, settembre: 8, zari: 8,
+        octubre: 9, oct: 9, october: 9, ottobre: 9, ott: 9,
+        outubro: 9, out: 9, rij: 9, rijna: 9, oktober: 9, okt: 9,
+        noviembre: 10, nov: 10, november: 10, listopadu: 10, lis: 10,
+        diciembre: 11, dic: 11, december: 11, dec: 11, dicembre: 11,
+        dezembro: 11, dez: 11, prosince: 11, pro: 11
+    };
+
+    function normaliseDate(value) {
+        var text = String(value || '').toLowerCase().replace(/ /g, ' ');
+        if (text.normalize) text = text.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        return text.replace(/[.,]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function validDate(year, month, day) {
+        var d = new Date(year, month, day, 0, 0, 0, 0);
+        if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) return null;
+        return d;
+    }
+
+    function parseDate(value) {
+        var raw = String(value || '').trim();
+        if (!raw) return null;
+
+        var iso = raw.match(/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/);
+        if (iso) return validDate(parseInt(iso[1], 10), parseInt(iso[2], 10) - 1, parseInt(iso[3], 10));
+
+        var numeric = raw.match(/\b(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})\b/);
+        if (numeric) return validDate(parseInt(numeric[3], 10), parseInt(numeric[2], 10) - 1, parseInt(numeric[1], 10));
+
+        // Texto localizado ("9 de marzo de 2026", "9 March 2026", "9. brezna 2026"…):
+        // se extrae año (4 díg.), mes (palabra del mapa) y día (1-2 díg.), sin
+        // depender del orden ni de los conectores ("de"/"of").
+        var text = normaliseDate(raw);
+        var yearM = text.match(/\b(\d{4})\b/);
+        if (!yearM) return null;
+        var tokens = text.split(' ');
+        var month = -1, day = null;
+        for (var i = 0; i < tokens.length; i++) {
+            if (month < 0 && MONTHS[tokens[i]] !== undefined) month = MONTHS[tokens[i]];
+            else if (day === null && /^\d{1,2}$/.test(tokens[i])) day = parseInt(tokens[i], 10);
+        }
+        if (month < 0 || day === null) return null;
+        return validDate(parseInt(yearM[1], 10), month, day);
+    }
+
+    function startOfTodayEpoch() {
+        var t = new Date();
+        t.setHours(0, 0, 0, 0);
+        return t.getTime();
+    }
+
+    // Fecha corta ("30 nov 2025") en el idioma de la página, igual que la home.
+    // Totara sirve el valor largo ("30 de noviembre de 2025"), que se recorta en
+    // el badge; al reformatearlo corto entra sin recortes y queda como la home.
+    function formatShort(date) {
+        try {
+            return new Intl.DateTimeFormat(lang(), {
+                day: 'numeric', month: 'short', year: 'numeric'
+            }).format(date);
+        } catch (e) {
+            return null;
+        }
+    }
 
     // Inyecta el CSS de soporte una sola vez: reactiva la 3.ª línea (Fecha fin),
     // que estaba oculta cuando ese hueco lo ocupaba id_netex, y le da su icono.
@@ -463,7 +553,17 @@
             /* interlineado ajustado entre etiqueta y valor (con aire para no recortar) */
             'body#page-totara-catalog-index .ivi-meta .ivi-meta-t{display:flex!important;flex-direction:column!important;line-height:15px!important;min-width:0!important;height:auto!important;max-height:none!important;overflow:visible!important;}',
             'body#page-totara-catalog-index .ivi-meta .ivi-meta-l{font-size:11px!important;font-weight:600!important;line-height:15px!important;color:var(--text-gray,#8A8A9E)!important;overflow:visible!important;}',
-            'body#page-totara-catalog-index .ivi-meta .ivi-meta-v{font-size:11px!important;line-height:15px!important;color:var(--text-gray,#8A8A9E)!important;overflow:visible!important;}'
+            'body#page-totara-catalog-index .ivi-meta .ivi-meta-v{font-size:11px!important;line-height:15px!important;color:var(--text-gray,#8A8A9E)!important;overflow:visible!important;}',
+            /* ── Badge de FECHA LÍMITE debajo del título ── */
+            /* En plazo: azul primario "Fecha límite: <fecha>" */
+            "body#page-totara-catalog-index .ivi-cat-deadline{display:flex!important;align-items:center!important;gap:5px!important;width:fit-content!important;max-width:100%!important;margin:2px 0 10px!important;padding:5px 10px!important;border-radius:999px!important;background:var(--light-blue,#004DF0)!important;color:#fff!important;font-family:var(--font-body,'Noto Sans',sans-serif)!important;font-size:11px!important;font-weight:700!important;line-height:1.3!important;letter-spacing:0.01em!important;white-space:nowrap!important;box-shadow:0 2px 8px rgba(0,77,240,0.28)!important;}",
+            "body#page-totara-catalog-index .ivi-cat-deadline::before{content:'event'!important;font-family:'Material Symbols Outlined'!important;font-weight:normal!important;font-size:14px!important;line-height:1!important;font-feature-settings:'liga'!important;-webkit-font-feature-settings:'liga'!important;}",
+            /* Vencido: rojo "No disponible" + icono de bloqueo */
+            'body#page-totara-catalog-index .ivi-cat-deadline--expired{background:var(--red,#B4084A)!important;box-shadow:0 2px 8px rgba(180,8,74,0.3)!important;}',
+            "body#page-totara-catalog-index .ivi-cat-deadline--expired::before{content:'block'!important;}",
+            /* Tarjeta vencida: apagada, imagen en gris y sin clic */
+            'body#page-totara-catalog-index .tw-catalogItemNarrow[data-cat-expired="1"],body#page-totara-catalog-index .tw-catalogItemWide[data-cat-expired="1"]{opacity:0.6!important;pointer-events:none!important;}',
+            'body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemNarrow__image_ratio_img,body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemWide__image_ratio_img{filter:grayscale(1)!important;}'
         ].join('');
         var s = document.createElement('style');
         s.id = 'ivi-cat-meta-style';
@@ -507,10 +607,12 @@
 
     function processItems(items) {
         var dateSeen = 0;
+        var endValue = null;                      // valor de la fecha fin (para el badge)
         items.forEach(function (item) {
             if (item.classList.contains('itemtype')) return;
             if (item.dataset.iviMeta) {           // ya procesado: solo contar fechas
                 if (item.dataset.iviMeta === 'start' || item.dataset.iviMeta === 'end') dateSeen++;
+                if (item.dataset.iviMeta === 'end') endValue = item.dataset.iviEndValue || null;
                 return;
             }
             var val = valueOf(item.textContent.trim());
@@ -521,22 +623,76 @@
                 render(item, L('dur'), out, 'dur');
             } else {                              // texto → fecha (1.ª = inicio, 2.ª = fin)
                 dateSeen++;
-                var type = dateSeen === 1 ? 'start' : 'end';
-                render(item, L(type), val, type);
+                if (dateSeen === 1) {
+                    render(item, L('start'), val, 'start');
+                } else {
+                    /* La "Fecha de finalización" = fecha límite: NO se muestra como
+                       línea meta; se pinta como BADGE debajo del título (más abajo). */
+                    hide(item);
+                    item.dataset.iviMeta = 'end';
+                    item.dataset.iviEndValue = val;
+                    endValue = val;
+                }
             }
         });
+        return endValue;
+    }
+
+    /* Badge de fecha límite debajo del título + estado "vencido" de la tarjeta.
+       Mismo criterio que la home: en plazo (hoy o futura) -> azul "Fecha límite:
+       <fecha>"; vencida -> rojo "No disponible" + tarjeta apagada y no clicable.
+       El VALOR se muestra tal cual lo sirve Totara (ya localizado); solo se
+       parsea para decidir si está vencida. */
+    function applyCatalogDeadline(card, isWide, val) {
+        var title = card.querySelector(isWide
+            ? '.tw-catalogItemWide__title'
+            : '.tw-catalogItemNarrow__title');
+        if (!title) return;
+
+        var badge = card.querySelector('.ivi-cat-deadline');
+        var date = val ? parseDate(val) : null;
+
+        /* Sin fecha límite (o no parseable): sin badge y tarjeta disponible. */
+        if (!date) {
+            if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
+            card.removeAttribute('data-cat-expired');
+            return;
+        }
+
+        var expired = date.getTime() < startOfTodayEpoch();
+        var shown = formatShort(date) || val;        // corta ("30 nov 2025"); crudo si falla
+        var text = expired ? L('unavailable') : L('deadline') + ': ' + shown;
+
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'ivi-cat-deadline';
+            title.parentNode.insertBefore(badge, title.nextSibling);
+        }
+        badge.classList.toggle('ivi-cat-deadline--expired', expired);
+        if (badge.dataset.val !== val || badge.dataset.lang !== lang()) {
+            badge.textContent = text;
+            badge.dataset.val = val;
+            badge.dataset.lang = lang();
+        }
+        badge.setAttribute('title', text);
+        card.setAttribute('data-cat-expired', expired ? '1' : '0');
     }
 
     function formatMeta() {
         injectStyle();
         document.querySelectorAll('.tw-catalogItemNarrow').forEach(function (card) {
-            processItems(Array.prototype.slice.call(
+            var end = processItems(Array.prototype.slice.call(
                 card.querySelectorAll('.tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item')));
+            applyCatalogDeadline(card, false, end);
         });
         document.querySelectorAll('.tw-catalogItemWide').forEach(function (card) {
-            processItems(Array.prototype.slice.call(
+            var end = processItems(Array.prototype.slice.call(
                 card.querySelectorAll('.tw-catalogItemWide__textarea_group_item')));
+            applyCatalogDeadline(card, true, end);
         });
+        /* Las tarjetas se dejan EN SU SITIO (orden natural del catálogo); las
+           vencidas solo se marcan "No disponible" (apagadas), sin reordenar ni
+           auto-cargar páginas. */
     }
 
     function init() {
