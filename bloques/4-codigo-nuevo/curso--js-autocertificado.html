@@ -34,12 +34,23 @@
 (function () {
     'use strict';
 
-    var SCRIPT_VERSION = '2026-09-15.3';
+    var SCRIPT_VERSION = '2026-09-17.1';
     if (window.__iviAutoCertVersion === SCRIPT_VERSION) return;
     window.__iviAutoCertVersion = SCRIPT_VERSION;
 
     /* Solo corre en páginas de curso (body id empieza por page-course-view). */
     if (!/^page-course-view/.test(document.body.id)) return;
+
+    /* Confirma que la respuesta es realmente el PDF del certificado.
+       OJO: un certificado BLOQUEADO también devuelve 200, pero redirige a
+       /course/view.php y responde HTML — por eso NO basta con response.ok;
+       hay que comprobar el content-type (o el content-disposition adjunto). */
+    function isPdfResponse(response) {
+        var ct = (response.headers.get('content-type') || '').toLowerCase();
+        if (ct.indexOf('application/pdf') !== -1) return true;
+        var cd = (response.headers.get('content-disposition') || '').toLowerCase();
+        return cd.indexOf('attachment') !== -1 && cd.indexOf('.pdf') !== -1;
+    }
 
     function autoIssueCerts() {
         /* Busca enlaces de customcert que estén accesibles (sin candado).
@@ -57,19 +68,18 @@
             if (!href) return;
 
             /* GET con downloadown=1: este es el parámetro que Totara usa para
-               generar el PDF y crear el registro customcert_issues.
-               La respuesta es el PDF en sí, que ignoramos; solo importa
-               que el servidor procese la solicitud y emita el certificado. */
+               generar el PDF y crear el registro customcert_issues. Al recibir
+               el PDF confirmamos que el certificado quedó emitido server-side. */
             var issueUrl = href + (href.indexOf('?') !== -1 ? '&' : '?') + 'downloadown=1';
 
             fetch(issueUrl, {
                 credentials: 'same-origin',
                 redirect:    'follow'
             }).then(function (response) {
-                if (response.ok) {
+                if (response.ok && isPdfResponse(response)) {
                     console.log('[ivi-autocert] Certificado emitido:', issueUrl);
                 } else {
-                    console.warn('[ivi-autocert] Respuesta inesperada:', response.status, issueUrl);
+                    console.warn('[ivi-autocert] No emitido (la respuesta no es un PDF):', response.status, issueUrl);
                 }
             }).catch(function (err) {
                 console.warn('[ivi-autocert] Error al emitir certificado:', err, issueUrl);

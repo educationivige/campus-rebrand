@@ -5398,3 +5398,53 @@ table.appendChild(tfoot);
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
 })();
+
+/**************** CURSO — AUTO-EMISIÓN DE CERTIFICADO (mod_customcert) ****************
+ * En las páginas de curso (body id page-course-view*), si hay un certificado
+ * mod_customcert DESBLOQUEADO (enlace sin .dimmed ni .conditionalhidden), hace
+ * un fetch GET a view.php?id=X&downloadown=1 para que Totara emita el
+ * certificado en background (crea customcert_issues + genera el PDF) sin que el
+ * alumno tenga que hacer clic. Verificado en PRE (2026-09-17): el GET
+ * same-origin devuelve el PDF, NO requiere sesskey ni POST.
+ * Solo se da por emitido si la respuesta es realmente un PDF (content-type
+ * application/pdf): un certificado bloqueado también responde 200, pero redirige
+ * a /course/view.php y devuelve HTML.
+ ************************************************************************************/
+(function () {
+    'use strict';
+
+    if (!/^page-course-view/.test(document.body.id)) return;
+
+    function isPdfResponse(response) {
+        var ct = (response.headers.get('content-type') || '').toLowerCase();
+        if (ct.indexOf('application/pdf') !== -1) return true;
+        var cd = (response.headers.get('content-disposition') || '').toLowerCase();
+        return cd.indexOf('attachment') !== -1 && cd.indexOf('.pdf') !== -1;
+    }
+
+    function autoIssueCerts() {
+        var links = document.querySelectorAll(
+            '.modtype_customcert a[href*="/mod/customcert/view.php"]' +
+            ':not(.dimmed):not(.conditionalhidden)'
+        );
+        Array.prototype.forEach.call(links, function (link) {
+            var href = link.getAttribute('href');
+            if (!href) return;
+            var issueUrl = href + (href.indexOf('?') !== -1 ? '&' : '?') + 'downloadown=1';
+            fetch(issueUrl, { credentials: 'same-origin', redirect: 'follow' })
+                .then(function (response) {
+                    if (response.ok && isPdfResponse(response)) {
+                        console.log('[ivi-autocert] Certificado emitido:', issueUrl);
+                    } else {
+                        console.warn('[ivi-autocert] No emitido (la respuesta no es un PDF):', response.status, issueUrl);
+                    }
+                })
+                .catch(function (err) {
+                    console.warn('[ivi-autocert] Error al emitir certificado:', err, issueUrl);
+                });
+        });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoIssueCerts);
+    else autoIssueCerts();
+})();
