@@ -3371,6 +3371,16 @@ h2#instance-8378-header {
   display: none !important;
 }
 
+/* Quitar el separador (border-bottom) sobrante bajo el ÚLTIMO grupo visible del
+   panel de filtros en NO-externos (internos/NAM): ahí "Idioma" es el último grupo
+   visible —el de "Tipo de acreditación" va detrás en el DOM pero no se muestra—,
+   así que su border-bottom queda como una línea suelta al final (debajo de ES).
+   En externos NO se toca: allí "Acreditación" SÍ va tras "Idioma" y ese separador
+   es necesario. El :last-child real (acreditación) ya trae el borde a 0. */
+#page-totara-catalog-index:not(.tenant-user-ext) .tw-selectRegionPanel__selector:has([id^="cfp_multiselect_idiomamlangesid"]) {
+  border-bottom: 0 !important;
+}
+
 /* Filtro "Filtro_bloque" (custom field filtrobloquemla): dejar visible SOLO la
    opción "Curso de Excelencia LFE" en los 6 idiomas. Se targetea por su optionkey
    estable (NO por posición): así no depende del orden alfabético —que cambia por
