@@ -10846,6 +10846,13 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
 /* --- Home interna (dashboard-9) — badge de fecha de inscripción ---
    JS: 10_JS_home--orden-inscripcion-cursos.html --- */
 
+/* El mismo bloque JS se usa en dashboard-6 y dashboard-9. En cuanto identifica
+   una fecha límite pasada marca el curso como vencido; no debe ocupar espacio
+   ni aparecer durante recargas AJAX o si Totara lo renderiza antes del filtro. */
+body.ivi-home-due-active li[data-home-expired="1"] {
+  display: none !important;
+}
+
 /* Maincontent en columna (como el tema): CURSO, título, fecha y, al pie, el
    bloque .__content con la barra de progreso. NO se fuerza el crecimiento de
    maincontent ni de .__content: el tema ya reparte la altura y el progreso
