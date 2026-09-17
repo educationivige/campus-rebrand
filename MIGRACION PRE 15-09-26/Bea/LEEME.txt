@@ -1,0 +1,2 @@
+Tus tareas están en la hoja «Bea» de ../MIGRACION-PRE2-15-09-26.xlsx
+En esta carpeta: css-adicional-PRE2.css (barra morada, pegar en «CSS adicional» de PRE2).

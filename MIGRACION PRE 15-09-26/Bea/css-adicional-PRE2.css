@@ -1,0 +1,37 @@
+/* ============================================================
+   CSS ADICIONAL — ENTORNO PRE2 (ivipre.actuatxp.com)
+
+   Pegar ENTERO en el campo "CSS adicional" del tema de PRE2.
+   Es lo ÚNICO que va en ese campo: el resto del CSS del rebranding
+   se carga por jsDelivr (css-totara-organizado.css) y NO se pega aquí.
+
+   Diferencia con PRE1: la barra superior es MORADA y dice
+   "SITIO EN PRE 2", para distinguir los dos entornos de un vistazo
+   (PRE1 la lleva ROJA #b4084a con el texto "SITIO EN PRE").
+   ============================================================ */
+
+/* --- ⚠️ ⚠️ NO BORRAR ⚠️ ⚠️  --- */
+/* --- Barra de entorno PRE2 - DEJAR SIEMPRE AQUÍ --- */
+body::before {
+  content: "⚠️ SITIO EN PRE 2 · ivipre.actuatxp.com ⚠️";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 99999;
+  background-color: #7D43F5;   /* MORADO — distinto del rojo de PRE1 (#b4084a) */
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px 0;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  padding-top: 38px !important;
+}
+/* --- ⚠️ ⚠️ NO BORRAR ⚠️ ⚠️  --- */
