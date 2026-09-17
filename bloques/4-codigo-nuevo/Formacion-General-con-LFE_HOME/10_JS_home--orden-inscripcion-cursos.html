@@ -28,11 +28,9 @@
            course_enddate). Deja la de inscripción ANTES que la de finalización.
          · La "Fecha de inscripción" -> badge central navy + ORDEN ascendente.
          · La "Fecha de finalización del curso" = FECHA LÍMITE -> badge de esquina
-           (superior derecha): si está en plazo muestra la fecha; si ya pasó,
-           muestra "No disponible", apaga la tarjeta (opacidad+gris), bloquea el
-           clic y la manda al final de la lista. Sin esta columna no hay badge de
-           esquina (por eso externos/dashboard-6 no se ve afectado mientras su
-           informe no exponga la finalización).
+           (superior derecha) mientras el curso está en plazo. Si la fecha ya
+           pasó, el curso se elimina del listado de la home. Sin esta columna no
+           se puede determinar la disponibilidad del curso.
          · Que liste los mismos cursos que el bloque Current Learning y SIN
            paginar (mostrar todas las filas).
          · El bloque puede ir oculto (display:none / clase bloque-fechas-cursos):
@@ -51,27 +49,26 @@
      - Procesa los cursos que Totara carga en Current Learning/Programs.
      - Ordena el array completo antes de paginar cuando el módulo AMD ya está
        disponible, y siempre reordena las tarjetas renderizadas.
-     - Conserva cada tarjeta y sus eventos; solo cambia el orden de los <li>.
+     - Conserva cada tarjeta disponible y sus eventos; solo cambia el orden de
+       los <li> y oculta los cursos vencidos.
      - Ordena por fecha de inscripción ASCENDENTE (las más antiguas primero);
-       los cursos VENCIDOS (fecha límite pasada) van al final y los cursos sin
-       fecha, después de esos.
+       los cursos sin fecha quedan al final.
      - Pinta la fecha de inscripción en un badge central navy.
      - Fecha límite (finalización del curso) como badge en la esquina superior
-       derecha: en plazo muestra la fecha; vencido muestra "No disponible",
-       apaga la tarjeta (opacidad + gris) y bloquea el clic.
+       derecha: en plazo muestra la fecha; vencido no aparece en la home.
      - Soporta es, en, it, pt, cs y sv.
      - Observa recargas AJAX de filtros/paginación. Idempotente.
 
      Estilos: el badge central de inscripción y las barras de progreso van en
-     css-totara-organizado.css (§30, por CDN); el badge de ESQUINA (fecha límite /
-     "No disponible" / apagado de vencidas) lo inyecta este mismo JS
+     css-totara-organizado.css (§30, por CDN); el badge de ESQUINA y la
+     ocultación de vencidas también los inyecta este mismo JS
      (injectDeadlineStyle) -> funciona con solo pegar el bloque.
      ============================================================ -->
 <script>
 (function () {
     'use strict';
 
-    var SCRIPT_VERSION = '2026-09-15.3';
+    var SCRIPT_VERSION = '2026-09-17.1';
     if (window.__iviHomeDueUrgencyVersion === SCRIPT_VERSION) return;
     window.__iviHomeDueUrgencyVersion = SCRIPT_VERSION;
     window.__iviHomeDueUrgencyActive = true;
@@ -332,7 +329,7 @@
 
     function sortItemsByDueDate(items) {
         rememberDueDates(items);
-        if (!Array.isArray(items) || items.length < 2) return items;
+        if (!Array.isArray(items)) return items;
 
         return items.map(function (item, index) {
             return {
@@ -341,9 +338,10 @@
                 epoch: epochForItem(item),
                 expired: isExpiredEpoch(deadlineEpochForItem(item))
             };
+        }).filter(function (entry) {
+            /* Evita que los cursos vencidos lleguen a la paginación de Totara. */
+            return !entry.expired;
         }).sort(function (a, b) {
-            /* Los cursos vencidos (fecha límite pasada) van SIEMPRE al final. */
-            if (a.expired !== b.expired) return a.expired ? 1 : -1;
             if (a.epoch === null && b.epoch === null) return a.index - b.index;
             if (a.epoch === null) return 1;
             if (b.epoch === null) return -1;
@@ -437,8 +435,7 @@
        fecha límite aunque no tenga fecha de inscripción y viceversa.
          · Sin fecha límite  -> no hay badge de esquina; tarjeta disponible.
          · Fecha límite HOY o futura -> badge navy con la fecha.
-         · Fecha límite pasada -> badge rojo "No disponible" + data-home-expired="1"
-           (el CSS apaga la tarjeta y bloquea el clic). */
+         · Fecha límite pasada -> data-home-expired="1" y tarjeta oculta. */
     function applyDeadline(tile, courseKey, lang, strings) {
         var epoch = (courseKey && deadlineByCourseUrl[courseKey] !== undefined)
             ? deadlineByCourseUrl[courseKey]
@@ -453,7 +450,8 @@
         }
 
         var expired = isExpiredEpoch(epoch);
-        /* En plazo: "Fecha límite: <fecha>". Vencido: "No disponible". */
+        /* El texto vencido se conserva como estado interno, aunque la tarjeta
+           queda oculta por completo en la home. */
         var text = expired
             ? strings.unavailable
             : strings.deadline + ': ' + formatDate(new Date(epoch), strings.locale);
@@ -609,7 +607,7 @@
         });
 
         ordered.sort(function (a, b) {
-            /* Los cursos vencidos (fecha límite pasada) van SIEMPRE al final. */
+            /* Los vencidos quedan al final como respaldo, pero no son visibles. */
             if (a.expired !== b.expired) return a.expired ? 1 : -1;
             if (a.epoch === null && b.epoch === null) return a.index - b.index;
             if (a.epoch === null) return 1;
@@ -628,8 +626,8 @@
         list.appendChild(fragment);
     }
 
-    /* CSS del badge de esquina (fecha límite / "No disponible"). Se inyecta desde
-       el JS —como el script del catálogo— para que el badge funcione con SOLO
+    /* CSS del badge de esquina y ocultación de vencidos. Se inyecta desde el JS
+       —como el script del catálogo— para que funcione con SOLO
        pegar este bloque, sin depender de pegar además el CSS en el tema (si no,
        el <span> cae sin estilo al pie de la tarjeta). Idempotente por id. */
     function injectDeadlineStyle() {
@@ -650,9 +648,7 @@
             'body.ivi-home-due-active .ivi-home-deadline--expired{background:var(--red,#B4084A)!important;' +
             'box-shadow:0 2px 8px rgba(180,8,74,0.3)!important;}' +
             'body.ivi-home-due-active .ivi-home-deadline--expired::before{content:"block"!important;}' +
-            'body.ivi-home-due-active li[data-home-expired="1"]{opacity:0.55!important;pointer-events:none!important;}' +
-            'body.ivi-home-due-active li[data-home-expired="1"] .block_current_learningas-tile__image_ratio_img,' +
-            'body.ivi-home-due-active li[data-home-expired="1"] .block_current_programsas-tile__image_ratio_img{filter:grayscale(1)!important;}';
+            'body.ivi-home-due-active li[data-home-expired="1"]{display:none!important;}';
         var style = document.createElement('style');
         style.id = 'ivi-home-deadline-style';
         style.textContent = css;

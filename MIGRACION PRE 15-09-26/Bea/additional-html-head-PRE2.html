@@ -1,0 +1,93 @@
+<!-- ============================================================
+   ADDITIONAL HTML HEAD — ENTORNO PRE2 (ivipre.actuatxp.com)
+   Se pega en el campo "Additional HTML head" del tema de PRE2.
+
+   DIFERENCIAS respecto a PRE1 (additional-html-head.html):
+   1) El CSS por jsDelivr apunta a la rama **@pre2** (no @main), para que los
+      cambios de PRE2 NO afecten a PRE1. ⚠️ Requiere crear y pushear antes la
+      rama `pre2` en el repo (si no existe, jsDelivr dará 404 en esos enlaces).
+      Si aún no la has creado, cambia @pre2 por @main temporalmente.
+   2) La fuente IVI Glance (webfont.php) apunta a **ivipre.actuatxp.com**
+      (same-origin en PRE2). Si IVI Glance no está subida a PRE2, caerá a Noto Sans.
+   ============================================================ -->
+
+<!-- ============================================================
+   CSS PERSONALIZADO CAMPUSNEO  ·  rama pre2
+   ============================================================ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/educationivige/campus-rebrand@pre2/css-totara-organizado.css">
+
+<!-- ============================================================
+   FUENTES PERSONALIZADAS
+   ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style id="neo-rebranding-fonts">
+/* IVI Glance servida desde PRE2 (same-origin). Confirmar el nombre real del
+   archivo en webfont.php; mientras tanto los títulos caen a Noto Sans. */
+@font-face {
+    font-family: 'IVI Glance';
+    src: url('https://ivipre.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff2') format('woff2'),
+         url('https://ivipre.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Titulares y botones en IVI Glance (duplicado del CSS del CDN para
+   que aplique aunque la caché de jsDelivr vaya con retraso). */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+button,
+.btn,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+.tui-formBtn,
+.ivi-btn {
+    font-family: 'IVI Glance', 'Noto Sans', -apple-system, sans-serif !important;
+}
+</style>
+
+<!-- Preload de IVI Glance (opcional): apuntar también a ivipre.actuatxp.com. -->
+
+<style id="imr-campus-fonts">
+
+@font-face {
+    font-family: 'Neue Montreal';
+    src: url('https://apps.ivieducationcloud.com/fonts/NeueMontreal-Medium.woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Canela';
+    src: url('https://apps.ivieducationcloud.com/fonts/Canela-Light.woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+</style>
+
+<!-- ============================================================
+   FONT AWESOME
+   ============================================================ -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- ============================================================
+   MATERIAL SYMBOLS
+   ============================================================ -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&display=swap">
+
+<!-- ============================================================
+   SCRIPTS EXTERNOS
+   ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script id="Cookiebot" src=https://consent.cookiebot.com/uc.js data-cbid="3161ce27-6979-4c00-961c-cb6c3cd0086a" type="text/javascript"></script>
+
+<!-- ============================================================
+   [TENANT IMR] — imr/css-tenant-imr.css  ·  rama pre2
+   ============================================================ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/educationivige/campus-rebrand@pre2/imr/css-tenant-imr.css">

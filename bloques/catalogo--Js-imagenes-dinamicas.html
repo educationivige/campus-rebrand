@@ -563,7 +563,28 @@
             "body#page-totara-catalog-index .ivi-cat-deadline--expired::before{content:'block'!important;}",
             /* Tarjeta vencida: apagada, imagen en gris y sin clic */
             'body#page-totara-catalog-index .tw-catalogItemNarrow[data-cat-expired="1"],body#page-totara-catalog-index .tw-catalogItemWide[data-cat-expired="1"]{opacity:0.6!important;pointer-events:none!important;}',
-            'body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemNarrow__image_ratio_img,body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemWide__image_ratio_img{filter:grayscale(1)!important;}'
+            'body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemNarrow__image_ratio_img,body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemWide__image_ratio_img{filter:grayscale(1)!important;}',
+            /* ── Toggle "Ocultar cursos no disponibles" + ocultación de vencidos ── */
+            /* Con el toggle activo (body.ivi-hide-unavailable) se oculta la CELDA del
+               grid de cada curso vencido (no solo la card, para no dejar hueco). */
+            'body#page-totara-catalog-index.ivi-hide-unavailable [data-tw-grid-item]:has([data-cat-expired="1"]){display:none!important;}',
+            /* El contenedor del recuento en fila: los dos badges (total/disponibles) */
+            'body#page-totara-catalog-index .tw-catalogResultsCount{display:flex!important;align-items:center!important;gap:14px!important;flex-wrap:wrap!important;}',
+            /* Toggle en la columna de filtros (aside), debajo del panel, a lo ancho */
+            "body#page-totara-catalog-index .tw-catalog__aside .ivi-hideunav{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;box-sizing:border-box!important;margin:16px 0 0!important;padding:0 2px!important;cursor:pointer!important;font-family:var(--font-body,'Noto Sans',sans-serif)!important;font-size:12px!important;font-weight:600!important;color:var(--navy-blue,#08004F)!important;-webkit-user-select:none!important;user-select:none!important;}",
+            "body#page-totara-catalog-index .ivi-hideunav__track{position:relative!important;flex:0 0 auto!important;width:38px!important;height:22px!important;border-radius:999px!important;background:var(--border-soft,#E4E2EE)!important;transition:background .2s ease!important;}",
+            "body#page-totara-catalog-index .ivi-hideunav__track::after{content:''!important;position:absolute!important;top:2px!important;left:2px!important;width:18px!important;height:18px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 1px 3px rgba(0,0,0,0.25)!important;transition:transform .2s ease!important;}",
+            'body#page-totara-catalog-index .ivi-hideunav input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;margin:0!important;}',
+            "body#page-totara-catalog-index .ivi-hideunav input:checked + .ivi-hideunav__track{background:var(--light-blue,#004DF0)!important;}",
+            "body#page-totara-catalog-index .ivi-hideunav input:checked + .ivi-hideunav__track::after{transform:translateX(16px)!important;}",
+            "body#page-totara-catalog-index .ivi-hideunav input:focus-visible + .ivi-hideunav__track{outline:2px solid var(--light-blue,#004DF0)!important;outline-offset:2px!important;}",
+            /* Badge "cursos en total": variante secundaria (pastilla warm-gray con
+               borde e icono de libro), para distinguirla del de "disponibles"
+               (que sigue en azul con icono school). La base .ivi-results-badge la
+               pone el organizado; aquí solo se sobrescribe la variante. */
+            'body#page-totara-catalog-index .ivi-results-badge--total{background:var(--warm-gray,#FAF4EE)!important;border:1.5px solid var(--border-soft,#E4E2EE)!important;}',
+            "body#page-totara-catalog-index .ivi-results-badge--total::before{content:'menu_book'!important;color:var(--navy-blue,#08004F)!important;}",
+            'body#page-totara-catalog-index .ivi-results-badge--total .ivi-results-badge__n{color:var(--navy-blue,#08004F)!important;}'
         ].join('');
         var s = document.createElement('style');
         s.id = 'ivi-cat-meta-style';
@@ -678,6 +699,46 @@
         card.setAttribute('data-cat-expired', expired ? '1' : '0');
     }
 
+    /* ── Helper compartido para el CONTADOR (script del recuento) ────────────────
+       Dice si una card está "no disponible" (fecha fin < hoy) SIN mutarla. Vale
+       tanto para cards vivas (usa el atributo data-cat-expired que ya puso el
+       badge) como para cards de un fragmento de página traído en background por el
+       contador (calcula la fecha fin = 2.ª fecha de la ficha, mismo criterio que
+       el badge). Se expone en window para que el contador lo reutilice. */
+    function endValueFromCard(card, isWide) {
+        var items = isWide
+            ? card.querySelectorAll('.tw-catalogItemWide__textarea_group_item')
+            : card.querySelectorAll('.tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item');
+        var dateSeen = 0, endValue = null;
+        Array.prototype.forEach.call(items, function (item) {
+            if (item.classList.contains('itemtype')) return;
+            var meta = item.dataset ? item.dataset.iviMeta : null;
+            if (meta === 'end') { endValue = item.dataset.iviEndValue || endValue; dateSeen++; return; }
+            if (meta === 'start') { dateSeen++; return; }
+            if (meta === 'dur' || meta === 'hidden') return;
+            var val = valueOf((item.textContent || '').trim());
+            if (!val) return;
+            if (/^[\d.,\s]+$/.test(val)) return;   // número → duración, no fecha
+            dateSeen++;
+            if (dateSeen >= 2) endValue = val;      // 2.ª fecha = fecha fin (fecha límite)
+        });
+        return endValue;
+    }
+
+    function isCardExpired(card, isWide) {
+        if (!card) return false;
+        var attr = card.getAttribute && card.getAttribute('data-cat-expired');
+        if (attr === '1') return true;
+        if (attr === '0') return false;
+        var val = endValueFromCard(card, !!isWide);
+        if (!val) return false;
+        var date = parseDate(val);
+        return !!date && date.getTime() < startOfTodayEpoch();
+    }
+
+    window.__iviCat = window.__iviCat || {};
+    window.__iviCat.isCardExpired = isCardExpired;
+
     function formatMeta() {
         injectStyle();
         document.querySelectorAll('.tw-catalogItemNarrow').forEach(function (card) {
@@ -728,15 +789,27 @@
 (function () {
     'use strict';
 
-    var state = { key: '', count: null, exact: false, pending: false, run: 0, timer: null };
+    var state = { key: '', count: null, expired: 0, exact: false, pending: false, run: 0, timer: null, hideUnavailable: true };
+    var STORE_KEY = 'ivi-cat-hide-unavailable';
 
+    // one/many/few = badge "cursos disponibles"; totalOne/totalMany/totalFew =
+    // badge "cursos en total". Se muestran los dos badges a la vez.
     var I18N = {
-        es: { one: 'curso disponible',  many: 'cursos disponibles' },
-        en: { one: 'course available',  many: 'courses available'  },
-        it: { one: 'corso disponibile', many: 'corsi disponibili'   },
-        pt: { one: 'curso disponível',  many: 'cursos disponíveis'  },
-        cs: { one: 'dostupný kurz', few: 'dostupné kurzy', many: 'dostupných kurzů' },
-        sv: { one: 'tillgänglig kurs',  many: 'tillgängliga kurser' }
+        es: { one: 'curso disponible',  many: 'cursos disponibles', totalOne: 'curso en total',  totalMany: 'cursos en total'  },
+        en: { one: 'course available',  many: 'courses available',  totalOne: 'course in total', totalMany: 'courses in total' },
+        it: { one: 'corso disponibile', many: 'corsi disponibili',  totalOne: 'corso in totale', totalMany: 'corsi in totale'  },
+        pt: { one: 'curso disponível',  many: 'cursos disponíveis', totalOne: 'curso no total',  totalMany: 'cursos no total'  },
+        cs: { one: 'dostupný kurz', few: 'dostupné kurzy', many: 'dostupných kurzů', totalOne: 'kurz celkem', totalFew: 'kurzy celkem', totalMany: 'kurzů celkem' },
+        sv: { one: 'tillgänglig kurs',  many: 'tillgängliga kurser', totalOne: 'kurs totalt',     totalMany: 'kurser totalt' }
+    };
+
+    var TOGGLE_I18N = {
+        es: 'Ocultar cursos no disponibles',
+        en: 'Hide unavailable courses',
+        it: 'Nascondi i corsi non disponibili',
+        pt: 'Ocultar cursos indisponíveis',
+        cs: 'Skrýt nedostupné kurzy',
+        sv: 'Dölj otillgängliga kurser'
     };
 
     function lang() {
@@ -745,12 +818,15 @@
         return I18N[l] ? l : 'es';
     }
 
-    function label(n, lg) {
+    function label(n, lg, kind) {
         var t = I18N[lg] || I18N.es;
+        var one  = kind === 'total' ? t.totalOne  : t.one;
+        var many = kind === 'total' ? t.totalMany : t.many;
+        var few  = kind === 'total' ? (t.totalFew || t.totalMany) : (t.few || t.many);
         if (lg === 'cs' && (n % 100 < 12 || n % 100 > 14)) {
-            if (n % 10 >= 2 && n % 10 <= 4) return t.few;
+            if (n % 10 >= 2 && n % 10 <= 4) return few;
         }
-        return n === 1 ? t.one : t.many;
+        return n === 1 ? one : many;
     }
 
     function formatNumber(n, lg) {
@@ -766,11 +842,17 @@
         return (root || document).querySelectorAll('[data-tw-grid] > [data-tw-grid-item]');
     }
 
-    function addItemIds(root, ids, prefix) {
+    function addItemIds(root, ids, prefix, expiredIds) {
         var items = gridItems(root);
         for (var i = 0; i < items.length; i++) {
             var id = items[i].getAttribute('data-tw-grid-item-id');
-            ids[id ? 'id:' + id : prefix + ':' + i] = true;
+            var key = id ? 'id:' + id : prefix + ':' + i;
+            ids[key] = true;
+            if (expiredIds && window.__iviCat && window.__iviCat.isCardExpired) {
+                var card = items[i].querySelector('.tw-catalogItemNarrow, .tw-catalogItemWide');
+                var isWide = !!(card && card.classList.contains('tw-catalogItemWide'));
+                if (card && window.__iviCat.isCardExpired(card, isWide)) expiredIds[key] = true;
+            }
         }
     }
 
@@ -825,35 +907,83 @@
         return null;
     }
 
+    function setHideUnavailable(on) {
+        state.hideUnavailable = !!on;
+        try { localStorage.setItem(STORE_KEY, on ? '1' : '0'); } catch (e) {}
+        document.body.classList.toggle('ivi-hide-unavailable', !!on);
+        renderBadge();
+    }
+
+    // Crea (una vez) el toggle "Ocultar cursos no disponibles" en la columna de
+    // filtros (aside), DEBAJO del panel de filtros; en cada render sincroniza su
+    // estado marcado y su etiqueta al idioma.
+    function ensureToggle() {
+        var aside = document.querySelector('.tw-catalog__aside');
+        if (!aside) return;
+        var lg = lang();
+        var toggle = aside.querySelector('.ivi-hideunav');
+        if (!toggle) {
+            toggle = document.createElement('label');
+            toggle.className = 'ivi-hideunav';
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.setAttribute('aria-label', TOGGLE_I18N[lg] || TOGGLE_I18N.es);
+            var track = document.createElement('span');
+            track.className = 'ivi-hideunav__track';
+            track.setAttribute('aria-hidden', 'true');
+            var text = document.createElement('span');
+            text.className = 'ivi-hideunav__label';
+            toggle.appendChild(input);
+            toggle.appendChild(track);
+            toggle.appendChild(text);
+            input.addEventListener('change', function () { setHideUnavailable(input.checked); });
+            aside.appendChild(toggle);      // al final del aside → debajo de los filtros
+        }
+        var inp = toggle.querySelector('input');
+        if (inp && inp.checked !== state.hideUnavailable) inp.checked = state.hideUnavailable;
+        var lbl = toggle.querySelector('.ivi-hideunav__label');
+        var wanted = TOGGLE_I18N[lg] || TOGGLE_I18N.es;
+        if (lbl && lbl.textContent !== wanted) lbl.textContent = wanted;
+    }
+
     function renderBadge() {
+        ensureToggle();
+
         var p = document.querySelector('.tw-catalogResultsCount__text');
         if (!p) return;
         var host = resultsHost(p);
         if (!host) return;
+
         var badge = host.querySelector('.ivi-results-badge');
         var key = catalogKey();
-        var n = state.key === key ? state.count : null;
+        var total = state.key === key ? state.count : null;
 
         // Fail-safe: si aún no conocemos ni siquiera la cantidad cargada,
         // dejamos el texto original visible en vez de mostrar un hueco vacío.
-        if (n === null) {
+        if (total === null) {
             host.classList.remove('ivi-results-badge-ready');
             if (badge && badge.parentNode) badge.parentNode.removeChild(badge);
             p.removeAttribute('aria-hidden');
             return;
         }
 
+        // UN SOLO badge que conmuta con el toggle:
+        //   ON  -> "N cursos disponibles" (total - no disponibles), estilo azul/school
+        //   OFF -> "N cursos en total"    (total),                  estilo gris/libro
         var lg = lang();
+        var expired = state.expired || 0;
+        var showAvailable = !!state.hideUnavailable;
+        var kind = showAvailable ? 'available' : 'total';
+        var variant = showAvailable ? 'ivi-results-badge--available' : 'ivi-results-badge--total';
+        var n = showAvailable ? Math.max(0, total - expired) : total;
         var count = formatNumber(n, lg) + (state.exact ? '' : '+');
-        var text = label(n, lg);
         var exact = state.exact ? '1' : '0';
 
-        // Totara conserva y actualiza este nodo; solo se oculta para accesibilidad
-        // después de haber leído el total.
-        // Idempotente: si ya está el mismo número e idioma, no tocar el DOM (evita bucle)
+        // Idempotente: si ya está el mismo número/idioma/exactitud/modo, no tocar el DOM.
         if (badge && badge.getAttribute('data-n') === String(n) &&
                 badge.getAttribute('data-lang') === lg &&
-                badge.getAttribute('data-exact') === exact) {
+                badge.getAttribute('data-exact') === exact &&
+                badge.getAttribute('data-kind') === kind) {
             host.classList.add('ivi-results-badge-ready');
             p.setAttribute('aria-hidden', 'true');
             return;
@@ -861,31 +991,33 @@
 
         if (!badge) {
             badge = document.createElement('span');
-            badge.className = 'ivi-results-badge';
             host.appendChild(badge);
         }
+        badge.className = 'ivi-results-badge ' + variant;
         badge.setAttribute('data-n', String(n));
         badge.setAttribute('data-lang', lg);
         badge.setAttribute('data-exact', exact);
+        badge.setAttribute('data-kind', kind);
         badge.innerHTML = '<span class="ivi-results-badge__n">' + count + '</span>' +
-                          '<span class="ivi-results-badge__l">' + text + '</span>';
+                          '<span class="ivi-results-badge__l">' + label(n, lg, kind) + '</span>';
         host.classList.add('ivi-results-badge-ready');
         p.setAttribute('aria-hidden', 'true');
     }
 
-    function publish(key, ids, exact) {
+    function publish(key, ids, expiredIds, exact) {
         if (key !== catalogKey()) return;
         state.key = key;
         state.count = objectSize(ids);
+        state.expired = objectSize(expiredIds);
         state.exact = exact;
         renderBadge();
     }
 
-    function countRemaining(key, run, ids, firstPage) {
+    function countRemaining(key, run, ids, expiredIds, firstPage) {
         function stopCounting() {
             if (run !== state.run || key !== catalogKey()) return;
             state.pending = false;
-            publish(key, ids, false);
+            publish(key, ids, expiredIds, false);
         }
 
         if (typeof window.require !== 'function') {
@@ -912,7 +1044,7 @@
                     templates.render('totara_core/grid', data.grid_template_data).then(function (html) {
                         var gridHolder = document.createElement('div');
                         gridHolder.innerHTML = html;
-                        addItemIds(gridHolder, ids, 'page-' + pageNumber);
+                        addItemIds(gridHolder, ids, 'page-' + pageNumber, expiredIds);
 
                         templates.render('totara_catalog/pagination', data.pagination_template_data).then(function (pagerHtml) {
                             var pagerHolder = document.createElement('div');
@@ -920,7 +1052,7 @@
                             var following = pagerData(pagerHolder);
 
                             state.pending = !!following;
-                            publish(key, ids, !following);
+                            publish(key, ids, expiredIds, !following);
                             if (following && following.limitfrom !== page.limitfrom) {
                                 next(following, pageNumber + 1);
                             } else if (following) {
@@ -950,13 +1082,13 @@
         }
 
         var run = ++state.run;
-        var ids = {};
-        addItemIds(grid, ids, 'initial');
+        var ids = {}, expiredIds = {};
+        addItemIds(grid, ids, 'initial', expiredIds);
         var page = pagerData(catalog);
 
         state.pending = !!page;
-        publish(key, ids, !page);
-        if (page) countRemaining(key, run, ids, page);
+        publish(key, ids, expiredIds, !page);
+        if (page) countRemaining(key, run, ids, expiredIds, page);
     }
 
     function scheduleCount(delay) {
@@ -965,6 +1097,12 @@
     }
 
     function init() {
+        // Estado inicial del toggle: ON por defecto; recuerda la elección del usuario.
+        var stored = null;
+        try { stored = localStorage.getItem(STORE_KEY); } catch (e) {}
+        state.hideUnavailable = stored === null ? true : stored === '1';
+        document.body.classList.toggle('ivi-hide-unavailable', state.hideUnavailable);
+
         calculateCount();
         [300, 800, 1500, 2500].forEach(function (ms) {
             setTimeout(function () { scheduleCount(0); }, ms);
@@ -991,5 +1129,215 @@
         init();
     }
     window.addEventListener('load', function () { scheduleCount(0); });
+})();
+</script>
+
+<script>
+/* ── Mostrar 60 tarjetas por tanda (cargando ~100 por detrás) + "Carga más" ────
+   Al ocultar los cursos no disponibles, cada página nativa de 60 quedaba con
+   pocas tarjetas mostrables y grandes huecos. Este script:
+     · Carga páginas en segundo plano (misma AJAX del catálogo que usa el
+       contador) hasta tener al menos DISPLAY_STEP (60) tarjetas MOSTRABLES →
+       en la práctica ~100 crudas por detrás (las no disponibles no cuentan).
+     · Muestra como MÁXIMO el tope actual (empieza en 60); las mostrables de más
+       se guardan ocultas y las revela un botón "Carga más" propio (de 60 en 60).
+   El botón NATIVO de Totara se oculta porque NO responde a clicks sintéticos de
+   JS (probado): por eso tomamos el control de la paginación. "Mostrable" = no
+   oculta por el toggle de no disponibles (window.__iviCat.isCardExpired). */
+(function () {
+    'use strict';
+
+    var DISPLAY_STEP = 60;  // tarjetas mostradas por tanda (= página nativa del catálogo)
+    var MAX_PAGES = 60;     // tope de seguridad de páginas AJAX auto-cargadas por contexto
+
+    var st = { key: '', cursor: 0, pageSize: 60, maxcount: 0, busy: false, pages: 0, seen: {}, cap: DISPLAY_STEP };
+
+    var LOADMORE_I18N = {
+        es: 'Carga más', en: 'Load more', it: 'Visualizza più elementi',
+        pt: 'Carregar mais', cs: 'Načíst další', sv: 'Ladda fler'
+    };
+    function lang() {
+        var l = (document.documentElement.lang || 'es').slice(0, 2).toLowerCase();
+        if (l === 'cz') l = 'cs';
+        return LOADMORE_I18N[l] ? l : 'es';
+    }
+
+    function key() { return location.pathname + location.search; }
+    function grid() { return document.querySelector('[data-tw-grid]'); }
+    function items() { var g = grid(); return g ? g.querySelectorAll(':scope > [data-tw-grid-item]') : []; }
+    function nativeTrig() { return document.querySelector('[data-tw-pagination-trigger]'); }
+    function hideUnav() { return document.body.classList.contains('ivi-hide-unavailable'); }
+    function curView() { return document.querySelector('.tw-catalogItemWide') ? 'wide' : 'narrow'; }
+
+    // "mostrable" = NO la oculta el toggle de no disponibles (cálculo síncrono,
+    // sin depender del render, para poder contar y aplicar el tope al instante).
+    function showable(it) {
+        if (!hideUnav()) return true;
+        var c = it.querySelector('.tw-catalogItemNarrow, .tw-catalogItemWide');
+        if (!c) return true;
+        var wide = c.classList.contains('tw-catalogItemWide');
+        return !(window.__iviCat && window.__iviCat.isCardExpired && window.__iviCat.isCardExpired(c, wide));
+    }
+
+    // Aplica el tope: muestra hasta st.cap mostrables y oculta el resto de
+    // mostrables (buffer) con .ivi-cap-hidden. Devuelve cuántas mostrables hay.
+    function applyCap() {
+        var shown = 0, showableTotal = 0;
+        Array.prototype.forEach.call(items(), function (it) {
+            if (!showable(it)) { it.classList.remove('ivi-cap-hidden'); return; } // la gestiona el toggle
+            showableTotal++;
+            if (shown < st.cap) { it.classList.remove('ivi-cap-hidden'); shown++; }
+            else { it.classList.add('ivi-cap-hidden'); }
+        });
+        return showableTotal;
+    }
+
+    function buildArgs() {
+        var args = { debug: false, filterparams: {}, limitfrom: st.cursor, maxcount: st.maxcount,
+                     orderbykey: 'featured', request: Date.now(), resultsonly: true, itemstyle: curView() };
+        var params = new URLSearchParams(location.search);
+        params.forEach(function (value, originalKey) {
+            var k = originalKey.replace(/\[\]$/, '');
+            if (k === 'orderbykey') { args.orderbykey = value; }
+            else if (k === 'itemstyle') { /* respetamos la vista real (curView) */ }
+            else if (k !== 'lang' && k !== 'edit' && k !== 'sesskey' && k !== 'debug') {
+                if (originalKey.slice(-2) === '[]') {
+                    if (!Array.isArray(args.filterparams[k])) args.filterparams[k] = [];
+                    args.filterparams[k].push(value);
+                } else { args.filterparams[k] = value; }
+            }
+        });
+        return args;
+    }
+
+    function fetchPage(cb) {
+        if (typeof window.require !== 'function') { cb(false); return; }
+        var mycursor = st.cursor, mykey = st.key;
+        window.require(['core/ajax', 'core/templates'], function (ajax, templates) {
+            ajax.call([{ methodname: 'totara_catalog_external_get_catalog_template_data', args: buildArgs() }], true, true)[0]
+                .then(function (data) {
+                    if (st.cursor !== mycursor || key() !== mykey) { cb(false); return; }
+                    templates.render('totara_core/grid', data.grid_template_data).then(function (html) {
+                        if (st.cursor !== mycursor || key() !== mykey) { cb(false); return; }
+                        var g = grid(); if (!g) { cb(false); return; }
+                        var holder = document.createElement('div');
+                        holder.innerHTML = html;
+                        var added = 0;
+                        Array.prototype.forEach.call(holder.querySelectorAll('[data-tw-grid-item]'), function (it) {
+                            var id = it.getAttribute('data-tw-grid-item-id');
+                            if (id && st.seen[id]) return;      // dedup
+                            if (id) st.seen[id] = 1;
+                            g.appendChild(it);
+                            added++;
+                        });
+                        var pd = data.pagination_template_data;
+                        var next = (pd && pd.limitfrom != null) ? parseInt(pd.limitfrom, 10) : null;
+                        st.cursor = (next != null && next > mycursor) ? next : (mycursor + (st.pageSize || added || 60));
+                        st.pages++;
+                        cb(true);
+                    }, function () { cb(false); });
+                }, function () { cb(false); });
+        });
+    }
+
+    function ensureStyle() {
+        if (document.getElementById('ivi-autoload-style')) return;
+        var s = document.createElement('style');
+        s.id = 'ivi-autoload-style';
+        // El trigger nativo no se puede accionar por JS → se oculta; usamos el propio.
+        s.textContent =
+            'body#page-totara-catalog-index [data-tw-pagination-trigger]{display:none!important;}' +
+            'body#page-totara-catalog-index .ivi-cap-hidden{display:none!important;}' +
+            'body#page-totara-catalog-index .ivi-loadmore{cursor:pointer!important;}';
+        document.head.appendChild(s);
+    }
+
+    function customBtn() { return document.querySelector('.ivi-loadmore'); }
+    function paginationHost() {
+        var nt = nativeTrig();
+        if (nt && nt.parentNode) return nt.parentNode;
+        var g = grid();
+        return g ? g.parentNode : null;
+    }
+    function setBtn(show) {
+        var b = customBtn();
+        if (show) {
+            if (!b) {
+                var host = paginationHost();
+                if (!host) return;
+                b = document.createElement('a');
+                b.className = 'ivi-loadmore tw-catalogPagination__btn btn';
+                b.href = '#';
+                b.addEventListener('click', function (e) { e.preventDefault(); if (!st.busy) loadMore(); });
+                host.appendChild(b);
+            }
+            b.textContent = LOADMORE_I18N[lang()] || LOADMORE_I18N.es;
+            b.style.display = '';
+        } else if (b) {
+            b.style.display = 'none';
+        }
+    }
+
+    // Carga en 2.º plano hasta tener >= st.cap tarjetas MOSTRABLES (≈100 crudas
+    // por detrás para 60 mostrables), aplica el tope y decide el botón.
+    function pump() {
+        if (st.busy) return;
+        var showableTotal = applyCap();
+        var moreServer = !!(st.maxcount && st.cursor < st.maxcount);
+        // ¿Ya hay suficientes mostrables para llenar la tanda (o no se puede cargar más)?
+        if (showableTotal >= st.cap || !moreServer || st.pages >= MAX_PAGES) {
+            setBtn(showableTotal > st.cap || moreServer);   // botón si queda algo por revelar/cargar
+            return;
+        }
+        st.busy = true;
+        setBtn(false);
+        fetchPage(function (ok) {
+            st.busy = false;
+            if (!ok) { applyCap(); setBtn(st.maxcount && st.cursor < st.maxcount); return; }
+            pump();   // seguir cargando hasta llenar la tanda
+        });
+    }
+
+    // Click del usuario: revelar la siguiente tanda de 60 (y cargar por detrás si falta).
+    function loadMore() {
+        st.cap += DISPLAY_STEP;
+        pump();
+    }
+
+    function resetAndRun() {
+        if (!grid()) return;
+        st.key = key();
+        st.pages = 0; st.seen = {}; st.busy = false; st.cap = DISPLAY_STEP;
+        var nt = nativeTrig();
+        st.cursor = nt ? (parseInt(nt.getAttribute('data-tw-pagination-limitfrom'), 10) || 0) : 0;
+        st.pageSize = st.cursor || 60;
+        st.maxcount = nt ? (parseInt(nt.getAttribute('data-tw-pagination-maxcount'), 10) || 0) : 0;
+        Array.prototype.forEach.call(items(), function (it) {
+            var id = it.getAttribute('data-tw-grid-item-id'); if (id) st.seen[id] = 1;
+        });
+        if (nt) pump(); else { applyCap(); setBtn(false); }
+    }
+
+    var t;
+    function schedule() {
+        clearTimeout(t);
+        t = setTimeout(function () {
+            if (key() !== st.key) { resetAndRun(); }   // cambio de filtros/búsqueda → reiniciar
+            else if (!st.busy) { pump(); }               // re-aplica tope (p. ej. al conmutar el toggle)
+        }, 300);
+    }
+
+    function init() {
+        ensureStyle();
+        resetAndRun();
+        // cambios en el DOM (nuevas tarjetas, re-render por filtros)
+        new MutationObserver(function () { schedule(); }).observe(document.body, { childList: true, subtree: true });
+        // conmutar el toggle cambia la clase del body → re-aplicar el tope
+        new MutationObserver(function () { schedule(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        window.addEventListener('load', function () { setTimeout(resetAndRun, 500); });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 })();
 </script>
