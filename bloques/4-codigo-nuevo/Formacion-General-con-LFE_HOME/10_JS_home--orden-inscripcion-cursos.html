@@ -49,26 +49,27 @@
      - Procesa los cursos que Totara carga en Current Learning/Programs.
      - Ordena el array completo antes de paginar cuando el módulo AMD ya está
        disponible, y siempre reordena las tarjetas renderizadas.
-     - Conserva cada tarjeta disponible y sus eventos; solo cambia el orden de
-       los <li> y oculta los cursos vencidos.
-     - Ordena por fecha de inscripción ASCENDENTE (las más antiguas primero);
-       los cursos sin fecha quedan al final.
+     - Conserva cada tarjeta y sus eventos; solo cambia el orden de los <li>.
+     - Disponibles PRIMERO, por fecha de inscripción ASCENDENTE (las más antiguas
+       primero); los cursos sin fecha quedan al final de su grupo.
+     - Los NO disponibles (fecha límite pasada) van al FINAL del todo, apagados
+       (opacidad + imagen en gris) y no clicables.
      - Pinta la fecha de inscripción en un badge central navy.
      - Fecha límite (finalización del curso) como badge en la esquina superior
-       derecha: en plazo muestra la fecha; vencido no aparece en la home.
+       derecha: en plazo muestra la fecha; vencido muestra "No disponible".
      - Soporta es, en, it, pt, cs y sv.
      - Observa recargas AJAX de filtros/paginación. Idempotente.
 
      Estilos: el badge central de inscripción y las barras de progreso van en
-     css-totara-organizado.css (§30, por CDN); el badge de ESQUINA y la
-     ocultación de vencidas también los inyecta este mismo JS
+     css-totara-organizado.css (§30, por CDN); el badge de ESQUINA y el apagado
+     de las tarjetas vencidas también los inyecta este mismo JS
      (injectDeadlineStyle) -> funciona con solo pegar el bloque.
      ============================================================ -->
 <script>
 (function () {
     'use strict';
 
-    var SCRIPT_VERSION = '2026-09-17.1';
+    var SCRIPT_VERSION = '2026-09-21.1';
     if (window.__iviHomeDueUrgencyVersion === SCRIPT_VERSION) return;
     window.__iviHomeDueUrgencyVersion = SCRIPT_VERSION;
     window.__iviHomeDueUrgencyActive = true;
@@ -338,10 +339,11 @@
                 epoch: epochForItem(item),
                 expired: isExpiredEpoch(deadlineEpochForItem(item))
             };
-        }).filter(function (entry) {
-            /* Evita que los cursos vencidos lleguen a la paginación de Totara. */
-            return !entry.expired;
         }).sort(function (a, b) {
+            /* Disponibles primero; los vencidos ("no disponibles") al final.
+               Dentro de cada grupo, por fecha de inscripción ascendente (el más
+               antiguo primero); los sin fecha, al final de su grupo. */
+            if (a.expired !== b.expired) return a.expired ? 1 : -1;
             if (a.epoch === null && b.epoch === null) return a.index - b.index;
             if (a.epoch === null) return 1;
             if (b.epoch === null) return -1;
@@ -435,7 +437,8 @@
        fecha límite aunque no tenga fecha de inscripción y viceversa.
          · Sin fecha límite  -> no hay badge de esquina; tarjeta disponible.
          · Fecha límite HOY o futura -> badge navy con la fecha.
-         · Fecha límite pasada -> data-home-expired="1" y tarjeta oculta. */
+         · Fecha límite pasada -> data-home-expired="1"; la tarjeta se apaga
+           ("No disponible") y se ordena al final del listado. */
     function applyDeadline(tile, courseKey, lang, strings) {
         var epoch = (courseKey && deadlineByCourseUrl[courseKey] !== undefined)
             ? deadlineByCourseUrl[courseKey]
@@ -450,8 +453,8 @@
         }
 
         var expired = isExpiredEpoch(epoch);
-        /* El texto vencido se conserva como estado interno, aunque la tarjeta
-           queda oculta por completo en la home. */
+        /* Vencido: la pastilla muestra "No disponible"; la tarjeta se apaga
+           (opacidad + gris + no clicable) y el orden la manda al final. */
         var text = expired
             ? strings.unavailable
             : strings.deadline + ': ' + formatDate(new Date(epoch), strings.locale);
@@ -607,7 +610,7 @@
         });
 
         ordered.sort(function (a, b) {
-            /* Los vencidos quedan al final como respaldo, pero no son visibles. */
+            /* Los vencidos ("no disponibles") se ordenan al final del listado. */
             if (a.expired !== b.expired) return a.expired ? 1 : -1;
             if (a.epoch === null && b.epoch === null) return a.index - b.index;
             if (a.epoch === null) return 1;
@@ -648,7 +651,12 @@
             'body.ivi-home-due-active .ivi-home-deadline--expired{background:var(--red,#B4084A)!important;' +
             'box-shadow:0 2px 8px rgba(180,8,74,0.3)!important;}' +
             'body.ivi-home-due-active .ivi-home-deadline--expired::before{content:"block"!important;}' +
-            'body.ivi-home-due-active li[data-home-expired="1"]{display:none!important;}';
+            /* Vencidos ("no disponibles"): NO se ocultan; se ordenan al final y
+               se muestran APAGADOS (opacidad + imagen en gris) y no clicables. */
+            'body.ivi-home-due-active li[data-home-expired="1"]{opacity:0.55!important;}' +
+            'body.ivi-home-due-active li[data-home-expired="1"] a{pointer-events:none!important;cursor:default!important;}' +
+            'body.ivi-home-due-active li[data-home-expired="1"] .block_current_learningas-tile__image,' +
+            'body.ivi-home-due-active li[data-home-expired="1"] .block_current_programsas-tile__image{filter:grayscale(1)!important;}';
         var style = document.createElement('style');
         style.id = 'ivi-home-deadline-style';
         style.textContent = css;

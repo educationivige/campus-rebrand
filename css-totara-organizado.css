@@ -10847,10 +10847,20 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
    JS: 10_JS_home--orden-inscripcion-cursos.html --- */
 
 /* El mismo bloque JS se usa en dashboard-6 y dashboard-9. En cuanto identifica
-   una fecha límite pasada marca el curso como vencido; no debe ocupar espacio
-   ni aparecer durante recargas AJAX o si Totara lo renderiza antes del filtro. */
+   una fecha límite pasada marca el curso como vencido ("no disponible"): la
+   tarjeta NO se oculta, se ordena al final y se muestra apagada (opacidad +
+   imagen en gris) y no clicable. El JS (injectDeadlineStyle) inyecta lo mismo
+   para que funcione con solo pegar el bloque; esto lo sirve por CDN. */
 body.ivi-home-due-active li[data-home-expired="1"] {
-  display: none !important;
+  opacity: 0.55 !important;
+}
+body.ivi-home-due-active li[data-home-expired="1"] a {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+body.ivi-home-due-active li[data-home-expired="1"] .block_current_learningas-tile__image,
+body.ivi-home-due-active li[data-home-expired="1"] .block_current_programsas-tile__image {
+  filter: grayscale(1) !important;
 }
 
 /* Maincontent en columna (como el tema): CURSO, título, fecha y, al pie, el
