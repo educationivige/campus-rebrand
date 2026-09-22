@@ -736,20 +736,55 @@
         return !!date && date.getTime() < startOfTodayEpoch();
     }
 
+    /* Variante para DATOS CRUDOS del catálogo (tile.template_data.text_placeholders,
+       tal como los sirve el AJAX antes de renderizar). Mismo criterio que las cards
+       vivas: se ignora la duración (numérica) y la 2.ª fecha = fecha fin. Permite al
+       CONTADOR saber si un curso está vencido SIN renderizar la plantilla del grid. */
+    function endValueFromPlaceholders(phs) {
+        if (!phs || !phs.length) return null;
+        var dateSeen = 0, endValue = null;
+        for (var i = 0; i < phs.length; i++) {
+            var ph = phs[i];
+            if (!ph || !ph.data_exists) continue;
+            var val = String(ph.data == null ? '' : ph.data).trim();
+            if (!val) continue;
+            if (/^[\d.,\s]+$/.test(val)) continue;   // número → duración, no fecha
+            dateSeen++;
+            if (dateSeen >= 2) endValue = val;        // 2.ª fecha = fecha fin (fecha límite)
+        }
+        return endValue;
+    }
+
+    function isExpiredFromPlaceholders(phs) {
+        var val = endValueFromPlaceholders(phs);
+        if (!val) return false;
+        var date = parseDate(val);
+        return !!date && date.getTime() < startOfTodayEpoch();
+    }
+
     window.__iviCat = window.__iviCat || {};
     window.__iviCat.isCardExpired = isCardExpired;
+    window.__iviCat.isExpiredFromPlaceholders = isExpiredFromPlaceholders;
 
     function formatMeta() {
         injectStyle();
+        // Incremental: cada tarjeta se formatea UNA vez por idioma (data-ivi-meta-lang).
+        // Evita re-escanear todas las cards en cada mutación (O(n²)) cuando la
+        // auto-carga va añadiendo páginas; se re-procesa solo si cambia el idioma.
+        var lg = lang();
         document.querySelectorAll('.tw-catalogItemNarrow').forEach(function (card) {
+            if (card.dataset.iviMetaLang === lg) return;
             var end = processItems(Array.prototype.slice.call(
                 card.querySelectorAll('.tw-catalogItemNarrow__textarea_group .tw-catalogItemNarrow__textarea_group_item')));
             applyCatalogDeadline(card, false, end);
+            card.dataset.iviMetaLang = lg;
         });
         document.querySelectorAll('.tw-catalogItemWide').forEach(function (card) {
+            if (card.dataset.iviMetaLang === lg) return;
             var end = processItems(Array.prototype.slice.call(
                 card.querySelectorAll('.tw-catalogItemWide__textarea_group_item')));
             applyCatalogDeadline(card, true, end);
+            card.dataset.iviMetaLang = lg;
         });
         /* Las tarjetas se dejan EN SU SITIO (orden natural del catálogo); las
            vencidas solo se marcan "No disponible" (apagadas), sin reordenar ni
@@ -852,6 +887,22 @@
                 var card = items[i].querySelector('.tw-catalogItemNarrow, .tw-catalogItemWide');
                 var isWide = !!(card && card.classList.contains('tw-catalogItemWide'));
                 if (card && window.__iviCat.isCardExpired(card, isWide)) expiredIds[key] = true;
+            }
+        }
+    }
+
+    // Igual que addItemIds pero sobre los TILES CRUDOS del AJAX (sin renderizar la
+    // plantilla del grid). Rebajar el recuento a solo-datos evita re-renderizar ~13
+    // páginas en segundo plano, que era lo que saturaba el hilo al "Cargar más".
+    function addTiles(tiles, ids, prefix, expiredIds) {
+        if (!tiles) return;
+        for (var i = 0; i < tiles.length; i++) {
+            var td = (tiles[i] && tiles[i].template_data) || {};
+            var id = td.itemid;
+            var key = id != null ? 'id:' + id : prefix + ':' + i;
+            ids[key] = true;
+            if (expiredIds && window.__iviCat && window.__iviCat.isExpiredFromPlaceholders) {
+                if (window.__iviCat.isExpiredFromPlaceholders(td.text_placeholders)) expiredIds[key] = true;
             }
         }
     }
@@ -1025,7 +1076,7 @@
             return;
         }
 
-        window.require(['core/ajax', 'core/templates'], function (ajax, templates) {
+        window.require(['core/ajax'], function (ajax) {
             function next(page, pageNumber) {
                 if (run !== state.run || key !== catalogKey() || !page) return;
                 if (pageNumber > 100) {
@@ -1041,25 +1092,25 @@
 
                 request.then(function (data) {
                     if (run !== state.run || key !== catalogKey()) return;
-                    templates.render('totara_core/grid', data.grid_template_data).then(function (html) {
-                        var gridHolder = document.createElement('div');
-                        gridHolder.innerHTML = html;
-                        addItemIds(gridHolder, ids, 'page-' + pageNumber, expiredIds);
+                    var gtd = data.grid_template_data || {};
+                    addTiles(gtd.tiles, ids, 'page-' + pageNumber, expiredIds);
 
-                        templates.render('totara_catalog/pagination', data.pagination_template_data).then(function (pagerHtml) {
-                            var pagerHolder = document.createElement('div');
-                            pagerHolder.innerHTML = pagerHtml;
-                            var following = pagerData(pagerHolder);
+                    // La paginación viene en los datos del AJAX: {limit_from, max_count,
+                    // end_of_results}. No hace falta renderizar la plantilla para leerla.
+                    var pd = data.pagination_template_data || {};
+                    var following = pd.end_of_results ? null
+                        : { limitfrom: pd.limit_from, maxcount: pd.max_count };
 
-                            state.pending = !!following;
-                            publish(key, ids, expiredIds, !following);
-                            if (following && following.limitfrom !== page.limitfrom) {
-                                next(following, pageNumber + 1);
-                            } else if (following) {
-                                stopCounting();
-                            }
-                        }, stopCounting);
-                    }, stopCounting);
+                    // following === null → fin limpio: el publish de arriba ya marcó
+                    // exact=true. Solo paramos con "N+" si el pager se queda atascado
+                    // (following con el mismo limitfrom), nunca al llegar al final.
+                    state.pending = !!following;
+                    publish(key, ids, expiredIds, !following);
+                    if (following && String(following.limitfrom) !== String(page.limitfrom)) {
+                        next(following, pageNumber + 1);
+                    } else if (following) {
+                        stopCounting();
+                    }
                 }, function () {
                     // Conservamos el mínimo cierto (N+) si falla una petición.
                     stopCounting();
@@ -1150,7 +1201,7 @@
     var DISPLAY_STEP = 60;  // tarjetas mostradas por tanda (= página nativa del catálogo)
     var MAX_PAGES = 60;     // tope de seguridad de páginas AJAX auto-cargadas por contexto
 
-    var st = { key: '', cursor: 0, pageSize: 60, maxcount: 0, busy: false, pages: 0, seen: {}, cap: DISPLAY_STEP };
+    var st = { key: '', cursor: 0, pageSize: 60, maxcount: 0, busy: false, pages: 0, seen: {}, cap: DISPLAY_STEP, end: false };
 
     var LOADMORE_I18N = {
         es: 'Carga más', en: 'Load more', it: 'Visualizza più elementi',
@@ -1213,13 +1264,21 @@
     function fetchPage(cb) {
         if (typeof window.require !== 'function') { cb(false); return; }
         var mycursor = st.cursor, mykey = st.key;
+        var settled = false;
+        function finish(ok) { if (settled) return; settled = true; clearTimeout(wd); cb(ok); }
+        // Watchdog: si el AJAX o el render se atascan (el hilo saturado hacía que un
+        // render tardara decenas de segundos y dejaba busy=true para siempre → el
+        // botón desaparecía y la carga se detenía), liberamos y dejamos reintentar.
+        var wd = setTimeout(function () { finish(false); }, 15000);
         window.require(['core/ajax', 'core/templates'], function (ajax, templates) {
             ajax.call([{ methodname: 'totara_catalog_external_get_catalog_template_data', args: buildArgs() }], true, true)[0]
                 .then(function (data) {
-                    if (st.cursor !== mycursor || key() !== mykey) { cb(false); return; }
+                    if (settled) return;
+                    if (st.cursor !== mycursor || key() !== mykey) { finish(false); return; }
                     templates.render('totara_core/grid', data.grid_template_data).then(function (html) {
-                        if (st.cursor !== mycursor || key() !== mykey) { cb(false); return; }
-                        var g = grid(); if (!g) { cb(false); return; }
+                        if (settled) return;
+                        if (st.cursor !== mycursor || key() !== mykey) { finish(false); return; }
+                        var g = grid(); if (!g) { finish(false); return; }
                         var holder = document.createElement('div');
                         holder.innerHTML = html;
                         var added = 0;
@@ -1230,13 +1289,14 @@
                             g.appendChild(it);
                             added++;
                         });
-                        var pd = data.pagination_template_data;
-                        var next = (pd && pd.limitfrom != null) ? parseInt(pd.limitfrom, 10) : null;
+                        var pd = data.pagination_template_data || {};
+                        var next = (pd.limit_from != null) ? parseInt(pd.limit_from, 10) : null;
+                        st.end = !!pd.end_of_results;   // señal limpia de "no hay más"
                         st.cursor = (next != null && next > mycursor) ? next : (mycursor + (st.pageSize || added || 60));
                         st.pages++;
-                        cb(true);
-                    }, function () { cb(false); });
-                }, function () { cb(false); });
+                        finish(true);
+                    }, function () { finish(false); });
+                }, function () { finish(false); });
         });
     }
 
@@ -1280,21 +1340,24 @@
 
     // Carga en 2.º plano hasta tener >= st.cap tarjetas MOSTRABLES (≈100 crudas
     // por detrás para 60 mostrables), aplica el tope y decide el botón.
+    function moreServer() {
+        // Preferimos end_of_results (exacto); maxcount es solo un respaldo aproximado.
+        return !st.end && (!st.maxcount || st.cursor < st.maxcount);
+    }
     function pump() {
         if (st.busy) return;
         var showableTotal = applyCap();
-        var moreServer = !!(st.maxcount && st.cursor < st.maxcount);
         // ¿Ya hay suficientes mostrables para llenar la tanda (o no se puede cargar más)?
-        if (showableTotal >= st.cap || !moreServer || st.pages >= MAX_PAGES) {
-            setBtn(showableTotal > st.cap || moreServer);   // botón si queda algo por revelar/cargar
+        if (showableTotal >= st.cap || !moreServer() || st.pages >= MAX_PAGES) {
+            setBtn(showableTotal > st.cap || moreServer());   // botón si queda algo por revelar/cargar
             return;
         }
         st.busy = true;
         setBtn(false);
         fetchPage(function (ok) {
             st.busy = false;
-            if (!ok) { applyCap(); setBtn(st.maxcount && st.cursor < st.maxcount); return; }
-            pump();   // seguir cargando hasta llenar la tanda
+            if (!ok) { applyCap(); setBtn(moreServer()); return; }  // reintentable: el botón vuelve
+            setTimeout(pump, 40);   // cede el hilo entre páginas para no congelar el navegador
         });
     }
 
@@ -1307,7 +1370,7 @@
     function resetAndRun() {
         if (!grid()) return;
         st.key = key();
-        st.pages = 0; st.seen = {}; st.busy = false; st.cap = DISPLAY_STEP;
+        st.pages = 0; st.seen = {}; st.busy = false; st.cap = DISPLAY_STEP; st.end = false;
         var nt = nativeTrig();
         st.cursor = nt ? (parseInt(nt.getAttribute('data-tw-pagination-limitfrom'), 10) || 0) : 0;
         st.pageSize = st.cursor || 60;
