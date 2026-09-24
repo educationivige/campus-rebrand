@@ -2175,6 +2175,23 @@ div#region-main #inst286.block .content {
 }
 
 /* --- Visor de puntos --- */
+
+/* Bloque "Ver mi puntuación de <año>" (botón .ivi-btn-anio): sin fondo blanco
+   ni marco, y pegado al bloque de arriba. */
+.block:has(.ivi-btn-anio) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: -10px !important;
+}
+.block:has(.ivi-btn-anio) > .content.block-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
 .visor .fo-completa {
   padding: 0.5em 1em;
   background-color: #85C99C;
