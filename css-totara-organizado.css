@@ -1780,6 +1780,43 @@ html .has-full-page-slider #block-region-top {
   background: var(--bright-orange) !important;
 }
 
+/* Aviso "sin formación en esta sección": mensaje vacío NATIVO de los bloques
+   Current Learning / Current Programs de las homes (Formación Obligatoria,
+   Formación adicional, Programas, Mi formación…). Cajita azul de marca con
+   icono "i", igual que el aviso del Expediente (.dai-empty-notice--corp). */
+.current_learningas-no-content,
+.current_programsas-no-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  margin: 16px 0;
+  padding: 18px 22px;
+  background: var(--bg-blue, #DCE6FF);
+  border: 1px solid #C4D4FB;
+  border-radius: 12px;
+  color: var(--navy-blue, #08004F);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.current_learningas-no-content::before,
+.current_programsas-no-content::before {
+  content: "info";
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: 'FILL' 1;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--light-blue, #004DF0);
+  flex-shrink: 0;
+}
+
+.current_learningas-no-content a,
+.current_programsas-no-content a {
+  color: var(--light-blue, #004DF0);
+}
+
 /* --- Cards de curso Monthly Seminars (#inst287) ---
    Imagen: la altura la fija el ::before con padding-top (el % se
    calcula sobre el ancho, así siempre da altura; con aspect-ratio en
