@@ -69,7 +69,7 @@
 (function () {
     'use strict';
 
-    var SCRIPT_VERSION = '2026-09-21.1';
+    var SCRIPT_VERSION = '2026-09-24.1';
     if (window.__iviHomeDueUrgencyVersion === SCRIPT_VERSION) return;
     window.__iviHomeDueUrgencyVersion = SCRIPT_VERSION;
     window.__iviHomeDueUrgencyActive = true;
@@ -391,16 +391,107 @@
         module.__iviDueOrderWrapped = true;
     }
 
-    function installDataSortInterceptors() {
-        if (typeof window.require !== 'function') return;
+    var TILE_MODULES = [
+        'block_current_learningas/current_learningas_tiles',
+        'block_current_programsas/current_programsas_tiles'
+    ];
 
-        window.require([
-            'block_current_learningas/current_learningas_tiles',
-            'block_current_programsas/current_programsas_tiles'
-        ], function (currentLearning, currentPrograms) {
-            wrapTotaraModule(currentLearning);
-            wrapTotaraModule(currentPrograms);
-        });
+    function isTileModule(name) {
+        return TILE_MODULES.indexOf(name) !== -1;
+    }
+
+    /* Envuelve un módulo AMD por nombre. Requiere cada uno POR SEPARADO (no en un
+       solo require con los dos): así, si una home no tiene el bloque de programas,
+       el de cursos se envuelve igualmente (con un require conjunto, el fallo de un
+       módulo cancela el callback y no se envolvería ninguno). */
+    function wrapModuleByName(name) {
+        try {
+            window.require([name], function (mod) { wrapTotaraModule(mod); }, function () {});
+        } catch (e) {}
+    }
+
+    function wrapKnownModules() {
+        for (var i = 0; i < TILE_MODULES.length; i++) wrapModuleByName(TILE_MODULES[i]);
+    }
+
+    /* Sustituto de window.require que, cuando el PIE del bloque pide el módulo de
+       tiles —require(['block_current_learningas/...'], function (tiles) { tiles.init(...) })—,
+       envuelve tiles.init ANTES de ejecutar ese callback. Así el init del bloque
+       corre YA envuelto y el array se ordena antes de paginar. Cualquier otra
+       petición (la forma síncrona require('mod'), require(config, deps, cb), o
+       módulos que no sean los de tiles) pasa intacta. Copia la API de requirejs
+       (config, toUrl, s, undef, onError...) para no romper a otros que usen
+       window.require. */
+    function makeInterceptingRequire(realRequire) {
+        function iviRequire(deps, callback, errback) {
+            if (Array.isArray(deps) && typeof callback === 'function' &&
+                deps.some(isTileModule)) {
+                var userCallback = callback;
+                callback = function () {
+                    for (var i = 0; i < arguments.length; i++) wrapTotaraModule(arguments[i]);
+                    return userCallback.apply(this, arguments);
+                };
+            }
+            return realRequire.call(this, deps, callback, errback);
+        }
+        for (var key in realRequire) {
+            try { iviRequire[key] = realRequire[key]; } catch (e) {}
+        }
+        return iviRequire;
+    }
+
+    function installDataSortInterceptors() {
+        /* Caso fácil (p.ej. internos, o cualquier home donde requirejs YA existe al
+           leer este bloque): registramos el wrap de una vez. Como este bloque va
+           ANTES en el DOM que el require(...).init() del pie, nuestro callback
+           queda registrado primero y el init corre envuelto. */
+        if (typeof window.require === 'function') {
+            wrapKnownModules();
+            return;
+        }
+
+        /* Caso externos: requirejs AÚN NO existe al leer este bloque, y su init
+           corre en un <script> inline JUSTO después de require.min.js, sin hueco
+           para un poll (comprobado: todo el arranque AMD —config, require.min.js,
+           init del bloque— sale al final del body, tras este bloque). La paginación
+           NO vuelve a llamar a init y el init está protegido contra doble ejecución,
+           así que si el PRIMER init corre sin envolver, el orden "no disponibles al
+           final" no cruza páginas (un disponible se queda en la página 2).
+
+           Solución determinista: colocamos un accessor en window.require ANTES de
+           que requirejs lo defina; en cuanto requirejs le asigna la FUNCIÓN require,
+           la sustituimos por la versión que envuelve el init del bloque de tiles.
+           config.js asigna primero un OBJETO de configuración: se guarda tal cual
+           (requirejs lo lee como config); solo se envuelve cuando el valor es una
+           función. */
+        var desc = Object.getOwnPropertyDescriptor(window, 'require');
+        if (desc && !desc.configurable) {
+            /* Ya fijado como no configurable: no se puede redefinir. Último recurso,
+               poll —no siempre gana la carrera, pero es lo que hay. */
+            var tries = 0;
+            (function attempt() {
+                if (typeof window.require === 'function') { wrapKnownModules(); return; }
+                if (tries++ < 200) window.setTimeout(attempt, 20);
+            })();
+            return;
+        }
+        try {
+            var storedRequire;
+            Object.defineProperty(window, 'require', {
+                configurable: true,
+                enumerable: false,
+                get: function () { return storedRequire; },
+                set: function (value) {
+                    storedRequire = (typeof value === 'function')
+                        ? makeInterceptingRequire(value)
+                        : value;   /* objeto de config de requirejs: intacto */
+                }
+            });
+        } catch (e) {
+            /* Si el navegador no deja el accessor, intento el wrap directo por si
+               require aparece a tiempo. */
+            wrapKnownModules();
+        }
     }
 
     function dateFromBadge(badge) {
