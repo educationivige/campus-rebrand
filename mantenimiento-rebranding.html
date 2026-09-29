@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Plataforma en mantenimiento · IVI Institute Education</title>
+
+<!--
+  Página de mantenimiento — Día del rebranding IVI Institute Education (2026).
+
+  Idiomas soportados (mismos que el filtro mlang del campus): es, en, it, pt,
+  sv, cs. El idioma se resuelve por JavaScript (el filtro {mlang} NO se ejecuta
+  en el modo mantenimiento de Totara, que sirve un archivo estático sin PHP):
+  ?lang= en la URL › preferencia guardada › idioma del navegador › inglés.
+  Selector manual abajo.
+
+  Logo e icono se cargan desde la plataforma (ver URLs abajo). OJO: si el día
+  del rebranding el campus está totalmente caído, esas URLs podrían no
+  responder; en ese caso conviene incrustar los SVG (hay copia en
+  assets/mantenimiento/). Solo se carga además Noto Sans desde Google Fonts;
+  IVI Glance se intenta desde el tema del campus y, si no responde, cae a Noto Sans.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  @font-face {
+    font-family: 'IVI Glance';
+    src: url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff2') format('woff2'),
+         url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff')  format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --light-blue: #004DF0;
+    --navy-blue:  #08004F;
+    --teal:       #0CE3C6;
+    --white:      #FFFFFF;
+    --text-soft:  rgba(255, 255, 255, 0.82);
+
+    --font-title: 'IVI Glance', 'Noto Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body:  'Noto Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--white);
+    background: radial-gradient(1200px 700px at 15% 10%, #123bd6 0%, transparent 55%),
+                radial-gradient(1000px 800px at 90% 90%, rgba(12, 227, 198, 0.28) 0%, transparent 50%),
+                linear-gradient(160deg, var(--navy-blue) 0%, #0a1a8c 45%, var(--light-blue) 120%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+  }
+
+  /* Imagen de fondo (laboratorio FIV, ya con tinte de marca), sutil detrás */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/Maintenance-mode.png') center center / cover no-repeat;
+    opacity: 0.32;
+    pointer-events: none;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 28px;
+    padding: 52px 48px 40px;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 30px 80px rgba(3, 0, 40, 0.45);
+    animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Logo real de marca (versión blanca, horizontal) */
+  .brand { margin-bottom: 36px; }
+  .brand img { height: 68px; width: auto; display: block; margin: 0 auto; }
+
+  /* Animación: anillos que laten alrededor del icono girando */
+  .pulse {
+    position: relative;
+    width: 118px;
+    height: 118px;
+    margin: 0 auto 30px;
+  }
+  .pulse .ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--teal);
+    opacity: 0;
+    animation: pulse 2.6s ease-out infinite;
+  }
+  .pulse .ring:nth-child(2) { animation-delay: 0.9s; }
+  .pulse .ring:nth-child(3) { animation-delay: 1.8s; }
+
+  .pulse .core {
+    position: absolute;
+    inset: 22px;
+    border-radius: 50%;
+    background: linear-gradient(150deg, var(--teal), var(--light-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 30px rgba(12, 227, 198, 0.35);
+  }
+  .pulse .core img {
+    width: 44px;
+    height: 44px;
+    animation: spin 7s linear infinite;
+  }
+
+  h1 {
+    font-family: var(--font-title);
+    font-weight: 400;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.12;
+    margin: 0 0 22px;
+    color: var(--white);
+  }
+
+  p {
+    font-size: clamp(15px, 2.4vw, 17px);
+    line-height: 1.65;
+    color: var(--text-soft);
+    margin: 0 auto 18px;
+    max-width: 510px;
+  }
+
+  .closing {
+    font-family: var(--font-title);
+    font-size: clamp(19px, 3vw, 24px);
+    color: var(--teal);
+    margin-top: 28px;
+    margin-bottom: 0;
+  }
+
+  .progress {
+    position: relative;
+    height: 5px;
+    width: 190px;
+    margin: 34px auto 4px;
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 40%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--teal), var(--light-blue));
+    animation: slide 1.8s ease-in-out infinite;
+  }
+
+  /* Selector de idioma */
+  .langs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .lang-btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-soft);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .lang-btn:hover { color: var(--white); border-color: rgba(255, 255, 255, 0.5); }
+  .lang-btn.is-active {
+    color: var(--navy-blue);
+    background: var(--teal);
+    border-color: var(--teal);
+    font-weight: 700;
+  }
+  .lang-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%   { opacity: 0.55; transform: scale(0.55); }
+    80%  { opacity: 0; }
+    100% { opacity: 0; transform: scale(1); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes slide {
+    0%   { left: -40%; }
+    100% { left: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 40px 24px 32px; border-radius: 22px; }
+    .brand img { height: 54px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .pulse .ring, .pulse .core img, .progress::after { animation: none; }
+    .pulse .ring:first-child { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="card" role="main">
+    <div class="brand">
+      <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/IVI_institute_h_w.svg"
+           alt="IVI Institute Education">
+    </div>
+
+    <div class="pulse" aria-hidden="true">
+      <span class="ring"></span>
+      <span class="ring"></span>
+      <span class="ring"></span>
+      <span class="core">
+        <img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mantenimiento-icon.svg"
+             alt="">
+      </span>
+    </div>
+
+    <h1 data-i18n="title">Plataforma en mantenimiento</h1>
+
+    <p data-i18n="p1">Estamos trabajando en la plataforma para adaptarla a nuestra nueva imagen
+       y al proceso de rebranding. Aprovechamos este momento para reorganizar
+       contenidos y dejar todo listo para ofrecer una mejor experiencia.</p>
+
+    <p data-i18n="p2">Regresa en las próximas horas. Muy pronto tendrás nuevamente acceso a
+       todos los servicios y funcionalidades.</p>
+
+    <div class="progress" aria-hidden="true"></div>
+
+    <p class="closing" data-i18n="closing">¡Volvemos enseguida!</p>
+
+    <nav class="langs" aria-label="Idioma / Language">
+      <button class="lang-btn" data-lang="es" aria-label="Español">ES</button>
+      <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+      <button class="lang-btn" data-lang="it" aria-label="Italiano">IT</button>
+      <button class="lang-btn" data-lang="pt" aria-label="Português">PT</button>
+      <button class="lang-btn" data-lang="sv" aria-label="Svenska">SV</button>
+      <button class="lang-btn" data-lang="cs" aria-label="Čeština">CS</button>
+    </nav>
+  </main>
+
+<script>
+(function () {
+  'use strict';
+
+  var FALLBACK = 'en';
+  var I18N = {
+    es: {
+      title: 'Plataforma en mantenimiento',
+      p1: 'Estamos trabajando en la plataforma para adaptarla a nuestra nueva imagen y al proceso de rebranding. Aprovechamos este momento para reorganizar contenidos y dejar todo listo para ofrecer una mejor experiencia.',
+      p2: 'Regresa en las próximas horas. Muy pronto tendrás nuevamente acceso a todos los servicios y funcionalidades.',
+      closing: '¡Volvemos enseguida!'
+    },
+    en: {
+      title: 'Platform under maintenance',
+      p1: 'We are working on the platform to bring it in line with our new image and rebranding. We are taking this opportunity to reorganise content and get everything ready to offer you a better experience.',
+      p2: 'Check back in the next few hours. Very soon you will have full access to all services and features again.',
+      closing: 'We will be right back!'
+    },
+    it: {
+      title: 'Piattaforma in manutenzione',
+      p1: 'Stiamo lavorando sulla piattaforma per adattarla alla nostra nuova immagine e al processo di rebranding. Approfittiamo di questo momento per riorganizzare i contenuti e preparare tutto per offrirti un’esperienza migliore.',
+      p2: 'Torna nelle prossime ore. Molto presto avrai di nuovo accesso a tutti i servizi e le funzionalità.',
+      closing: 'Torniamo subito!'
+    },
+    pt: {
+      title: 'Plataforma em manutenção',
+      p1: 'Estamos a trabalhar na plataforma para a adaptar à nossa nova imagem e ao processo de rebranding. Aproveitamos este momento para reorganizar conteúdos e deixar tudo pronto para oferecer uma melhor experiência.',
+      p2: 'Volta nas próximas horas. Muito em breve terás novamente acesso a todos os serviços e funcionalidades.',
+      closing: 'Voltamos já!'
+    },
+    sv: {
+      title: 'Plattformen underhålls',
+      p1: 'Vi arbetar med plattformen för att anpassa den till vår nya profil och vårt rebranding-arbete. Vi passar samtidigt på att omorganisera innehållet så att allt är redo att ge dig en bättre upplevelse.',
+      p2: 'Kom tillbaka inom de närmaste timmarna. Mycket snart har du åter tillgång till alla tjänster och funktioner.',
+      closing: 'Vi är strax tillbaka!'
+    },
+    cs: {
+      title: 'Platforma je v údržbě',
+      p1: 'Pracujeme na platformě, abychom ji přizpůsobili naší nové vizuální identitě a procesu rebrandingu. Využíváme tuto chvíli k reorganizaci obsahu, abychom vše připravili a nabídli vám lepší zážitek.',
+      p2: 'Vraťte se v následujících hodinách. Velmi brzy budete mít opět přístup ke všem službám a funkcím.',
+      closing: 'Brzy jsme zpět!'
+    }
+  };
+
+  function normalize(code) {
+    return (code || '').slice(0, 2).toLowerCase();
+  }
+
+  function pickLang() {
+    try {
+      var q = normalize(new URLSearchParams(location.search).get('lang'));
+      if (I18N[q]) return q;
+    } catch (e) {}
+    try {
+      var saved = localStorage.getItem('neo-maint-lang');
+      if (I18N[saved]) return saved;
+    } catch (e) {}
+    var navs = navigator.languages || [navigator.language || ''];
+    for (var i = 0; i < navs.length; i++) {
+      var c = normalize(navs[i]);
+      if (I18N[c]) return c;
+    }
+    return FALLBACK;
+  }
+
+  function apply(lang) {
+    var t = I18N[lang] || I18N[FALLBACK];
+    document.documentElement.lang = lang;
+    document.title = t.title + ' · IVI Institute Education';
+    var nodes = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < nodes.length; i++) {
+      var key = nodes[i].getAttribute('data-i18n');
+      if (t[key]) nodes[i].textContent = t[key];
+    }
+    var btns = document.querySelectorAll('.lang-btn');
+    for (var j = 0; j < btns.length; j++) {
+      var on = btns[j].getAttribute('data-lang') === lang;
+      btns[j].classList.toggle('is-active', on);
+      btns[j].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+
+  var buttons = document.querySelectorAll('.lang-btn');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      var l = this.getAttribute('data-lang');
+      try { localStorage.setItem('neo-maint-lang', l); } catch (e) {}
+      apply(l);
+    });
+  }
+
+  apply(pickLang());
+})();
+</script>
+</body>
+</html>
