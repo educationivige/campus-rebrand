@@ -1,0 +1,141 @@
+<!-- [NEO] Rebrand del aviso "habilitar popups" de SCORM (iframe loadSCO). Pegar en HTML adicional. -->
+<script>
+(function () {
+  'use strict';
+
+  var COLOR_MAP = {
+    '#006975': '#004DF0',
+    '#008897': '#004DF0',
+    '#17a2b8': '#0CE3C6',
+    '#e39282': '#004DF0',
+    '#fff0ee': '#DCE6FF',
+    '#ffeaa7': '#DCE6FF'
+  };
+  var FONT_OLD = /["']?Gotham["']?/gi;
+  var FONT_NEW = "'IVI Glance','Noto Sans',sans-serif";
+  var ICONS = [
+    { cp: 0x1F512, name: 'lock' },
+    { cp: 0x1F527, name: 'settings' },
+    { cp: 0x1F504, name: 'refresh' }
+  ];
+  var NEW_ILLUSTRATION_URL = '';
+
+  function recolor(s) {
+    if (!s) return s;
+    var out = s;
+    Object.keys(COLOR_MAP).forEach(function (c) {
+      out = out.replace(new RegExp(c.replace('#', '\\#'), 'gi'), COLOR_MAP[c]);
+    });
+    return out.replace(FONT_OLD, FONT_NEW);
+  }
+
+  function injectFonts(d) {
+    if (d.getElementById('neo-scorm-fonts')) return;
+    var link = d.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap';
+    d.head.appendChild(link);
+    var st = d.createElement('style');
+    st.id = 'neo-scorm-fonts';
+    st.textContent =
+      "@font-face{font-family:'IVI Glance';" +
+      "src:url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff2') format('woff2')," +
+      "url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff') format('woff');" +
+      "font-weight:normal;font-style:normal;font-display:swap;}" +
+      "html,body,body *{font-family:'IVI Glance','Noto Sans',sans-serif;}";
+    d.head.appendChild(st);
+  }
+
+  function injectMaterial(d) {
+    if (d.getElementById('neo-scorm-material')) return;
+    var link = d.createElement('link');
+    link.id = 'neo-scorm-material';
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&display=swap';
+    d.head.appendChild(link);
+    var st = d.createElement('style');
+    st.textContent =
+      ".material-symbols-outlined{font-family:'Material Symbols Outlined'!important;" +
+      "font-weight:normal;font-style:normal;line-height:1;vertical-align:-0.18em;" +
+      "font-size:1.25em;letter-spacing:normal;text-transform:none;white-space:nowrap;" +
+      "direction:ltr;color:#004DF0;}";
+    d.head.appendChild(st);
+  }
+
+  function replaceIcons(d) {
+    try { if (!d.fonts.check("24px 'Material Symbols Outlined'")) return; } catch (e) {}
+    d.querySelectorAll('span').forEach(function (sp) {
+      if (sp.dataset.neoIcon) return;
+      var txt = sp.textContent || '';
+      if (txt.length > 4) return;
+      for (var i = 0; i < ICONS.length; i++) {
+        var hit = false;
+        for (var ch of txt) { if (ch.codePointAt(0) === ICONS[i].cp) { hit = true; break; } }
+        if (hit) {
+          sp.textContent = ICONS[i].name;
+          sp.classList.add('material-symbols-outlined');
+          sp.dataset.neoIcon = '1';
+          break;
+        }
+      }
+    });
+  }
+
+  function swapIllustration(d) {
+    if (!NEW_ILLUSTRATION_URL) return;
+    d.querySelectorAll('img').forEach(function (img) {
+      if (img.dataset.neoImg) return;
+      if (/pop-up-off/i.test(img.src)) {
+        img.src = NEW_ILLUSTRATION_URL;
+        img.dataset.neoImg = '1';
+      }
+    });
+  }
+
+  function isPopupDoc(d) {
+    try {
+      if (d.querySelector('img[src*="pop-up-off"]')) return true;
+      return /#006975|#008897/i.test((d.body && d.body.innerHTML) || '');
+    } catch (e) { return false; }
+  }
+
+  function patch(d) {
+    if (!d || !d.body || !isPopupDoc(d)) return;
+    injectFonts(d);
+    injectMaterial(d);
+    d.querySelectorAll('[style]').forEach(function (el) {
+      if (el.dataset.neoDone) return;
+      var before = el.getAttribute('style');
+      var after = recolor(before);
+      if (after !== before) el.setAttribute('style', after);
+      el.dataset.neoDone = '1';
+    });
+    replaceIcons(d);
+    swapIllustration(d);
+  }
+
+  function hookIframe(ifr) {
+    if (!ifr || ifr.dataset.neoHook) return;
+    ifr.dataset.neoHook = '1';
+    ifr.addEventListener('load', function () { try { patch(ifr.contentDocument); } catch (e) {} });
+    var t = 0, iv = setInterval(function () {
+      var d = null;
+      try { d = ifr.contentDocument; } catch (e) { d = null; }
+      if (d) patch(d);
+      if (++t > 40) clearInterval(iv);
+    }, 200);
+  }
+
+  function boot() {
+    if (!document.body || document.body.id !== 'page-mod-scorm-player') return;
+    var t = 0, iv = setInterval(function () {
+      var ifr = document.getElementById('scorm_object');
+      if (ifr) hookIframe(ifr);
+      if (++t > 50) clearInterval(iv);
+    }, 200);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
