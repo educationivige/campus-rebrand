@@ -3670,6 +3670,22 @@ display:none!important;
   display: none;
 }
 
+/* Alinea a la izquierda los mensajes sin etiqueta del formulario de matrícula
+   (p. ej. "Sólo los miembros de la audiencia… pueden auto-matricularse"): la
+   columna de etiqueta vacía .fitemtitle los empujaba ~25% a la derecha */
+#page-enrol-index .mform .fitem.femptylabel > .fitemtitle,
+#page-course-info .mform .fitem.femptylabel > .fitemtitle {
+  display: none;
+}
+
+#page-enrol-index .mform .fitem.femptylabel > .felement,
+#page-course-info .mform .fitem.femptylabel > .felement {
+  width: 100%;
+  max-width: 100%;
+  flex: 0 0 100%;
+  margin-left: 0;
+}
+
 /* Face to face */
 .mod_facetoface__eventinfo.mod_facetoface__event_details .mod_facetoface__eventinfo__sidebar__panel {
   background-color: #f0f4f5 !important;
