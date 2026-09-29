@@ -3483,15 +3483,31 @@ a.courserating-resume-lite {
 .info-catalogo {
   margin-top: var(--spacing-xl);
   display: flex;
+  align-items: center;              /* centra verticalmente texto e ilustración */
   justify-content: space-between;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;                  /* apila el bloque cuando no cabe (responsive) */
 }
 
 .info-catalogo .info-izq {
-  width: 65%;
+  flex: 1 1 420px;                  /* texto flexible; anula el 65% rígido */
+  width: auto;
 }
 
 .info-catalogo .img {
-  max-width: 33%;
+  flex: 0 1 340px;                  /* ilustración hasta 340px */
+  max-width: 340px;
+  margin-inline: auto;             /* la centra al apilarse */
+}
+
+.info-catalogo .img img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .info-catalogo .img { max-width: 260px; }
 }
 
 .info-cat-lfe {
