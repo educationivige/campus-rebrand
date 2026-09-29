@@ -1,4 +1,5 @@
 <!-- [NEO] Rebrand del aviso "habilitar popups" de SCORM (iframe loadSCO). Pegar en HTML adicional. -->
+
 <script>
 (function () {
   'use strict';
@@ -7,18 +8,28 @@
     '#006975': '#004DF0',
     '#008897': '#004DF0',
     '#17a2b8': '#0CE3C6',
-    '#e39282': '#004DF0',
+    '#e39282': '#FC814C',
     '#fff0ee': '#DCE6FF',
-    '#ffeaa7': '#DCE6FF'
+    '#ffeaa7': '#DCE6FF',
+    '#f5f5f5': '#FAF4EE'
   };
   var FONT_OLD = /["']?Gotham["']?/gi;
   var FONT_NEW = "'IVI Glance','Noto Sans',sans-serif";
-  var ICONS = [
-    { cp: 0x1F512, name: 'lock' },
-    { cp: 0x1F527, name: 'settings' },
-    { cp: 0x1F504, name: 'refresh' }
-  ];
-  var NEW_ILLUSTRATION_URL = '';
+
+  // Nueva ilustración rebrandeada (subida a local_uploadfiles).
+  var NEW_ILLUSTRATION_URL = 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/pop-up-off-IVI.svg';
+
+  // Iconos en SVG en línea (azul de marca), por codepoint del emoji original.
+  var ICON_SVG = {};
+  ICON_SVG[0x1F512] = // 🔒 candado
+    '<svg class="neo-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+  ICON_SVG[0x1F527] = // 🔧 llave/ajustes
+    '<svg class="neo-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4a2 2 0 1 1-2.9-2.9l2.4-2.4z"/></svg>';
+  ICON_SVG[0x1F504] = // 🔄 recargar
+    '<svg class="neo-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>';
 
   function recolor(s) {
     if (!s) return s;
@@ -42,40 +53,24 @@
       "src:url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff2') format('woff2')," +
       "url('https://ivirma.actuatxp.com/theme/actua/webfont.php?nomfont=IVIGlance-Regular.woff') format('woff');" +
       "font-weight:normal;font-style:normal;font-display:swap;}" +
-      "html,body,body *{font-family:'IVI Glance','Noto Sans',sans-serif;}";
-    d.head.appendChild(st);
-  }
-
-  function injectMaterial(d) {
-    if (d.getElementById('neo-scorm-material')) return;
-    var link = d.createElement('link');
-    link.id = 'neo-scorm-material';
-    link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&display=swap';
-    d.head.appendChild(link);
-    var st = d.createElement('style');
-    st.textContent =
-      ".material-symbols-outlined{font-family:'Material Symbols Outlined'!important;" +
-      "font-weight:normal;font-style:normal;line-height:1;vertical-align:-0.18em;" +
-      "font-size:1.25em;letter-spacing:normal;text-transform:none;white-space:nowrap;" +
-      "direction:ltr;color:#004DF0;}";
+      "html,body,body *{font-family:'IVI Glance','Noto Sans',sans-serif;}" +
+      // el SVG del icono NO depende de fuente: color de marca y tamaño alineado al texto
+      ".neo-ic{width:1.15em;height:1.15em;vertical-align:-0.22em;stroke:#004DF0;color:#004DF0;flex:0 0 auto;}";
     d.head.appendChild(st);
   }
 
   function replaceIcons(d) {
-    try { if (!d.fonts.check("24px 'Material Symbols Outlined'")) return; } catch (e) {}
-    d.querySelectorAll('span').forEach(function (sp) {
-      if (sp.dataset.neoIcon) return;
-      var txt = sp.textContent || '';
-      if (txt.length > 4) return;
-      for (var i = 0; i < ICONS.length; i++) {
-        var hit = false;
-        for (var ch of txt) { if (ch.codePointAt(0) === ICONS[i].cp) { hit = true; break; } }
-        if (hit) {
-          sp.textContent = ICONS[i].name;
-          sp.classList.add('material-symbols-outlined');
-          sp.dataset.neoIcon = '1';
-          break;
+    d.querySelectorAll('span,i,em,b').forEach(function (el) {
+      if (el.dataset.neoIcon) return;
+      var txt = el.textContent || '';
+      if (txt.length > 4) return; // solo elementos "icono", no párrafos
+      for (var cp in ICON_SVG) {
+        var ch = String.fromCodePoint(Number(cp));
+        if (txt.indexOf(ch) >= 0) {
+          el.textContent = txt.split(ch).join(''); // quita el emoji (queda invisible)
+          el.insertAdjacentHTML('afterbegin', ICON_SVG[cp]);
+          el.dataset.neoIcon = '1';
+          return;
         }
       }
     });
@@ -85,9 +80,26 @@
     if (!NEW_ILLUSTRATION_URL) return;
     d.querySelectorAll('img').forEach(function (img) {
       if (img.dataset.neoImg) return;
-      if (/pop-up-off/i.test(img.src)) {
+      // sustituye la ilustración antigua (pop-up-off.svg), no la nueva ya puesta
+      if (/pop-up-off(?!-ivi)/i.test(img.src)) {
         img.src = NEW_ILLUSTRATION_URL;
         img.dataset.neoImg = '1';
+      }
+    });
+  }
+
+  // El título "Tu contenido no se ha podido cargar…" al navy de marca.
+  // Se identifica por FIRMA DE ESTILO (font-size:18px + azul/teal primario),
+  // no por texto → funciona en todos los idiomas de la plataforma. Deja intactos
+  // el botón y los enlaces "OPCIÓN", que comparten el azul pero no ese tamaño.
+  function navyHeading(d) {
+    d.querySelectorAll('[style*="18px"]').forEach(function (el) {
+      if (el.dataset.neoNavy) return;
+      if (el.tagName.toLowerCase() === 'svg') return;
+      var st = el.getAttribute('style') || '';
+      if (/font-size:\s*18px/i.test(st) && /#004DF0|#006975|#008897/i.test(st)) {
+        el.setAttribute('style', st.replace(/#004DF0|#006975|#008897/ig, '#08004F'));
+        el.dataset.neoNavy = '1';
       }
     });
   }
@@ -102,7 +114,6 @@
   function patch(d) {
     if (!d || !d.body || !isPopupDoc(d)) return;
     injectFonts(d);
-    injectMaterial(d);
     d.querySelectorAll('[style]').forEach(function (el) {
       if (el.dataset.neoDone) return;
       var before = el.getAttribute('style');
@@ -110,6 +121,7 @@
       if (after !== before) el.setAttribute('style', after);
       el.dataset.neoDone = '1';
     });
+    navyHeading(d);
     replaceIcons(d);
     swapIllustration(d);
   }
@@ -131,6 +143,7 @@
     var t = 0, iv = setInterval(function () {
       var ifr = document.getElementById('scorm_object');
       if (ifr) hookIframe(ifr);
+      patch(document); // por si algún SCORM pinta el aviso en el documento principal
       if (++t > 50) clearInterval(iv);
     }, 200);
   }
