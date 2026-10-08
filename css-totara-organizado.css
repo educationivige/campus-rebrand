@@ -7613,6 +7613,16 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
    ESTADO DE MIS CURSOS (inst8161): donut + leyenda con barras
    Generado por expediente/estado-cursos.html — rebranding IVI 2026
    ============================================================ */
+/* FOUC: ocultar el gráfico nativo "en crudo" del Expediente hasta que el JS
+   (expediente/estado-cursos.html) inserte el widget .status-chart. Si el JS
+   no llega a montarlo, su failsafe revela el nativo (display:block inline, que
+   gana a esta regla). min-height reserva el alto para que el layout no salte. */
+#page-totara-dashboard-16 .block_totara_report_graph__chart .rb-chartjs {
+  display: none;
+}
+#page-totara-dashboard-16 .block_totara_report_graph__chart {
+  min-height: 236px;
+}
 /* Card contenedora en crema, a ancho completo */
 .status-chart {
   display: flex;
