@@ -31,6 +31,9 @@ bloques/2-actual/*
 # Documento interno de flujo de trabajo (no se versiona)
 FLUJO-DE-TRABAJO.md
 
+# Runbook operativo de la migración a PRO (uso interno, se queda en local)
+RUNBOOK-MIGRACION-PRO-13-OCT.md
+
 # Documentos internos de seguimiento de cambios (no se versionan)
 CAMBIOS-CAMPUS-IVI.md
 Cambios-Campus-IVI.xlsx
