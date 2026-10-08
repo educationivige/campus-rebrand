@@ -6386,18 +6386,30 @@ div:has(> #region-main) > #block-region-side-post {
   overflow: visible !important;
 }
 
-#inst9796 {
+#inst9796,
+#inst11558,
+#inst11521,
+#inst11560,
+#inst11559 {
   position: sticky !important;
   top: 0px;
 }
 
-#inst9796.cta-onetech .content.block-content {
+#inst9796.cta-onetech .content.block-content,
+#inst11558.cta-onetech .content.block-content,
+#inst11521.cta-onetech .content.block-content,
+#inst11560.cta-onetech .content.block-content,
+#inst11559.cta-onetech .content.block-content {
   position: relative !important;
   overflow: hidden !important;
   position: sticky;
 }
 
-#inst9796.cta-onetech .content.block-content::before {
+#inst9796.cta-onetech .content.block-content::before,
+#inst11558.cta-onetech .content.block-content::before,
+#inst11521.cta-onetech .content.block-content::before,
+#inst11560.cta-onetech .content.block-content::before,
+#inst11559.cta-onetech .content.block-content::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
@@ -6409,7 +6421,11 @@ div:has(> #region-main) > #block-region-side-post {
   z-index: 0 !important;
 }
 
-#inst9796.cta-onetech .content.block-content .no-overflow {
+#inst9796.cta-onetech .content.block-content .no-overflow,
+#inst11558.cta-onetech .content.block-content .no-overflow,
+#inst11521.cta-onetech .content.block-content .no-overflow,
+#inst11560.cta-onetech .content.block-content .no-overflow,
+#inst11559.cta-onetech .content.block-content .no-overflow {
   position: relative !important;
   z-index: 1 !important;
   min-height: 82vh !important;
