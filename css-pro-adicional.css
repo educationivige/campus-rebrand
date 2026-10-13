@@ -1,0 +1,69 @@
+/* ============================================================
+   css-pro-adicional.css — STAGING de fixes para PRODUCCIÓN (PRO)
+   ------------------------------------------------------------
+   Se PEGA en el campo "CSS adicional" del tema de PRO para iterar
+   al instante SIN purgar jsDelivr (ahorra purgas).
+
+   OJO (orden de carga): este campo carga ANTES que el
+   css-totara-organizado.css del CDN. Por eso las reglas que
+   CHOCAN con una regla del organizado "viejo" (cacheado) llevan
+   !important o especificidad extra para ganar aunque el organizado
+   cargue después.
+
+   Cuando todo esté validado → se fusiona en css-totara-organizado.css
+   (rama pro), se vacía este archivo y se hace UNA sola purga.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. LOGIN — el logo se recortaba
+   El organizado (cacheado) fuerza background-size:260px → el logo
+   SVG (576×155, ratio ≈3,71:1) se cortaba en la caja de 56px de alto.
+   `contain` lo mete entero. !important para ganar al 260px.
+   ------------------------------------------------------------ */
+#page-login-index .loginpanel h2 {
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+}
+
+
+/* ------------------------------------------------------------
+   2. OneTech "Accede ahora" — no salía el fondo del banner
+   El organizado ataba la regla a #inst9929 / #inst10654 (ids de PRE);
+   en PRO el bloque es inst12024.one-tech-launch → el selector no casaba.
+   Se pasa a SOLO CLASE (.one-tech-launch) + !important para que aplique
+   con cualquier inst-id (al quitar el #id baja la especificidad).
+   ------------------------------------------------------------ */
+.one-tech-launch .content.block-content {
+  background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png') !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  text-align: center !important;
+  padding: 2em 1em !important;
+}
+
+.one-tech-launch .content.block-content a {
+  padding: 12px 25px !important;
+  background-color: #fff !important;
+  border-radius: 25px !important;
+  color: var(--color-secondary) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  border: 1.5px solid #fff !important;
+  margin-top: 20px !important;
+}
+
+.one-tech-launch .content.block-content a:hover {
+  color: #fff !important;
+  background-color: #ffffff40 !important;
+}
+
+.one-tech-launch .content.block-content img {
+  margin-bottom: 20px !important;
+}
+
+.one-tech-launch .no-overflow {
+  overflow: hidden !important;
+  padding: 10px !important;
+}
