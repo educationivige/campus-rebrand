@@ -555,6 +555,8 @@ a[href*="/message/edit.php"] {
   height: 56px;
   background-color: transparent;
   background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
   border-radius: 0;
   font-size: 0;
 }
