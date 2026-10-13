@@ -67,3 +67,31 @@
   overflow: hidden !important;
   padding: 10px !important;
 }
+
+
+/* ------------------------------------------------------------
+   3. HOME (dashboard-9) — reglas que en el organizado iban por
+   inst-id de PRE y en PRO no casan (ids nuevos recreados).
+   Se pasan a dashboard + clase/estructura (robusto PRE/PRO):
+     · Hero                 #inst11487 → inst12018
+     · Enlaces de interés   #inst231   → inst12023  (featured_links)
+
+   El INFORME OCULTO de orden (#inst11511 en PRE) NO necesita regla
+   aquí: el organizado ya lo oculta por su CLASE .bloque-fechas-cursos.
+   → En PRO basta CREAR ese informe en la Home y asignarle esa clase.
+   ------------------------------------------------------------ */
+
+/* Hero al ancho del contenido (sin padding lateral), solo en la Home */
+#page-totara-dashboard-9 #block-region-top .block_slickslider {
+  padding: 1.5rem 0 !important;
+}
+
+/* Enlaces de interés (featured_links): aire sobre el título y tiles a
+   200px — SOLO la instancia de la Home. La especificidad (dashboard +
+   2 clases) gana al #links-lfe{height:260px} del organizado. */
+#page-totara-dashboard-9 .block_totara_featured_links .block-header {
+  margin-top: 2rem !important;
+}
+#page-totara-dashboard-9 .block_totara_featured_links .block-totara-featured-links-tile {
+  height: 200px !important;
+}
