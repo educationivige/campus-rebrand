@@ -129,3 +129,56 @@
   background-color: transparent !important;
   box-shadow: none !important;
 }
+
+
+/* ------------------------------------------------------------
+   6. MUST READ PAPERS (dashboard-12) — cards con el formato de Monthly
+   El organizado da el formato (imagen a proporción 38,2% ≈ 2,62:1, tile
+   sin recorte, título sin line-clamp) solo a #inst287 (Monthly). Must Read
+   (inst350) no lo tenía → imágenes bajas/irregulares. Se replica scopeado
+   por dashboard-12 (robusto a inst-id). SIN badge de vencimiento (los
+   papers no tienen fecha límite). Verificado en vivo = igual a Monthly.
+   ------------------------------------------------------------ */
+#page-totara-dashboard-12 .block_current_learningas-tile__image,
+#page-totara-dashboard-12 .block_current_learningas-tile__image_ratio {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile__image_ratio::before {
+  content: "" !important;
+  display: block !important;
+  width: 100% !important;
+  padding-top: 38.2% !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile__image_ratio_img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: 100% auto !important;
+  background-position: center top !important;
+  background-repeat: no-repeat !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile,
+#page-totara-dashboard-12 .block_current_learningas-tile__content,
+#page-totara-dashboard-12 .block_current_learningas-tile__link,
+#page-totara-dashboard-12 .block_current_learningas-tile__maincontent {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile__link_title {
+  display: block !important;
+  -webkit-line-clamp: none !important;
+  line-clamp: none !important;
+  -webkit-box-orient: initial !important;
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
