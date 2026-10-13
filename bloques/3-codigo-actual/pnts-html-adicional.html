@@ -3,8 +3,13 @@
   // Solo ejecutar en dashboard 33
   if (!document.getElementById('page-totara-dashboard-33')) return;
 
+  // NO ejecutar en el EDITOR de paneles (layout.php): el script reconstruye el
+  // DOM (tarjetas, oculta el informe) y eso rompe la edición de bloques
+  // (al tocar un bloque, el re-render saca de la edición). Solo en la vista.
+  if (/\/totara\/dashboard\/layout\.php/.test(window.location.pathname)) return;
+
   var IMAGE_JSON = 'https://beaesreal.github.io/totara-custom-styles/pnts/images.json';
-  var FALLBACK_IMG = 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/default.png';
+  var FALLBACK_IMG = 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/default.png';
   var imageData = null;
   var TILES_PER_PAGE = 9;
 
