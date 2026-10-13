@@ -95,3 +95,23 @@
 #page-totara-dashboard-9 .block_totara_featured_links .block-totara-featured-links-tile {
   height: 200px !important;
 }
+
+
+/* ------------------------------------------------------------
+   4. "Cursos que imparto" (.ivi-imparto__lista) — sombra de más
+   La regla del organizado que normaliza estos bloques (sin caja/sombra;
+   la tarjeta es la lista interna con borde) solo cubre .ivi-icono-azul,
+   NO el alias .ivi-imparto__lista → en PRO el bloque (p.ej. inst12029)
+   mostraba la sombra por defecto del bloque. Se extiende al alias.
+   Verificado: box-shadow rgb(221,221,221) → none. Iguala PRE.
+   ------------------------------------------------------------ */
+.block:has(.ivi-imparto__lista) {
+  margin-bottom: 15px !important;
+}
+.block:has(.ivi-imparto__lista) > .content.block-content {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
