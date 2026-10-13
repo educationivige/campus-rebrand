@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             enabledForAllPatterns: true, // Si es true, se activará para todas las rutas sin importar el ID
             instancias: ['inst230', 'inst215', 'inst10236'], // Instancias donde buscar íconos
             newIconUrl: '/pluginfile.php/1/local_uploadfiles/additionalimages/0/pnt-white.svg', // URL del ícono estándar
-            lfeIconUrl: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/pnt-lfe.svg' // URL del ícono para LFE
+            lfeIconUrl: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/pnt-lfe.svg' // URL del ícono para LFE
         },
 
         // Configuración para Etiquetas Obligatorio/Mandatory
@@ -74,11 +74,11 @@ document.addEventListener('DOMContentLoaded', function() {
             enabledForAllPatterns: false, // No usar las rutas generales
             titlePatterns: ['cuestionario satisfacción', 'dotazník spokojenosti', 'satisfaction questionnaire', 'questionario di gradimento', 'questionário de satisfação', 'utvärderingsformulär'],
             faceImages: {
-                1: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-1.svg',
-                2: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-2.svg',
-                3: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-3.svg',
-                4: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-4.svg',
-                5: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-5.svg'
+                1: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-1.svg',
+                2: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-2.svg',
+                3: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-3.svg',
+                4: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-4.svg',
+                5: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/cuestionario-5.svg'
             }
         },
 
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cyberPlanConfig: {
             enabledForIds: ['28'],
             enabledForAllPatterns: false,
-            sourceUrl: 'https://ivirmacampus.com/mod/page/view.php?id=21135',
+            sourceUrl: 'https://campus.iviinstitute.com/mod/page/view.php?id=21135',
             tableId: 'ivirma-plan-ciberseguridad-2026',
             originalBlockId: 'inst9792',     // Bloque cuya estructura clonamos
             newBlockId: 'inst-cyber-2026',   // ID del nuevo bloque inyectado
@@ -100,8 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
         stylesConfig: {
             icons: {
                 completedIcon: '/pluginfile.php/1/local_uploadfiles/additionalimages/0/Completed.svg', //check pnts completados
-                plusCircleIcon: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/plus-circle.svg', //colapsar acordeon visor
-                minusCircleIcon: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/minus-circle.svg' //expandir acordeon visor
+                plusCircleIcon: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/plus-circle.svg', //colapsar acordeon visor
+                minusCircleIcon: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/minus-circle.svg' //expandir acordeon visor
             },
             animations: {
                 duration: '0.4s',
@@ -2858,17 +2858,17 @@ const EnrollmentPageHandler = {
 
     getLanguageContent: function() {
         return {
-            'ES': `<div class="info-catalogo"><div class="info-izq">Este curso está diseñado para facilitar tu formación en aspectos clave de tu actividad diaria. Podrás acceder a los contenidos a tu ritmo, con recursos útiles y prácticos para aplicar en tu trabajo.&nbsp;<p><b>Fórmate a tu ritmo, con materiales de calidad y el respaldo de IVI RMA.&nbsp;</b></p><p class="last-p">Si te interesa, puedes iniciar el curso haciendo clic en el botón inferior <b>"Matricularme"</b>.</p></div><div class="img"><img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
+            'ES': `<div class="info-catalogo"><div class="info-izq">Este curso está diseñado para facilitar tu formación en aspectos clave de tu actividad diaria. Podrás acceder a los contenidos a tu ritmo, con recursos útiles y prácticos para aplicar en tu trabajo.&nbsp;<p><b>Fórmate a tu ritmo, con materiales de calidad y el respaldo de IVI RMA.&nbsp;</b></p><p class="last-p">Si te interesa, puedes iniciar el curso haciendo clic en el botón inferior <b>"Matricularme"</b>.</p></div><div class="img"><img src="https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
 
-            'EN': `<div class="info-catalogo"><div class="info-izq">This course is designed to support your training in key aspects of your daily work. You can access the content at your own pace, with useful and practical resources to apply in your job.&nbsp;</p><p><b>Learn at your own pace, with quality materials and the support of IVI RMA.&nbsp;</b></p><p class="last-p">If you're interested, you can start the course by clicking the <b>"Enroll"</b> button below.</p></div><div class="img"><img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
+            'EN': `<div class="info-catalogo"><div class="info-izq">This course is designed to support your training in key aspects of your daily work. You can access the content at your own pace, with useful and practical resources to apply in your job.&nbsp;</p><p><b>Learn at your own pace, with quality materials and the support of IVI RMA.&nbsp;</b></p><p class="last-p">If you're interested, you can start the course by clicking the <b>"Enroll"</b> button below.</p></div><div class="img"><img src="https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
 
-            'PT': `<div class="info-catalogo"><div class="info-izq">Este curso foi desenvolvido para apoiar a sua formação em aspectos-chave da sua atividade diária. Você poderá acessar os conteúdos no seu próprio ritmo, com recursos úteis e práticos para aplicar no seu trabalho.&nbsp;</p><p><b>Forme-se no seu ritmo, com materiais de qualidade e o respaldo da IVI RMA.&nbsp;</b></p><p class="last-p">Se tiver interesse, pode iniciar o curso clicando no botão abaixo<b> "Matricular-me"</b>.</p></div><div class="img"><img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
+            'PT': `<div class="info-catalogo"><div class="info-izq">Este curso foi desenvolvido para apoiar a sua formação em aspectos-chave da sua atividade diária. Você poderá acessar os conteúdos no seu próprio ritmo, com recursos úteis e práticos para aplicar no seu trabalho.&nbsp;</p><p><b>Forme-se no seu ritmo, com materiais de qualidade e o respaldo da IVI RMA.&nbsp;</b></p><p class="last-p">Se tiver interesse, pode iniciar o curso clicando no botão abaixo<b> "Matricular-me"</b>.</p></div><div class="img"><img src="https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
 
-            'IT': `<div class="info-catalogo"><div class="info-izq">Questo corso è stato progettato per supportare la tua formazione sugli aspetti chiave della tua attività quotidiana. Potrai accedere ai contenuti al tuo ritmo, con risorse utili e pratiche da applicare al lavoro.&nbsp;</p><p><b>Formati al tuo ritmo, con materiali di qualità e il supporto di IVI RMA.</b>&nbsp;</p><p class="last-p">Se sei interessato, puoi iniziare il corso cliccando sul pulsante in basso <b>"Iscrivimi"</b>.</p></div><div class="img"><img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
+            'IT': `<div class="info-catalogo"><div class="info-izq">Questo corso è stato progettato per supportare la tua formazione sugli aspetti chiave della tua attività quotidiana. Potrai accedere ai contenuti al tuo ritmo, con risorse utili e pratiche da applicare al lavoro.&nbsp;</p><p><b>Formati al tuo ritmo, con materiali di qualità e il supporto di IVI RMA.</b>&nbsp;</p><p class="last-p">Se sei interessato, puoi iniziare il corso cliccando sul pulsante in basso <b>"Iscrivimi"</b>.</p></div><div class="img"><img src="https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
 
-            'CS': `<div class="info-catalogo"><div class="info-izq">Tento kurz je navržen tak, aby podpořil vaše vzdělávání v klíčových oblastech vaší každodenní práce. K obsahu můžete přistupovat vlastním tempem, s užitečnými a praktickými materiály pro vaši práci.&nbsp;</p><p><b>Vzdělávejte se vlastním tempem, s kvalitními materiály a podporou IVI RMA.</b>&nbsp;</p><p class="last-p">Máte-li zájem, můžete kurz zahájit kliknutím na tlačítko dole "<b>Zapsat se"</b>.</p></div><div class="img"><img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
+            'CS': `<div class="info-catalogo"><div class="info-izq">Tento kurz je navržen tak, aby podpořil vaše vzdělávání v klíčových oblastech vaší každodenní práce. K obsahu můžete přistupovat vlastním tempem, s užitečnými a praktickými materiály pro vaši práci.&nbsp;</p><p><b>Vzdělávejte se vlastním tempem, s kvalitními materiály a podporou IVI RMA.</b>&nbsp;</p><p class="last-p">Máte-li zájem, můžete kurz zahájit kliknutím na tlačítko dole "<b>Zapsat se"</b>.</p></div><div class="img"><img src="https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`,
 
-            'SV': `<div class="info-catalogo"><div class="info-izq">Den här kursen är utformad för att stödja din utbildning inom viktiga delar av ditt dagliga arbete. Du kan ta del av innehållet i din egen takt, med användbara och praktiska resurser att tillämpa i arbetet.&nbsp;</p><p><b>Utbilda dig i din egen takt, med kvalitetsmaterial och stöd från IVI RMA.&nbsp;</b></p><p class="last-p">Om du är intresserad kan du starta kursen genom att klicka på knappen<b> "Registrera mig"</b> nedan.</p></div><div class="img"><img src="https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`
+            'SV': `<div class="info-catalogo"><div class="info-izq">Den här kursen är utformad för att stödja din utbildning inom viktiga delar av ditt dagliga arbete. Du kan ta del av innehållet i din egen takt, med användbara och praktiska resurser att tillämpa i arbetet.&nbsp;</p><p><b>Utbilda dig i din egen takt, med kvalitetsmaterial och stöd från IVI RMA.&nbsp;</b></p><p class="last-p">Om du är intresserad kan du starta kursen genom att klicka på knappen<b> "Registrera mig"</b> nedan.</p></div><div class="img"><img src="https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/matriculate-img.svg" alt="" width="400" height="264" role="presentation" class="img-responsive atto_image_button_text-bottom"></div></div>`
         };
     }
 };
@@ -3088,7 +3088,7 @@ const InformeTutorButton = {
 
     config: {
         reportId: '233',
-        reportBaseUrl: 'https://ivirmacampus.com/totara/reportbuilder/report.php',
+        reportBaseUrl: 'https://campus.iviinstitute.com/totara/reportbuilder/report.php',
         debug: true
     },
 
@@ -3510,7 +3510,7 @@ async function getShortname(courseId) {
 (function () {
   if (!window.location.pathname.includes('/catalog/')) return;
 
-  const CONFIG_URL = 'https://ivirmacampus.com/mod/page/view.php?id=20899';
+  const CONFIG_URL = 'https://campus.iviinstitute.com/mod/page/view.php?id=20899';
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -3644,10 +3644,10 @@ async function getShortname(courseId) {
 
 // ==UserScript==
 // @name         IVIRMA - Tutor Dashboard Redirect
-// @namespace    https://ivirmacampus.com
+// @namespace    https://campus.iviinstitute.com
 // @version      4.3
 // @description  Inyecta URL de informe en botón de tutor + aplica búsqueda guardada en el report
-// @match        https://ivirmacampus.com/*
+// @match        https://campus.iviinstitute.com/*
 // @grant        none
 // @run-at       document-idle
 // ==/UserScript==
@@ -3655,8 +3655,8 @@ async function getShortname(courseId) {
 (async function () {
     'use strict';
 
-    const TUTOR_TABLE_PAGE = 'https://ivirmacampus.com/mod/page/view.php?id=20645';
-    const REPORT_BASE_URL  = 'https://ivirmacampus.com/totara/reportbuilder/report.php';
+    const TUTOR_TABLE_PAGE = 'https://campus.iviinstitute.com/mod/page/view.php?id=20645';
+    const REPORT_BASE_URL  = 'https://campus.iviinstitute.com/totara/reportbuilder/report.php';
     const REPORT_ID        = '286';
     const CUSTOM_PARAM     = 'tutorbusqueda';
     const STEP_PARAM       = 'tutorstep';
@@ -4020,7 +4020,7 @@ table.appendChild(tfoot);
 
     // ── Badge LFE ─────────────────────────────────────────────────────────
     const LFE_BADGE = {
-        url:    'https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/LFE-badge.png',
+        url:    'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/LFE-badge.png',
         width:  '72px',   // ← cambia este valor para ajustar el tamaño
         top:    '8px',
         left:   '8px'
@@ -4029,21 +4029,21 @@ table.appendChild(tfoot);
     // ── Mapa de imágenes (sincronizado con pnts/images.json) ─────────────
     const PNT_CONFIG = {
         categorias: [
-            { keywords: ['ohss', 'ovarian'],                    imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
-            { keywords: ['serology', 'serolog', 'consent'],     imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/serologia.png' },
-            { keywords: ['adenomios'],                          imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
-            { keywords: ['vitrif', 'desvitrif'],                imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/vitrificacion.png' },
-            { keywords: ['laborator', 'lab', 'nota técnica', 'parada'], imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' },
-            { keywords: ['visita', 'infertil'],                 imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/infertilidad.png' },
-            { keywords: ['biovigilancia', 'biovigilance'],      imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/biovigilancia.png' },
-            { keywords: ['embrion', 'embryo', 'thaw'],          imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/embrion.png' },
-            { keywords: ['trazabilidad', 'muestras', 'biológic'], imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/trazabilidad.png' },
-            { keywords: ['alerta', 'seguridad', 'geneseeker'], imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/seguridad.png' },
-            { keywords: ['documentac', 'gestión', 'clínica'],  imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/documentacion.png' },
-            { keywords: ['genetic', 'genétic'],                 imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/genetica.png' },
-            { keywords: ['standard', 'estándar', 'sop', 'pnt'], imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' }
+            { keywords: ['ohss', 'ovarian'],                    imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
+            { keywords: ['serology', 'serolog', 'consent'],     imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/serologia.png' },
+            { keywords: ['adenomios'],                          imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
+            { keywords: ['vitrif', 'desvitrif'],                imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/vitrificacion.png' },
+            { keywords: ['laborator', 'lab', 'nota técnica', 'parada'], imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' },
+            { keywords: ['visita', 'infertil'],                 imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/infertilidad.png' },
+            { keywords: ['biovigilancia', 'biovigilance'],      imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/biovigilancia.png' },
+            { keywords: ['embrion', 'embryo', 'thaw'],          imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/embrion.png' },
+            { keywords: ['trazabilidad', 'muestras', 'biológic'], imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/trazabilidad.png' },
+            { keywords: ['alerta', 'seguridad', 'geneseeker'], imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/seguridad.png' },
+            { keywords: ['documentac', 'gestión', 'clínica'],  imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/documentacion.png' },
+            { keywords: ['genetic', 'genétic'],                 imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/genetica.png' },
+            { keywords: ['standard', 'estándar', 'sop', 'pnt'], imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' }
         ],
-        default: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/default.png'
+        default: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/default.png'
     };
 
     // ── Helpers ───────────────────────────────────────────────────────────
@@ -4188,19 +4188,19 @@ table.appendChild(tfoot);
 
     // Imágenes por keyword del título — sincronizar con pnts/images.json
     const PNT_CATEGORIAS = [
-        { keywords: ['ohss', 'ovarian'],                          imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
-        { keywords: ['serology', 'serolog', 'consent'],           imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/serologia.png' },
-        { keywords: ['adenomios'],                                imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
-        { keywords: ['vitrif', 'desvitrif'],                      imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/vitrificacion.png' },
-        { keywords: ['laborator', 'lab', 'nota técnica', 'parada'], imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' },
-        { keywords: ['visita', 'infertil'],                       imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/infertilidad.png' },
-        { keywords: ['biovigilancia', 'biovigilance'],            imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/biovigilancia.png' },
-        { keywords: ['embrion', 'embryo', 'thaw'],                imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/embrion.png' },
-        { keywords: ['trazabilidad', 'muestras', 'biológic'],     imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/trazabilidad.png' },
-        { keywords: ['alerta', 'seguridad', 'geneseeker'],        imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/seguridad.png' },
-        { keywords: ['documentac', 'gestión', 'clínica'],         imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/documentacion.png' },
-        { keywords: ['genetic', 'genétic'],                       imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/genetica.png' },
-        { keywords: ['standard', 'estándar', 'sop', 'pnt'],       imagen: 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' }
+        { keywords: ['ohss', 'ovarian'],                          imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
+        { keywords: ['serology', 'serolog', 'consent'],           imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/serologia.png' },
+        { keywords: ['adenomios'],                                imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/clinica.png' },
+        { keywords: ['vitrif', 'desvitrif'],                      imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/vitrificacion.png' },
+        { keywords: ['laborator', 'lab', 'nota técnica', 'parada'], imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' },
+        { keywords: ['visita', 'infertil'],                       imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/infertilidad.png' },
+        { keywords: ['biovigilancia', 'biovigilance'],            imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/biovigilancia.png' },
+        { keywords: ['embrion', 'embryo', 'thaw'],                imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/embrion.png' },
+        { keywords: ['trazabilidad', 'muestras', 'biológic'],     imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/trazabilidad.png' },
+        { keywords: ['alerta', 'seguridad', 'geneseeker'],        imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/seguridad.png' },
+        { keywords: ['documentac', 'gestión', 'clínica'],         imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/documentacion.png' },
+        { keywords: ['genetic', 'genétic'],                       imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/genetica.png' },
+        { keywords: ['standard', 'estándar', 'sop', 'pnt'],       imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/laboratorio.png' }
     ];
 
     // Solo "mejoramos" imágenes genéricas de PNT; el resto no se toca
@@ -5036,7 +5036,7 @@ table.appendChild(tfoot);
    Solo toca los que NO tienen foto propia (src del tema); las fotos reales
    van por pluginfile y no casan. El SVG escala, así que sirve para f1/f2/f3. */
 (function () {
-    var NEW = 'https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/avatar-f1.svg';
+    var NEW = 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/avatar-f1.svg';
     var RE  = /\/theme\/image\.php\/[^"']*\/u\/f[123]\b/;
 
     function swap(img) {

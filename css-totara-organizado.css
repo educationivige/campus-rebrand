@@ -426,20 +426,20 @@ a[href*="/message/edit.php"] {
    a la derecha del original */
 .totara_core__QuickAccess_icon .flex-icon.tfont-var-gear::before {
   margin-right: 8px;
-  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
-  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
+  -webkit-mask-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
+  mask-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/ajustes.svg");
 }
 
 /* Mensajes (sobre del botón del topbar) */
 .popover-region-messages .popover-region-toggle .flex-icon.email.actua-icon::before {
-  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
-  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
+  -webkit-mask-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
+  mask-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/mensajes.svg");
 }
 
 /* Notificaciones (campana del botón del topbar) */
 .popover-region-notifications .popover-region-toggle .flex-icon.notification-non-filled.actua-icon::before {
-  -webkit-mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
-  mask-image: url("https://ivirma.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
+  -webkit-mask-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
+  mask-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/notificaciones.svg");
 }
 
 /* --- 1.11 Breadcrumbs --- */
@@ -1088,7 +1088,7 @@ html .has-full-page-slider #block-region-top {
 /* --- Bloques one-tech-launch --- */
 #inst9929.one-tech-launch .content.block-content,
 #inst10654.one-tech-launch .content.block-content{
-    background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png');
+    background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -2079,7 +2079,7 @@ html .has-full-page-slider #block-region-top {
 #inst286 .course_custom_field_10 {
   padding: 0px;
   height: 152px;
-  background-image: url(https://isdin-ld.actuatxp.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/course_defaultimage.png);
+  background-image: url(https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/course_defaultimage.png);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -2412,7 +2412,7 @@ div#region-main #inst281 .header.block-header h2::after {
   display: inline-block;
   width: 25px;
   height: 25px;
-  background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/minus-circle.svg');
+  background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/minus-circle.svg');
   background-size: contain;
   background-repeat: no-repeat;
   margin-left: var(--spacing-medium);
@@ -2738,7 +2738,7 @@ h2#instance-8378-header {
     display: block !important;
     width: 100% !important;
     aspect-ratio: 16 / 9 !important;
-    background: url('https://ivirmacampus.com/pluginfile.php/1/course/defaultcourseimage/2545/microscopio-lwfi7vnuibs.jpg') center / cover no-repeat !important;
+    background: url('https://campus.iviinstitute.com/pluginfile.php/1/course/defaultcourseimage/2545/microscopio-lwfi7vnuibs.jpg') center / cover no-repeat !important;
 }
 
 #page-totara-dashboard-33 #inst10607 table.totaratable td .course_icon,
@@ -4330,7 +4330,7 @@ li.option #choice_1{
     display: inline-block;
     width: 50px;
     height: 30px;
-    background-image: url('https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/icon-profes_dark-blue.svg');
+    background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/icon-profes_dark-blue.svg');
     background-size: contain;
     background-repeat: no-repeat;
     margin: 0 5px 0 var(--spacing-small);
@@ -4456,7 +4456,7 @@ p.ividb_certificatelink {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url(https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/download-pdf.svg);
+  background-image: url(https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/download-pdf.svg);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -6413,7 +6413,7 @@ div:has(> #region-main) > #block-region-side-post {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/one-tech-sidebar-bg.png") !important;
+  background-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/one-tech-sidebar-bg.png") !important;
   background-position: center !important;
   background-size: cover !important;
   filter: blur(8px) !important;
@@ -9368,7 +9368,7 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 
    El código/contenido (bloque de presentación con clases ivi-cert-*)
    se añade desde la página de ajustes del módulo:
-   https://ivirma.actuatxp.com/course/modedit.php?update=20259&return=1
+   https://campus.iviinstitute.com/course/modedit.php?update=20259&return=1
    ============================================================ */
 
 /* Contenedor general */
@@ -10019,16 +10019,16 @@ div#region-main #inst9478.block .content.block-content tbody > tr > td.course_co
 
 /* Un SVG por red (según la clase del enlace) */
 .footercolumn.xxss .social-links a.instagram .social-circle {
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-instagram.svg") !important;
+  background-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-instagram.svg") !important;
 }
 .footercolumn.xxss .social-links a.twitter .social-circle {
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-X.svg") !important;
+  background-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-X.svg") !important;
 }
 .footercolumn.xxss .social-links a.linkedin .social-circle {
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-linkedin.svg") !important;
+  background-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-linkedin.svg") !important;
 }
 .footercolumn.xxss .social-links a.youtube .social-circle {
-  background-image: url("https://ivirmacampus.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-youtube.svg") !important;
+  background-image: url("https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/rrss-youtube.svg") !important;
 }
 
 /* ============================================================
