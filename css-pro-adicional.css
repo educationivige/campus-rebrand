@@ -182,3 +182,19 @@
   height: auto !important;
   max-height: none !important;
 }
+
+
+/* ------------------------------------------------------------
+   7. COOKIEBOT — logo IVI más grande
+   Cookiebot limita su logo (#CybotCookiebotDialogPoweredbyImage) a
+   max-height ~32px → se veía pequeño. Se sube a 50px (≈ el tamaño del
+   logo "Cookiebot" de la derecha). OJO: el logo subido a Cookiebot es
+   de 91×46 px nativos → a más de ~50px empieza a pixelar; para hacerlo
+   mucho mayor, subir un logo de más resolución en el panel de Cookiebot.
+   ------------------------------------------------------------ */
+#CybotCookiebotDialogPoweredbyImage {
+  height: 50px !important;
+  width: auto !important;
+  max-height: none !important;
+  max-width: none !important;
+}
