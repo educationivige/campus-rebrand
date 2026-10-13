@@ -555,8 +555,7 @@ a[href*="/message/edit.php"] {
   height: 56px;
   background-color: transparent;
   background-position: center;
-  background-size: contain;
-  background-repeat: no-repeat;
+  background-size: 260px;
   border-radius: 0;
   font-size: 0;
 }
@@ -1087,41 +1086,43 @@ html .has-full-page-slider #block-region-top {
 }
 
 /* --- Bloques one-tech-launch --- */
-/* Por CLASE (no por inst-id): los ids cambian PRE→PRO (p.ej. inst12024 en PRO).
-   Se sube a !important en el fondo porque al quitar el #id la regla perdía
-   especificidad frente al tema. */
-.one-tech-launch .content.block-content{
-    background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png') !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
+#inst9929.one-tech-launch .content.block-content,
+#inst10654.one-tech-launch .content.block-content{
+    background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     text-align:center;
     padding:2em 1em!important;
 }
 
-.one-tech-launch .content.block-content a{
-    padding: 12px 25px !important;
-    background-color: white !important;
-    border-radius: 25px !important;
-    color: var(--color-secondary) !important;
+#inst9929.one-tech-launch .content.block-content a,
+#inst10654.one-tech-launch .content.block-content a{
+    padding: 12px 25px;
+    background-color: white;
+    border-radius: 25px;
+    color: var(--color-secondary);
     font-size: 15px;
     font-weight: 500;
-    border: 1.5px solid white !important;
+    border: 1.5px solid white;
     transition: background-color 0.3s ease-in, transform 0.3s ease-in;
     margin-top:20px!important;
 }
 
-.one-tech-launch .content.block-content a:hover {
+#inst9929.one-tech-launch .content.block-content a:hover,
+#inst10654.one-tech-launch .content.block-content a:hover {
     color: white!important;
     background-color: #ffffff40 !important;
     transform: scale(1.03);
 }
 
-.one-tech-launch .content.block-content img {
+#inst9929.one-tech-launch .content.block-content img,
+#inst10654.one-tech-launch .content.block-content img {
     margin-bottom:20px!important;
 }
 
-.one-tech-launch .no-overflow{
+#inst9929 .no-overflow,
+#inst10654 .no-overflow{
     overflow: hidden !important;
     padding: 10px;
 }
