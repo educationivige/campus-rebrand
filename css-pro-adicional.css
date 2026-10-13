@@ -115,3 +115,17 @@
   border-radius: 0 !important;
   box-shadow: none !important;
 }
+
+
+/* ------------------------------------------------------------
+   5. PERFIL — "Enlaces de interés" del lateral con sombra de más
+   El organizado deja ese bloque transparente/sin sombra con
+   #inst8291 (id de PRE); en PRO es inst12201 → no casa y sale el
+   fondo blanco + sombra (se ve como un "borde"). Se reescribe por
+   página (page-user-profile), robusto a cualquier inst-id.
+   Verificado: rgb(221,221,221)+blanco → none+transparente (= PRE).
+   ------------------------------------------------------------ */
+#page-user-profile .block_totara_featured_links .content.block-content {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
