@@ -2876,6 +2876,31 @@ h2#instance-8378-header {
     border-radius: 999px;
 }
 
+/* Badge de recuento en cada selector (mismo estilo que el contador del
+   Expediente, .dai-filter-btn__count): pastilla blanca, número navy y borde
+   suave; en el filtro activo/hover (fondo azul) el borde pasa a blanco. */
+#page-totara-dashboard-33 .pnts-filter-bar .nav.nav-tabs li a .pnts-filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    margin-left: 7px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--navy-blue, #08004F);
+    border: 1px solid var(--border-soft, #E4E2EE);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
+}
+#page-totara-dashboard-33 .pnts-filter-bar .nav.nav-tabs li.active a .pnts-filter-count,
+#page-totara-dashboard-33 .pnts-filter-bar .nav.nav-tabs li a:hover .pnts-filter-count {
+    border-color: #ffffff;
+}
+
 #page-totara-dashboard-33 #inst10607 .pnts-tiles-wrap,
 #page-totara-dashboard-33 #inst11103 .pnts-tiles-wrap,
 #page-totara-dashboard-33 #inst11136 .pnts-tiles-wrap {
