@@ -77,12 +77,13 @@
         return (s || '').replace(/ /g, ' ').trim();
     }
 
-    // ¿La celda de estado indica "realizado"? (Sí / check / completado…)
+    // ¿La celda de estado indica "realizado"? (✓ / Sí / check / completado…)
     function isDone(cell) {
         if (cell.querySelector('.fa-check, .fa-circle-check, [data-flex-icon*="check"], img')) {
             return true;
         }
         var t = norm(cell.textContent).toLowerCase();
+        if (/[✓✔✅☑🗸]/.test(t)) return true;  // ✓ ✔ ✅ ☑ 🗸 (reportbuilder "Realizado")
         return /^(s[ií]|yes|sim|ja|ano|complet|conclu|realiz|hecho|done|godk|slutf)/.test(t);
     }
 

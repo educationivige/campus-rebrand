@@ -1336,6 +1336,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     divNoTabla.setAttribute('style', 'display: block !important');
                     Utils.log('Estados', `Div info no obligatoria mostrado`);
                 }
+
+                // Sin formación obligatoria → ocultar ambos badges nuevos
+                this.toggleBadgesEstado(null);
             } catch (error) {
                 Utils.log('Estados', `ERROR manipulando divs de estado: ${error.message}`, true);
             }
@@ -1501,9 +1504,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     Utils.log('Estados', `No se encontraron los divs .fo-completa o .fo-incompleta`, true);
                 }
+
+                // Badges del rebranding 2026 (.ivi-status-badge--complete/--incomplete,
+                // se muestran/ocultan con .oculto). Sustituyen a .fo-completa/.fo-incompleta.
+                this.toggleBadgesEstado(todosCompletados);
             } catch (error) {
                 Utils.log('Estados', `ERROR actualizando divs de estado: ${error.message}`, true);
             }
+        },
+
+        /**
+         * Muestra/oculta los badges de estado nuevos (COMPLETA / INCOMPLETA).
+         * null = sin formación obligatoria → ocultar ambos.
+         */
+        toggleBadgesEstado: function(todosCompletados) {
+            const badgeComplete = document.querySelector('.ivi-status-badge--complete');
+            const badgeIncomplete = document.querySelector('.ivi-status-badge--incomplete');
+            if (!badgeComplete || !badgeIncomplete) {
+                Utils.log('Estados', `No se encontraron los badges .ivi-status-badge`);
+                return;
+            }
+            if (todosCompletados === null) {
+                badgeComplete.classList.add('oculto');
+                badgeIncomplete.classList.add('oculto');
+                return;
+            }
+            badgeComplete.classList.toggle('oculto', !todosCompletados);
+            badgeIncomplete.classList.toggle('oculto', !!todosCompletados);
+            Utils.log('Estados', `Badge de estado -> ${todosCompletados ? 'COMPLETA' : 'INCOMPLETA'}`);
         },
 
         /**
@@ -1527,8 +1555,32 @@ document.addEventListener('DOMContentLoaded', function() {
             this.configurarEstilosAcordeon(header, content);
             this.configurarIconoAcordeon(divId, false);
             this.configurarEventoClick(divId, header, content, isExpanded);
+            this.sincronizarAltura(content);
 
             Utils.log('Acordeón', `Acordeón creado exitosamente para div: ${divId}`);
+        },
+
+        /**
+         * El max-height del acordeón se fija con el scrollHeight del momento de
+         * crearlo; si el contenido crece después (badges que añade el visor,
+         * imágenes o fuentes que cargan tarde) se recortarían filas porque el
+         * .content tiene overflow:hidden. Mientras está expandido, mantenemos el
+         * max-height sincronizado con el alto real. Observamos los hijos (que NO
+         * están recortados) + eventos tardíos como red de seguridad.
+         */
+        sincronizarAltura: function(content) {
+            function recalc() {
+                var mh = content.style.maxHeight;
+                if (mh === '0px' || mh === '0') return;            // colapsado: no tocar
+                var h = content.scrollHeight + 'px';
+                if (content.style.maxHeight !== h) content.style.maxHeight = h;
+            }
+            if (window.ResizeObserver) {
+                var ro = new ResizeObserver(recalc);
+                Array.prototype.forEach.call(content.children, function(ch) { ro.observe(ch); });
+            }
+            window.addEventListener('load', recalc);
+            [300, 800, 1600].forEach(function(t) { setTimeout(recalc, t); });
         },
 
         /**
