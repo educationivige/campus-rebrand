@@ -1,15 +1,76 @@
+<!-- ============================================================
+     VISOR — Aviso Formación Obligatoria (ok / ko)
+     Estilo aviso naranja de LFE (.no-obligatorio title_lfe, ya estilada
+     en el CSS) + icono Material Symbols "info" + estructura izq/dcha.
+     El <script> alterna .obligatorio-ok / .obligatorio-ko según si el
+     bloque de cursos obligatorios (inst212) tiene una lista con cursos;
+     si no, además oculta inst212. Multi-idioma es / pt / other.
+     Se pega en el bloque HTML de "Formación Obligatoria" (inst213, dashboard 1).
+     ============================================================ -->
+
+<!-- HAY cursos obligatorios -->
 <div class="obligatorio-ok" style="display: block;">
-  {mlang es}<p>Debes superar toda la formación Obligatoria para poder obtener los puntos de formación de excelencia.</p>{mlang}
-  {mlang pt}<p>Você deve concluir toda a formação Obrigatória para poder obter os pontos de formação de excelência.</p>{mlang}
-  {mlang other}<p>You must pass all the Mandatory training in order to earn excellence training points.</p>{mlang}
-</div>
-<div class="obligatorio-ko" style="display: none;">
-  <div class="no-obligatorio">
+  <div class="no-obligatorio title_lfe">
     <div class="izq"><span class="material-symbols-outlined" aria-hidden="true">info</span></div>
     <div class="dcha">
-      {mlang es}<p>Actualmente no hay cursos obligatorios disponibles, pero <b>estarán disponibles próximamente</b>. ¡Mantente atento a las novedades!</p><p>Recuerda que debes superar toda la formación obligatoria para poder obtener los puntos de formación de excelencia.</p>{mlang}
-      {mlang pt}<p>Atualmente não há cursos obrigatórios disponíveis, mas <b>estarão disponíveis em breve</b>. Fique atento às novidades!</p><p>Lembre-se de que você deve concluir toda a formação obrigatória para poder obter os pontos de formação de excelência.</p>{mlang}
-      {mlang other}<p>There are currently no mandatory courses available, but <b>they will be available soon</b>. Stay tuned for updates!</p><p>Remember that you must pass all the mandatory training in order to earn excellence training points.</p>{mlang}
+      {mlang es}<p style="margin:0; padding:0;">Debes superar toda la formación Obligatoria para poder obtener los puntos de formación de excelencia.</p>{mlang}
+      {mlang pt}<p style="margin:0; padding:0;">Você deve concluir toda a formação Obrigatória para poder obter os pontos de formação de excelência.</p>{mlang}
+      {mlang other}<p style="margin:0; padding:0;">You must pass all the Mandatory training in order to earn excellence training points.</p>{mlang}
     </div>
   </div>
 </div>
+
+<!-- NO hay cursos obligatorios -->
+<div class="obligatorio-ko" style="display: none;">
+  <div class="no-obligatorio title_lfe">
+    <div class="izq"><span class="material-symbols-outlined" aria-hidden="true">info</span></div>
+    <div class="dcha">
+      {mlang es}<p style="margin:0 0 .5em; padding:0;">Actualmente no hay cursos obligatorios disponibles, pero <b>estarán disponibles próximamente</b>. ¡Mantente atento a las novedades!</p><p style="margin:0; padding:0;">Recuerda que debes superar toda la formación obligatoria para poder obtener los puntos de formación de excelencia.</p>{mlang}
+      {mlang pt}<p style="margin:0 0 .5em; padding:0;">Atualmente não há cursos obrigatórios disponíveis, mas <b>estarão disponíveis em breve</b>. Fique atento às novidades!</p><p style="margin:0; padding:0;">Lembre-se de que você deve concluir toda a formação obrigatória para poder obter os pontos de formação de excelência.</p>{mlang}
+      {mlang other}<p style="margin:0 0 .5em; padding:0;">There are currently no mandatory courses available, but <b>they will be available soon</b>. Stay tuned for updates!</p><p style="margin:0; padding:0;">Remember that you must pass all the mandatory training in order to earn excellence training points.</p>{mlang}
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * Alterna .obligatorio-ok / .obligatorio-ko según si inst212 contiene una
+ * lista (ul con li, excluyendo .dropdown-menu). Si no hay cursos, oculta inst212.
+ */
+function checkListElements(targetDivId) {
+  const targetDiv = document.getElementById(targetDivId);
+  if (!targetDiv) {
+    console.error(`El div con ID "${targetDivId}" no existe en el documento.`);
+    return;
+  }
+
+  const allUls = targetDiv.querySelectorAll('ul');
+  const validUls = Array.from(allUls).filter(ul => !ul.classList.contains('dropdown-menu'));
+
+  let hasValidList = false;
+  for (const ul of validUls) {
+    if (ul.querySelectorAll('li').length > 0) { hasValidList = true; break; }
+  }
+
+  const obligatorioOk = document.querySelector('.obligatorio-ok');
+  const obligatorioKo = document.querySelector('.obligatorio-ko');
+  if (!obligatorioOk || !obligatorioKo) {
+    console.error('No se encontraron los divs con clases "obligatorio-ok" o "obligatorio-ko".');
+    return;
+  }
+
+  if (hasValidList) {
+    obligatorioOk.style.display = 'block';
+    obligatorioKo.style.display = 'none';
+  } else {
+    obligatorioOk.style.display = 'none';
+    obligatorioKo.style.display = 'block';
+    const lista = document.getElementById(targetDivId);
+    if (lista) lista.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  checkListElements('inst212');
+});
+</script>
