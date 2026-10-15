@@ -137,6 +137,22 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         /**
+         * Detecta cualquier contexto de edición de bloques, donde los módulos
+         * cosméticos NO deben tocar el DOM (al hacerlo se sale de la edición):
+         *   - /dashboard/layout.php  → editor de la home.
+         *   - URL con un parámetro bui_* (bui_editid, bui_addblock, bui_moveid…)
+         *     → formularios de configurar/añadir/mover bloque ("Configurar bloque").
+         *   - body con clase "editing" → modo edición activo que marca Totara.
+         */
+        esEditorDeBloques: function() {
+            var ruta = window.location.pathname;
+            var query = window.location.search;
+            return ruta.indexOf('/dashboard/layout.php') !== -1
+                || /[?&]bui_/.test(query)
+                || (document.body && document.body.classList.contains('editing'));
+        },
+
+        /**
          * Función debounce para optimizar eventos frecuentes
          */
         debounce: function(func, wait) {
@@ -222,6 +238,11 @@ document.addEventListener('DOMContentLoaded', function() {
          * y si el ID (cuando existe) está en la lista de permitidos
          */
         isUrlPatternMatched: function(configSection) {
+            // Nunca correr en el editor de bloques: rompería la activación
+            if (Utils.esEditorDeBloques()) {
+                return false;
+            }
+
             const currentPath = window.location.pathname;
             const currentUrl = currentPath + window.location.search;
             const id = Utils.getQueryParam('id');
@@ -1934,6 +1955,13 @@ document.addEventListener('DOMContentLoaded', function() {
          * Función principal de inicialización
          */
         init: function() {
+            // Saltar el editor de bloques (/dashboard/layout.php): si los módulos
+            // reconstruyen el DOM ahí, al tocar un bloque se sale de la edición.
+            if (Utils.esEditorDeBloques()) {
+                Utils.log('Dashboard', 'Editor de bloques (layout.php): módulos omitidos');
+                return;
+            }
+
             const currentPath = window.location.pathname;
             const currentUrl = currentPath + window.location.search;
 
@@ -5447,4 +5475,75 @@ table.appendChild(tfoot);
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoIssueCerts);
     else autoIssueCerts();
+})();
+
+/**************** DASHBOARD — FIX "Configurar bloque" en el editor compartido ****************
+ * ⚠️ WORKAROUND TEMPORAL — QUITAR cuando Totara/Actua lo arreglen en el servidor
+ *    (que propague adminedit en el editor del dashboard compartido). Reportado a
+ *    soporte. Este IIFE entero se puede borrar sin tocar nada más cuando esté fijo.
+ *
+ * En el editor del dashboard compartido (totara/dashboard/layout.php con
+ * adminedit=on) Totara genera los enlaces de acción de bloque (Configurar,
+ * Ocultar, Eliminar, Mover, Añadir…) y el formulario de configuración SIN el
+ * parámetro adminedit. Al pulsarlos / al guardar se pierde el modo edición,
+ * Totara ignora bui_editid y muestra la vista normal en vez del formulario
+ * ("se sale del modo edición") y los cambios no persisten. Este parche reañade
+ * adminedit=on a los enlaces bui_* (al hacer clic) y al envío del formulario
+ * (action + input hidden). Solo toca href/action y añade un hidden; no toca el
+ * DOM, así que no interfiere con la edición.
+ ********************************************************************************************/
+(function () {
+    'use strict';
+    var RUTA_EDITOR = '/totara/dashboard/layout.php';
+    if (window.location.pathname.indexOf(RUTA_EDITOR) === -1) return;
+
+    // En el editor el modo edición vive en la sesión: la URL queda limpia y el
+    // servidor marca <body class="editing">. Ese es el guard fiable (no la URL).
+    function enEdicion() {
+        return !!(document.body && document.body.classList.contains('editing'));
+    }
+
+    // (1) Enlaces de acción de bloque (Configurar/Ocultar/Eliminar/Mover/Añadir):
+    //     al pulsarlos se pierde adminedit. Se lo reinyectamos en el href.
+    document.addEventListener('click', function (e) {
+        if (!enEdicion()) return;
+        var a = e.target && e.target.closest ? e.target.closest('a[href*="bui_"]') : null;
+        if (!a) return;
+        try {
+            var u = new URL(a.href, window.location.origin);
+            if (u.pathname.indexOf(RUTA_EDITOR) === -1) return;
+            if (u.searchParams.get('adminedit') === 'on') return;
+            u.searchParams.set('adminedit', 'on');
+            a.href = u.toString();
+        } catch (err) {}
+    }, true);
+
+    // (2) Formulario de configurar/añadir bloque: el POST tampoco lleva
+    //     adminedit, así que Totara guarda fuera del contexto de edición y los
+    //     cambios NO persisten. Se lo añadimos al action y como input oculto
+    //     (optional_param lee de GET y de POST; lo ponemos en ambos por si acaso).
+    function fijarFormularios() {
+        if (new URLSearchParams(window.location.search).get('adminedit') !== 'on') return;
+        var forms = document.querySelectorAll('form');
+        for (var i = 0; i < forms.length; i++) {
+            var f = forms[i], act;
+            try { act = new URL(f.action, window.location.origin); } catch (e) { continue; }
+            if (act.pathname.indexOf(RUTA_EDITOR) === -1) continue;
+            if (act.searchParams.get('adminedit') !== 'on') {
+                act.searchParams.set('adminedit', 'on');
+                f.action = act.toString();
+            }
+            if (!f.querySelector('input[name="adminedit"]')) {
+                var inp = document.createElement('input');
+                inp.type = 'hidden'; inp.name = 'adminedit'; inp.value = 'on';
+                f.appendChild(inp);
+            }
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fijarFormularios);
+    } else {
+        fijarFormularios();
+    }
 })();
