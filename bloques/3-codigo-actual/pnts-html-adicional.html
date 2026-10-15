@@ -1,3 +1,26 @@
+<style>
+/* Badge de recuento en los selectores de PNTs (TODO / No iniciado / Iniciado / Completado) */
+.pnts-filter-bar .nav-tabs li a .pnts-filter-count {
+  display: inline-block;
+  min-width: 20px;
+  margin-left: 7px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--light-blue, #004DF0);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  vertical-align: middle;
+}
+/* En el filtro activo o en hover (fondo azul) se invierte: pastilla blanca, número azul */
+.pnts-filter-bar .nav-tabs li.active a .pnts-filter-count,
+.pnts-filter-bar .nav-tabs li a:hover .pnts-filter-count {
+  background: #fff;
+  color: var(--light-blue, #004DF0);
+}
+</style>
 <script>
 (function() {
   // Solo ejecutar en dashboard 33
@@ -456,11 +479,21 @@
     var filterBar = document.createElement('div');
     filterBar.className = 'pnts-filter-bar';
     filterBar.setAttribute('data-pnts-filter-bar', '1');
+    // Recuento por estado para el badge de cada selector
+    function pntsCount(f) {
+      return f === 'all' ? allCourses.length
+        : allCourses.filter(function(c) { return c.status === f; }).length;
+    }
+    function pntsFilterLi(f, label, active) {
+      return '<li data-filter="' + f + '"' + (active ? ' class="active"' : '') + '>' +
+        '<a href="#">' + label +
+        '<span class="pnts-filter-count">' + pntsCount(f) + '</span></a></li>';
+    }
     filterBar.innerHTML = '<ul class="nav nav-tabs">' +
-      '<li data-filter="all" class="active"><a href="#">' + t.all + '</a></li>' +
-      '<li data-filter="notstarted"><a href="#">' + t.notstarted + '</a></li>' +
-      '<li data-filter="inprogress"><a href="#">' + t.inprogress + '</a></li>' +
-      '<li data-filter="complete"><a href="#">' + t.complete + '</a></li>' +
+      pntsFilterLi('all', t.all, true) +
+      pntsFilterLi('notstarted', t.notstarted, false) +
+      pntsFilterLi('inprogress', t.inprogress, false) +
+      pntsFilterLi('complete', t.complete, false) +
       '</ul>';
 
     // Contenedor de tiles
