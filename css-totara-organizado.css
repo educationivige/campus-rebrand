@@ -11370,3 +11370,308 @@ body.ivi-home-due-active .block_current_programsas .progressbar__text {
     right: 0 !important;
   }
 }
+
+
+/* ============================================================
+   FIXES PRO — fusionados desde css-pro-adicional.css (staging)
+   ------------------------------------------------------------
+   Repoints PRE→PRO y features validados en el campo "CSS adicional"
+   del tema PRO y movidos aquí para servirse por CDN. Los comentarios
+   de cada bloque conservan el porqué original (aunque ya no cargue
+   "antes" del organizado: ahora forman parte de él).
+   ============================================================ */
+/* ------------------------------------------------------------
+   1. LOGIN — el logo se recortaba
+   El organizado (cacheado) fuerza background-size:260px → el logo
+   SVG (576×155, ratio ≈3,71:1) se cortaba en la caja de 56px de alto.
+   `contain` lo mete entero. !important para ganar al 260px.
+   ------------------------------------------------------------ */
+#page-login-index .loginpanel h2 {
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+}
+
+
+/* ------------------------------------------------------------
+   2. OneTech "Accede ahora" — no salía el fondo del banner
+   El organizado ataba la regla a #inst9929 / #inst10654 (ids de PRE);
+   en PRO el bloque es inst12024.one-tech-launch → el selector no casaba.
+   Se pasa a SOLO CLASE (.one-tech-launch) + !important para que aplique
+   con cualquier inst-id (al quitar el #id baja la especificidad).
+   ------------------------------------------------------------ */
+.one-tech-launch .content.block-content {
+  background-image: url('https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/One-Tech-IVI-Institute-Campus-banner.png') !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  text-align: center !important;
+  padding: 2em 1em !important;
+}
+
+.one-tech-launch .content.block-content a {
+  padding: 12px 25px !important;
+  background-color: #fff !important;
+  border-radius: 25px !important;
+  color: var(--navy-blue) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  border: 1.5px solid #fff !important;
+  margin-top: 20px !important;
+}
+
+.one-tech-launch .content.block-content a:hover {
+  color: #fff !important;
+  background-color: #ffffff40 !important;
+}
+
+.one-tech-launch .content.block-content img {
+  margin-bottom: 20px !important;
+}
+
+.one-tech-launch .no-overflow {
+  overflow: hidden !important;
+  padding: 10px !important;
+}
+
+
+/* ------------------------------------------------------------
+   3. HOME (dashboard-9) — reglas que en el organizado iban por
+   inst-id de PRE y en PRO no casan (ids nuevos recreados).
+   Se pasan a dashboard + clase/estructura (robusto PRE/PRO):
+     · Hero                 #inst11487 → inst12018
+     · Enlaces de interés   #inst231   → inst12023  (featured_links)
+
+   El INFORME OCULTO de orden (#inst11511 en PRE) NO necesita regla
+   aquí: el organizado ya lo oculta por su CLASE .bloque-fechas-cursos.
+   → En PRO basta CREAR ese informe en la Home y asignarle esa clase.
+   ------------------------------------------------------------ */
+
+/* Hero al ancho del contenido (sin padding lateral), solo en la Home */
+#page-totara-dashboard-9 #block-region-top .block_slickslider {
+  padding: 1.5rem 0 !important;
+}
+
+/* Enlaces de interés (featured_links): aire sobre el título y tiles a
+   200px — SOLO la instancia de la Home. La especificidad (dashboard +
+   2 clases) gana al #links-lfe{height:260px} del organizado. */
+#page-totara-dashboard-9 .block_totara_featured_links .block-header {
+  margin-top: 2rem !important;
+}
+#page-totara-dashboard-9 .block_totara_featured_links .block-totara-featured-links-tile {
+  height: 200px !important;
+}
+
+
+/* ------------------------------------------------------------
+   4. "Cursos que imparto" (.ivi-imparto__lista) — sombra de más
+   La regla del organizado que normaliza estos bloques (sin caja/sombra;
+   la tarjeta es la lista interna con borde) solo cubre .ivi-icono-azul,
+   NO el alias .ivi-imparto__lista → en PRO el bloque (p.ej. inst12029)
+   mostraba la sombra por defecto del bloque. Se extiende al alias.
+   Verificado: box-shadow rgb(221,221,221) → none. Iguala PRE.
+   ------------------------------------------------------------ */
+.block:has(.ivi-imparto__lista) {
+  margin-bottom: 15px !important;
+}
+.block:has(.ivi-imparto__lista) > .content.block-content {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   5. PERFIL — "Enlaces de interés" del lateral con sombra de más
+   El organizado deja ese bloque transparente/sin sombra con
+   #inst8291 (id de PRE); en PRO es inst12201 → no casa y sale el
+   fondo blanco + sombra (se ve como un "borde"). Se reescribe por
+   página (page-user-profile), robusto a cualquier inst-id.
+   Verificado: rgb(221,221,221)+blanco → none+transparente (= PRE).
+   ------------------------------------------------------------ */
+#page-user-profile .block_totara_featured_links .content.block-content {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   6. MUST READ PAPERS (dashboard-12) — cards con el formato de Monthly
+   El organizado da el formato (imagen a proporción 38,2% ≈ 2,62:1, tile
+   sin recorte, título sin line-clamp) solo a #inst287 (Monthly). Must Read
+   (inst350) no lo tenía → imágenes bajas/irregulares. Se replica scopeado
+   por dashboard-12 (robusto a inst-id). SIN badge de vencimiento (los
+   papers no tienen fecha límite). Verificado en vivo = igual a Monthly.
+   ------------------------------------------------------------ */
+#page-totara-dashboard-12 .block_current_learningas-tile__image,
+#page-totara-dashboard-12 .block_current_learningas-tile__image_ratio {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile__image_ratio::before {
+  content: "" !important;
+  display: block !important;
+  width: 100% !important;
+  padding-top: 38.2% !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile__image_ratio_img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: 100% auto !important;
+  background-position: center top !important;
+  background-repeat: no-repeat !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile,
+#page-totara-dashboard-12 .block_current_learningas-tile__content,
+#page-totara-dashboard-12 .block_current_learningas-tile__link,
+#page-totara-dashboard-12 .block_current_learningas-tile__maincontent {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+#page-totara-dashboard-12 .block_current_learningas-tile__link_title {
+  display: block !important;
+  -webkit-line-clamp: none !important;
+  line-clamp: none !important;
+  -webkit-box-orient: initial !important;
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   7. COOKIEBOT — logo IVI más grande
+   Cookiebot limita su logo (#CybotCookiebotDialogPoweredbyImage) a
+   max-height ~32px → se veía pequeño. Se sube a 50px (≈ el tamaño del
+   logo "Cookiebot" de la derecha). OJO: el logo subido a Cookiebot es
+   de 91×46 px nativos → a más de ~50px empieza a pixelar; para hacerlo
+   mucho mayor, subir un logo de más resolución en el panel de Cookiebot.
+   ------------------------------------------------------------ */
+#CybotCookiebotDialogPoweredbyImage {
+  height: 50px !important;
+  width: auto !important;
+  max-height: none !important;
+  max-width: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   8. MUST READ PAPERS — "Completados" en tarjetas (como Monthly)
+   El organizado deja Monthly (#inst8174) como cards e inst8190 como
+   tabla ("look antiguo"). Aquí damos a Must Read Papers (#inst8190,
+   dashboard id=12) el mismo trato que Monthly (#ms-grid): tarjetas
+   .exp-* en #mrp-grid, "Finalizado"/progreso en navy.
+   Requiere el bloque JS must-read-papers--cards.html en el dashboard 12.
+   (La tabla queda de fallback si el JS no corre.)
+   Cuando se valide → fusionar junto a las reglas de #ms-grid del organizado.
+   ------------------------------------------------------------ */
+/* Bloque sin caja (fondo/sombra/borde) cuando hay cards */
+#region-main .block:has(#mrp-grid),
+#region-main .block:has(#mrp-grid) > .content,
+#inst8190:has(#mrp-grid),
+#inst8190:has(#mrp-grid) > .content,
+#inst8190:has(#mrp-grid) .content.block-content {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+/* Grid de tarjetas (auto-fill, igual que Monthly) */
+#mrp-grid.cyber-standalone__grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+}
+#mrp-grid .exp-card {
+  border-radius: 10px !important;
+}
+body.mrp-cards-active #inst8190 .header.block-header {
+  margin-bottom: 6px !important;
+}
+/* "Finalizado" y barra de progreso en navy (como Monthly) */
+#page-totara-dashboard-12 #mrp-grid .exp-status--done {
+  background: var(--navy-blue, #08004F) !important;
+  color: #ffffff !important;
+}
+#page-totara-dashboard-12 #mrp-grid .exp-progress--done .exp-progress__fill {
+  background: var(--navy-blue, #08004F) !important;
+}
+#page-totara-dashboard-12 #mrp-grid .exp-progress--done .exp-progress__label {
+  color: var(--navy-blue, #08004F) !important;
+}
+
+
+/* ------------------------------------------------------------
+   9. REPOINT PRO — "Formación de Excelencia" (home de LFE)
+   En PRE el bloque featured-links era #inst216; en PRO es #inst12067.
+   Se replican aquí las reglas que el organizado aplica a #inst216
+   (banda de color por tile, texto blanco, sin velo, tamaños) para el
+   nuevo id. Al fusionar: añadir #inst12067 junto a #inst216 en el
+   organizado (o renombrar inst216→inst12067).
+   ------------------------------------------------------------ */
+/* Título del bloque */
+#inst12067 .title.block-title h2 {
+  font-family: "IVI Glance", "Noto Sans" !important;
+  font-weight: bold;
+  font-size: 26px !important;
+}
+
+/* Banda del título/subtítulo de cada card: color de marca translúcido +
+   letra blanca, sin velo blanco del tema (::before) ni backdrop-filter. */
+#inst12067 .block-totara-featured-links-tile .block-totara-featured-links-content-container {
+  background: none;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-content {
+  width: 100%;
+  padding: 12px 16px 14px;
+  margin-bottom: -5px;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-content::before {
+  background: rgba(255, 255, 255, 0) !important;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-content h3,
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-content p {
+  color: #ffffff !important;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-content h3 {
+  padding: 5px !important;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-content p {
+  margin-bottom: var(--spacing-small) !important;
+  font-size: 13px;
+}
+/* Colores de marca por tile. OJO: en PRO los tiles son -121/-122/-123
+   (en PRE eran -1/-2/-3). 121 Must Read #AC1D6B, 122 Monthly #7B2594,
+   123 Asistencia #622A9C. */
+#inst12067 .block-totara-featured-links-tile-121 .block-totara-featured-links-content {
+  background: rgba(172, 29, 107, 0.8) !important;
+}
+#inst12067 .block-totara-featured-links-tile-122 .block-totara-featured-links-content {
+  background: rgba(123, 37, 148, 0.8) !important;
+}
+#inst12067 .block-totara-featured-links-tile-123 .block-totara-featured-links-content {
+  background: rgba(98, 42, 156, 0.9) !important;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-tile.background-cover {
+  flex-basis: auto;
+  width: 30% !important;
+  max-height: 230px;
+  background-size: cover;
+  margin-top: -15px;
+}
+#inst12067 .block-totara-featured-links-layout .block-totara-featured-links-tile.background-cover:hover {
+  opacity: 0.8 !important;
+}
+#inst12067 .block-totara-featured-links-layout.align-left.square {
+  margin-top: 20px !important;
+}
