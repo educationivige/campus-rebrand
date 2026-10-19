@@ -11762,15 +11762,183 @@ body.mrp-cards-active #inst8190 .header.block-header {
    16. Tooltip de finalización — recorte lateral
    El tooltip (.activity-completion-info) es position:absolute dentro de
    span.actions y se despliega hacia la IZQUIERDA (width:300px), pero quedaba
-   cortado por dos ancestros con overflow:auto: los .no-overflow (que
-   envuelven el contenido de la actividad) y la columna del contenido
-   #region-main. Se levanta el overflow a visible SOLO mientras se hace hover
-   sobre .actions (:has), de modo que el tooltip se ve entero y el
-   overflow:auto se RESTAURA al salir (no afecta al scroll horizontal de
-   contenido ancho el resto del tiempo). #region-main es id estable en todas
-   las páginas de curso. Verificado en vivo (course/view.php?id=1291).
+   cortado por ancestros que recortan: los .no-overflow (overflow:auto, que
+   envuelven el contenido de la actividad), la columna del contenido
+   #region-main, y —en cursos onetopic con subsecciones en acordeón— la caja
+   .collapse-content (overflow:hidden, el cuerpo del acordeón). Se levanta el
+   overflow a visible SOLO mientras se hace hover sobre .actions (:has), de
+   modo que el tooltip se ve entero y el overflow se RESTAURA al salir (no
+   afecta al scroll ni al colapso el resto del tiempo). Verificado en vivo
+   (course id=1291 y onetopic id=1061).
    ------------------------------------------------------------ */
 .no-overflow:has(.actions:hover),
-#region-main:has(.actions:hover) {
+#region-main:has(.actions:hover),
+.collapse-content:has(.actions:hover) {
   overflow: visible !important;
+}
+
+
+/* ------------------------------------------------------------
+   17. "Inicio del curso" (.inicicurs a) — quitar el look de BOTÓN
+   El tema lo pinta como pill azul relleno (idéntico a "Activar edición") y
+   la gente cree que es un CTA obligatorio. Se pasa a enlace tenue estilo
+   breadcrumb (gris-azul, sin fondo ni borde) con una flecha ‹ de "volver".
+   El icono fa-arrow-left del tema no renderiza glifo (su fuente no mapea esa
+   clase) → se oculta y se pone un ‹ propio con ::before.
+   OJO: NO tocar el botón "siguiente" del quiz (#region-main .mod_quiz-next-nav),
+   que comparte regla con .inicicurs a en el tema pero SÍ debe seguir siendo
+   botón. Por eso aquí se ataca SOLO .inicicurs a. La regla del botón vive en
+   el tema (no en este CSS), por eso se usa !important. Verificado (id=1291).
+   ------------------------------------------------------------ */
+.inicicurs a {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  background: none !important;
+  color: #5B6B8F !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.inicicurs a > .flex-icon { display: none !important; }
+.inicicurs a::before {
+  content: "\2039";          /* ‹ flecha de "volver" */
+  font-size: 1.3em;
+  line-height: 1;
+  margin-right: 2px;
+}
+.inicicurs a:hover,
+.inicicurs a:focus {
+  color: var(--navy-blue, #08004F) !important;
+  background: none !important;
+  text-decoration: underline !important;
+}
+
+
+/* ------------------------------------------------------------
+   18. Bloque "pnts-ocultar" (informe embebido) — ocultar en vista normal
+   Curso "Itinerario Formativo Inicial de Enfermería" (course id=1061): hay
+   un bloque block_totara_report_table titulado "pnts-ocultar" (#inst9524)
+   que a los alumnos solo les muestra "No hay registros…" + "Ver informe
+   completo" (ruido). Se oculta SOLO fuera de edición (body:not(.editing))
+   para que el admin lo siga viendo y pueda gestionarlo al editar.
+   NO afecta al bloque "JS-convalidador-PNTs" (otro inst-id).
+   OJO (PRO): #inst9524 es el id de ESTE bloque en PRO; si otros cursos
+   tienen su propio bloque "pnts-ocultar", añadir aquí sus #inst… (o darles
+   una clase CSS común en la config del bloque y atacar esa clase).
+   ------------------------------------------------------------ */
+body:not(.editing) #inst9524 {
+  display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   19. Pestañas de módulos (formato onetopic) — IGUAL que las pestañas de
+   AJUSTES DEL TEMA (theme_settings, regla genérica .nav-tabs > li.active > a).
+   Se replican sus valores EXACTOS, con las MISMAS variables del tema:
+     · activa: fondo --color-neutral-1 (#fff), texto --tab-text-selected-color
+       (#313131, bold), acento superior 5px --color-primary (#004DF0), borde
+       lateral 1px --tabs-border-color (#c7c7c7), radio 4px, SOMBRA --shadow-3
+       y margin-top:-2px (se eleva sobre la línea).
+     · inactivas: TEXTO PLANO azul-navy tenue, sin caja.
+     · línea inferior ("estante") 1px --tabs-border-color.
+   El formato onetopic pisa esa regla con un pill azul; aquí se revierte al
+   look de ajustes. Se excluyen los +/- de edición con :has(> div.tab_content)
+   (llevan span.flex-icon). Scope a body.format-onetopicas. Verificado (id=1061).
+   ------------------------------------------------------------ */
+body.format-onetopicas .tabtree ul.nav-tabs {
+  border-bottom: 1px solid var(--tabs-border-color, #c7c7c7) !important;
+  gap: 2px !important;
+  padding-left: 4px !important;
+  align-items: flex-end !important;
+}
+/* estructura común (excluye los botones +/-) */
+body.format-onetopicas .tabtree ul.nav-tabs > li > a:has(> div.tab_content) {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 4px 4px 0 0 !important;
+  padding: 12px 30px !important;
+  margin: 0 2px 0 0 !important;
+  box-shadow: none !important;
+}
+/* inactivas: TEXTO PLANO, sin caja */
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content) {
+  background: transparent !important;
+}
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content) .tab_content,
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content) span {
+  color: #4F5E8F !important;
+  font-weight: 500 !important;
+}
+/* hover/focus inactivas → navy (NO verde: el tema usa Bootstrap primary
+   verde en varios :hover; aquí se fuerza el color de texto). */
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content):hover,
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content):focus {
+  background: transparent !important;
+}
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content):hover .tab_content,
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content):hover span,
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content):focus .tab_content,
+body.format-onetopicas .tabtree ul.nav-tabs > li:not(.active) > a:has(> div.tab_content):focus span {
+  color: var(--navy-blue, #08004F) !important;
+}
+/* activa: EXACTO como ajustes del tema (acento 5px + sombra + borde + radio) */
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content) {
+  background: var(--color-neutral-1, #fff) !important;
+  border: 1px solid var(--tabs-border-color, #c7c7c7) !important;
+  border-top: 5px solid var(--color-primary, #004DF0) !important;
+  border-bottom: 1px solid var(--color-neutral-1, #fff) !important;
+  border-radius: 4px 4px 0 0 !important;
+  box-shadow: var(--shadow-3, 0 6px 6px 0 rgba(0, 0, 0, 0.15)) !important;
+  margin: -2px 2px -1px 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content) .tab_content,
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content) span,
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content):hover .tab_content,
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content):hover span,
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content):focus .tab_content,
+body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_content):focus span {
+  color: var(--tab-text-selected-color, #313131) !important;
+  font-weight: 700 !important;
+}
+
+
+/* ------------------------------------------------------------
+   20. Acordeón de subsecciones (.collapse-toggle) — hover teal → azul
+   El tema pinta el hover de estos encabezados ("1.1 Conoce tu clínica"…) en
+   TEAL legacy (color #004D57 + fondo #006975 al 10%), que se ve "verde" y
+   off-brand. Se pasa a azul de marca: el TÍTULO mantiene el mismo navy que
+   sin hover + fondo azul muy claro. El texto va en un hijo (span.it-titulo-1/2,
+   a veces <b>): se atacan también los hijos o el título sale teal aunque el
+   contenedor sea navy. Verificado en vivo (course id=1061).
+   ------------------------------------------------------------ */
+.collapse-toggle:hover,
+.collapse-toggle:hover .it-titulo-1,
+.collapse-toggle:hover .it-titulo-2,
+.collapse-toggle:hover b,
+.collapse-toggle:hover span {
+  color: var(--navy-blue, #08004F) !important;
+}
+.collapse-toggle:hover {
+  background: rgba(0, 77, 240, 0.08) !important;
+}
+
+
+/* ------------------------------------------------------------
+   21. Títulos de label en gris → como "Mapa del centro"
+   En los cursos (p.ej. onetopic de PNTs) muchos labels-título llevan un
+   color inline gris author-made: <b style="color:#858585">…</b> (p.ej.
+   "Normas, Organigrama y Equipo", "Asepsia", "Gestión de Residuos"…), que
+   se ven apagados frente a "Mapa del centro" (negro, sin color inline).
+   Se neutraliza SOLO ese gris concreto (selector por el valor inline) para
+   que hereden el color por defecto del label (negro, = "Mapa del centro").
+   !important porque hay que ganar al estilo inline. Verificado en vivo
+   (course id=1061): 15 títulos pasan de rgb(133,133,133) a rgb(0,0,0).
+   ------------------------------------------------------------ */
+li.activity.label .contentwithoutlink b[style*="858585"] {
+  color: inherit !important;
 }

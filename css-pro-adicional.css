@@ -21,4 +21,10 @@
    "FIXES PRO", secciones 10-16: PNTs chip azul, sangría bloque
    Administración, banner enrolment azul, título de catálogo, h4 de
    secciones de curso, y tooltip de finalización — z-index + recorte
-   lateral por overflow. Staging vacío → pendiente UNA purga de jsDelivr.) */
+   lateral por overflow.) */
+
+/* (Fusionado el 2026-10-19 en css-totara-organizado.css, secciones 17-21:
+   "Inicio del curso" como enlace tenue, ocultar bloque pnts-ocultar
+   (#inst9524), pestañas de módulos onetopic con estilo de ajustes del tema,
+   hover del acordeón .collapse-toggle teal→azul, y títulos de label grises
+   (#858585)→negro. Staging vacío → pendiente UNA purga de jsDelivr.) */
