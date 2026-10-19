@@ -344,19 +344,6 @@ html body .ascabecera .asinfoelem i.fa-user::before {
 }
 
 /* --- 1.6 Estados de actividades globales --- */
-li.activity.label,
-li.activity.statusok,
-li.activity.statuswarning,
-li.activity.statusserious,
-li.activity.statuscritical,
-.file-picker td.label,
-.file-picker td.statusok,
-.file-picker td.statuswarning,
-.file-picker td.statusserious,
-.file-picker td.statuscritical {
-  color: var(--color-text-gray);
-}
-
 .course-content ul.topics li.section .content,
 .course-content ul.weeks li.section .content {
   overflow: visible;
@@ -3857,7 +3844,6 @@ width:95%;
 .course-description h4,
 .seccion-eval h4 {
   font-size: 17px !important;
-  color: var(--color-text-gray) !important;
 }
 
 .course-description .competencias {
@@ -11699,4 +11685,92 @@ body.mrp-cards-active #inst8190 .header.block-header {
 }
 #inst12067 .block-totara-featured-links-layout.align-left.square {
   margin-top: 20px !important;
+}
+
+
+/* ------------------------------------------------------------
+   10. PNTs (dashboard-33) — badge de recuento como CHIP azul claro
+   Los badges quedaban con fondo blanco + borde gris suave y se perdían
+   sobre el botón blanco. Se pasan a un chip relleno azul claro
+   (--bg-blue #DCE6FF) con borde #C4D4FB, en todos los estados.
+   ------------------------------------------------------------ */
+#page-totara-dashboard-33 .pnts-filter-bar .nav.nav-tabs li a .pnts-filter-count {
+  background: var(--bg-blue, #DCE6FF) !important;
+  border-color: #C4D4FB !important;
+}
+
+
+/* ------------------------------------------------------------
+   11. Bloque "Administración" (block_settings chromeless) — sangría
+   El tema actua deja el .content a padding:0 y el árbol queda pegado al
+   borde, desalineado con el título (que ya lleva padding-left:20px). Se le
+   da al contenido la misma sangría izquierda.
+   ------------------------------------------------------------ */
+.block.chromeless.block_settings .content.block-content {
+  padding: 20px !important;
+}
+
+
+/* ------------------------------------------------------------
+   12. Banner de matriculación "info" del curso (ej. "Estás accediendo a
+   este curso como administrador"). El tema actua lo pintaba en teal
+   (#007CB8 / #E6F2F7), que no es corporativo. Se pasa al azul del aviso
+   .info-puntos: icono --light-blue, fondo --bg-blue, texto --navy-blue.
+   Solo la variante .alert-info (success/warning/danger se dejan).
+   ------------------------------------------------------------ */
+.tw-containerCourse-enrolmentBanner.alert-info .alert-icon {
+  background: var(--light-blue, #004DF0) !important;
+}
+.tw-containerCourse-enrolmentBanner.alert-info .tw-containerCourse-enrolmentBanner__messageBox {
+  background: var(--bg-blue, #DCE6FF) !important;
+  color: var(--navy-blue, #08004F) !important;
+}
+
+
+/* ------------------------------------------------------------
+   13. Catálogo — título de página sin margen inferior extra
+   ------------------------------------------------------------ */
+.tw-catalog__page_heading {
+  margin-bottom: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+   14. Secciones de curso (format topics) — h4 del contenido en el color
+   de enlace del bloque lateral (coherencia de marca).
+   ------------------------------------------------------------ */
+#page-course-view-topics li.section .content h4 {
+  color: var(--color-link-lateral-block) !important;
+}
+
+
+/* ------------------------------------------------------------
+   15. Tooltip de finalización de actividad (.activity-completion-info)
+   "se veía por detrás": la caja ya tiene fondo blanco sólido pero el tema
+   le pone z-index:1, así que el contenido de la actividad se apilaba por
+   encima y se transparentaba. Se sube el z-index (y se reafirma el fondo).
+   ------------------------------------------------------------ */
+.activity-completion-info {
+  z-index: 99999 !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+
+/* ------------------------------------------------------------
+   16. Tooltip de finalización — recorte lateral
+   El tooltip (.activity-completion-info) es position:absolute dentro de
+   span.actions y se despliega hacia la IZQUIERDA (width:300px), pero quedaba
+   cortado por dos ancestros con overflow:auto: los .no-overflow (que
+   envuelven el contenido de la actividad) y la columna del contenido
+   #region-main. Se levanta el overflow a visible SOLO mientras se hace hover
+   sobre .actions (:has), de modo que el tooltip se ve entero y el
+   overflow:auto se RESTAURA al salir (no afecta al scroll horizontal de
+   contenido ancho el resto del tiempo). #region-main es id estable en todas
+   las páginas de curso. Verificado en vivo (course/view.php?id=1291).
+   ------------------------------------------------------------ */
+.no-overflow:has(.actions:hover),
+#region-main:has(.actions:hover) {
+  overflow: visible !important;
 }
