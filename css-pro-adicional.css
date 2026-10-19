@@ -14,7 +14,11 @@
    (rama pro), se vacía este archivo y se hace UNA sola purga.
    ============================================================ */
 
-/* VACÍO — las secciones 1-9 se fusionaron en css-totara-organizado.css
-   el 2026-10-15 (bloque "FIXES PRO — fusionados desde css-pro-adicional.css").
-   Tras confirmar que el CDN sirve esa versión, vaciar TAMBIÉN el campo
-   "CSS adicional" del tema de PRO. Añadir aquí los próximos fixes de staging. */
+/* (Las secciones 1-9 anteriores se fusionaron en css-totara-organizado.css
+   el 2026-10-15; bloque "FIXES PRO — fusionados desde css-pro-adicional.css".) */
+
+/* (Fusionado el 2026-10-19 en css-totara-organizado.css, mismo bloque
+   "FIXES PRO", secciones 10-16: PNTs chip azul, sangría bloque
+   Administración, banner enrolment azul, título de catálogo, h4 de
+   secciones de curso, y tooltip de finalización — z-index + recorte
+   lateral por overflow. Staging vacío → pendiente UNA purga de jsDelivr.) */
