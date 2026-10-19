@@ -4595,6 +4595,73 @@ table.appendChild(tfoot);
   var t = setInterval(function () { tries++; scan(); if (tries > 30) clearInterval(t); }, 200);
 })();
 
+/* ============================================================
+   ESTADO DE MI FORMACIÓN (Expediente, inst8161) — donut que carga vacío
+   El gráfico es un report graph de Totara (ChartJS sobre <canvas>). Totara
+   deja .rb-chartjs con display:none (regla CSS; oculto hasta pintar) y a veces
+   marca data-core-autoinitialise="done" SIN crear la instancia ChartJS: al
+   inicializar, el contenedor estaba oculto/0px, el canvas midió 0 y no pintó
+   nada → queda una zona vacía hasta recargar. Los DATOS siempre están en
+   data-report-options.
+   Self-healing: cuando Totara YA lo intentó (autoinitialise=done) pero el
+   gráfico está roto (.rb-chartjs en display:none o canvas de 0px), se fuerza
+   display:block y se (re)crea el Chart desde data-report-options. Idempotente
+   (solo actúa si está roto; antes de recrear destruye cualquier instancia
+   previa) y con reintentos + MutationObserver para cazar la carga asíncrona
+   del bloque del dashboard. El recoloreado de marca lo sigue aplicando el
+   módulo GRÁFICAS CHARTJS de arriba. Scope: #inst8161 (id del bloque en PRO;
+   si cambia, actualizar el selector). Verificado en vivo (dashboard 16).
+   ============================================================ */
+(function () {
+  'use strict';
+  function getInstance(cv) {
+    if (!window.Chart) return null;
+    if (typeof Chart.getChart === 'function') {
+      try { var c = Chart.getChart(cv); if (c) return c; } catch (e) {}
+    }
+    if (Chart.instances) {
+      for (var id in Chart.instances) {
+        var i = Chart.instances[id];
+        var cvv = i && (i.canvas || (i.chart && i.chart.canvas));
+        if (cvv === cv) return i;
+      }
+    }
+    return null;
+  }
+  function heal(cv) {
+    if (!cv || cv.getAttribute('data-core-autoinitialise') !== 'done') return; // esperar a Totara
+    var wrap = cv.closest('.rb-chartjs');
+    if (!wrap) return;
+    var broken = getComputedStyle(wrap).display === 'none' ||
+                 cv.getBoundingClientRect().width === 0;
+    if (!broken) return; // Totara lo pintó bien → no tocar (idempotente)
+    wrap.style.setProperty('display', 'block', 'important');
+    wrap.removeAttribute('hidden');
+    if (wrap.getBoundingClientRect().width === 0) return; // aún sin tamaño → próximo intento
+    var raw = cv.getAttribute('data-report-options');
+    if (!raw || !window.Chart) return;
+    var cfg;
+    try { cfg = JSON.parse(raw); } catch (e) { return; }
+    var ex = getInstance(cv);
+    if (ex) { try { ex.destroy(); } catch (e) {} }
+    try { new Chart(cv.getContext('2d'), cfg); } catch (e) {}
+  }
+  function scan() {
+    Array.prototype.forEach.call(
+      document.querySelectorAll('#inst8161 canvas[data-report-options]'), heal
+    );
+  }
+  scan();
+  if (document.readyState !== 'complete') window.addEventListener('load', scan);
+  try {
+    var mo = new MutationObserver(scan);
+    mo.observe(document.body, { childList: true, subtree: true });
+    setTimeout(function () { mo.disconnect(); }, 10000);
+  } catch (e) {}
+  var n = 0;
+  var t = setInterval(function () { n++; scan(); if (n >= 40) clearInterval(t); }, 250);
+})();
+
 /**************** MIS CERTIFICADOS — Página de listado (list.php) ****************
  * Replica en /blocks/mycertificates/list.php la miniatura real del PDF y los
  * botones Ver / Descargar del bloque de la home. En la home lo hace
