@@ -11943,3 +11943,33 @@ body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_conten
 li.activity.label .contentwithoutlink b[style*="858585"] {
   color: inherit !important;
 }
+
+/* ------------------------------------------------------------
+   EXPEDIENTE — pestaña de filtro activa con el color de su estado.
+   Las tabs (.exp-filters .dai-filter-btn) llevan data-exp-tab con el
+   estado (finalizada / encurso / noiniciada / nosuperada); el activo
+   toma el color de su estado, misma paleta que el donut de estado-cursos
+   y las barras de las cards (#exp-grid .exp-status--*). "Finalizada" se
+   queda navy (regla base .exp-filters .dai-filter-btn.active). Mayor
+   especificidad (…[data-exp-tab].active = 0-4-0) que la base (0-3-0).
+   ------------------------------------------------------------ */
+.exp-filters .dai-filter-btn[data-exp-tab="encurso"].active,
+.exp-filters .dai-filter-btn[data-exp-tab="encurso"].active:hover {
+  background: var(--teal, #0CE3C6);
+  border: 1px solid var(--teal, #0CE3C6);
+  color: var(--navy-blue, #08004F);
+}
+
+.exp-filters .dai-filter-btn[data-exp-tab="noiniciada"].active,
+.exp-filters .dai-filter-btn[data-exp-tab="noiniciada"].active:hover {
+  background: var(--light-blue, #004DF0);
+  border: 1px solid var(--light-blue, #004DF0);
+  color: #ffffff;
+}
+
+.exp-filters .dai-filter-btn[data-exp-tab="nosuperada"].active,
+.exp-filters .dai-filter-btn[data-exp-tab="nosuperada"].active:hover {
+  background: var(--red, #B4084A);
+  border: 1px solid var(--red, #B4084A);
+  color: #ffffff;
+}
