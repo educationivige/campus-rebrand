@@ -1,0 +1,162 @@
+<style id="imr-csss">
+@font-face {
+    font-family: 'Neue Montreal';
+    src: url('https://apps.ivieducationcloud.com/fonts/NeueMontreal-Medium.woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face { 
+    font-family: 'Canela';
+    src: url('https://apps.ivieducationcloud.com/fonts/Canela-Light.woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script id="Cookiebot" src=https://consent.cookiebot.com/uc.js data-cbid="3161ce27-6979-4c00-961c-cb6c3cd0086a" type="text/javascript"></script>
+
+
+<!-- CSS crítico inline para carga instantánea -->
+<style id="critical-css">
+:root {
+  --color-primary: #006975;
+  --color-primary-light: #00B7BD;
+  --color-accent: #F18D7E;
+  --color-secondary: #3b8695;
+  --color-secondary-dark: #2c6773;
+}
+
+.oculto { display: none !important; }
+.nav-tabs > li.active > a { 
+  background: var(--color-primary-light) !important; 
+  color: white !important; 
+}
+#vimeo-custom-modal.vimeo-modal-container { 
+  display: none !important; 
+  position: fixed !important; 
+  z-index: 10000 !important; 
+}
+</style>
+
+<!-- CSS y JS dinámicos desde jsDelivr -->
+<link id="totara-css" rel="stylesheet" href="">
+
+<!-- Fallback para navegadores sin JS -->
+<noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/carlesv90/totara@main/css.css">
+</noscript>
+
+<script>
+// CONFIGURACIÓN SIMPLE
+let CSS_COMMIT = "651156efe70a52a4c3226a0277dbb7061b7575f1"; // Cambiar commit CSS aquí
+let JS_COMMIT = "main";  // Cambiar commit JS aquí
+
+// Cargar CSS
+function loadCSS() {
+    document.getElementById("totara-css").href = 
+        `https://cdn.jsdelivr.net/gh/carlesv90/totara@${CSS_COMMIT}/css.css`;
+}
+
+// Cargar JS
+function loadJS() {
+    const oldScript = document.getElementById("totara-js");
+    if (oldScript) oldScript.remove();
+    
+    const script = document.createElement('script');
+    script.id = "totara-js";
+    script.src = `https://cdn.jsdelivr.net/gh/carlesv90/totara@${JS_COMMIT}/js.js`;
+    document.head.appendChild(script);
+}
+
+// Inicializar
+loadCSS();
+//loadJS();
+
+// Limpiar CSS crítico después de cargar
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const critical = document.getElementById('critical-css');
+        if (critical) critical.remove();
+    }, 2000);
+});
+
+// Funciones públicas para actualizar
+window.updateTotaraCSS = function(commit) {
+    if (commit) CSS_COMMIT = commit;
+    loadCSS();
+};
+
+window.updateTotaraJS = function(commit) {
+    if (commit) JS_COMMIT = commit;
+    loadJS();
+};
+
+window.updateTotara = function(cssCommit, jsCommit) {
+    if (cssCommit) CSS_COMMIT = cssCommit;
+    if (jsCommit) JS_COMMIT = jsCommit;
+    loadCSS();
+    loadJS();
+};
+
+window.checkTotara = function() {
+    const css = document.getElementById('totara-css');
+    const js = document.getElementById('totara-js');
+    console.log('CSS:', css ? '✅ Cargado' : '❌ Falta');
+    console.log('JS:', js ? '✅ Cargado' : '❌ Falta');
+    if (!js) loadJS(); // Recargar JS si falta
+};
+
+console.log('Totara resources loaded from:', `carlesv90/totara@${CSS_COMMIT}`);
+</script>
+<style>
+#inst10236 td a img.course_icon {
+  background: var(--color-primary) !important;
+  padding: 14px;
+  max-width: 65px !important;
+  max-height: 65px !important;
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+}
+
+body.tenant-user-imr a, body.tenant-user-imr p, body.tenant-user-imr div, body.tenant-user-imr ul, body.tenant-user-imr form {
+    font-family: 'Neue Montreal';
+    font-weight: 400; 
+}
+
+/* Login */
+
+#page-login-index.tenant-user-imr .loginpanel h2 {
+    background-size: 150px!important;
+}
+
+#page-login-index.tenant-user-imr .signuppanel {
+    display: none!important;
+}
+
+#page-login-index.tenant-user-imr .loginpanel {
+    background-color: #342818!important;
+    padding: 40px!important;
+    border-radius: var(--border-radius-large)!important;
+}
+
+#page-login-index.tenant-user-imr .loginbox.clearfix.twocolumns {
+    margin: auto!important;
+    padding-bottom: 0px!important;
+}
+
+@media screen and (min-width: 768px) {
+    .loginbox.twocolumns .loginpanel {
+        width: 100%!important;
+    }
+}
+/* End Login IMR*/
+.block_totara_report_table .footer {
+    display: none;
+}
+.no-overflow {
+    overflow: inherit !important;
+}
+</style>
