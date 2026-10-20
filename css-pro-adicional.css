@@ -4,3 +4,22 @@
    instante, sin purga de jsDelivr. Al verificar, fusionar en
    css-totara-organizado.css y vaciar este archivo.
    ============================================================ */
+
+/* Separación superior de la columna lateral derecha:
+   Must Read Papers (dashboard 12) y Monthly Seminars (11) a 25px;
+   Mi Visor de Puntos LFE (10) a 20px. */
+#page-totara-dashboard-11 #block-region-side-post,
+#page-totara-dashboard-12 #block-region-side-post {
+  margin-top: 25px;
+}
+#page-totara-dashboard-10 #block-region-side-post {
+  margin-top: 20px;
+}
+
+/* PNTs (dashboard 33) — buscador a la derecha. El CSS base del buscador
+   (.pnts-search-*) vive en el organizado sin justify-content (= izquierda);
+   aquí se alinea a la derecha. Al fusionar, mover a la regla
+   .pnts-search-container del organizado. */
+#page-totara-dashboard-33 .pnts-search-container {
+  justify-content: flex-end;
+}
