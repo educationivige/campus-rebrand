@@ -1,31 +1,67 @@
+<!-- ============================================================
+     HOME (dashboard-9) — Título del banner LFE desde el informe
+     Lee el curso del informe #inst11192 ("Curso Presentación", columna
+     course_courselink) cuyo nombre es "<Título> - <Tipo>" (p.ej.
+     "Learning for Excellence 2026 - Ginecología") y lo vuelca en el
+     banner LFE (#inst12019): el <Título> en span.lfe-banner-titulo y el
+     <Tipo> en span.lfe-banner-tipo. Oculta el informe (también se oculta
+     por CSS en css-totara-organizado / css-pro-adicional).
+
+     OJO: la FUENTE es #inst11192 (el informe), NO #inst12019 (el banner).
+     Un error típico al migrar a PRO fue apuntar a #inst12019 → no hay
+     tabla ahí → no cambiaba el título ni se ocultaba el informe.
+
+     Reintenta (intervalo + MutationObserver) porque Totara puede pintar
+     el informe/banner después del DOMContentLoaded. Idempotente.
+     Pegar en el bloque HTML "JS Título LFE" (#inst12020) de la home.
+     ============================================================ -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const targetDiv = document.getElementById('inst11192');
-    
-    if (targetDiv) {
-        const courseLink = targetDiv.querySelector('td.course_courselink a');
-        
-        if (courseLink) {
-            const linkText = courseLink.textContent.trim();
-            const textParts = linkText.split('-');
-            
-            if (textParts.length >= 2) {
-                const firstPart = textParts[0].trim();
-                const secondPart = textParts.slice(1).join('-').trim();
-                
-                const titleSpan = document.querySelector('span.lfe-banner-titulo');
-                if (titleSpan) {
-                    titleSpan.textContent = firstPart;
-                }
-                
-                const typeSpan = document.querySelector('span.lfe-banner-tipo');
-                if (typeSpan) {
-                    typeSpan.innerHTML = '<strong>' + secondPart + '</strong>';
-                }
-                
-                targetDiv.style.display = 'none';
-            }
-        }
+(function () {
+    'use strict';
+
+    function apply() {
+        var report = document.getElementById('inst11192');   // informe = fuente
+        if (!report) return false;
+        var courseLink = report.querySelector('td.course_courselink a');
+        if (!courseLink) return false;
+
+        var parts = courseLink.textContent.trim().split('-');
+        if (parts.length < 2) return false;
+
+        var titleSpan = document.querySelector('span.lfe-banner-titulo');
+        var typeSpan  = document.querySelector('span.lfe-banner-tipo');
+        if (!titleSpan && !typeSpan) return false;   // el banner aún no está
+
+        var firstPart  = parts[0].trim();
+        var secondPart = parts.slice(1).join('-').trim();
+
+        if (titleSpan) titleSpan.textContent = firstPart;
+        if (typeSpan)  typeSpan.innerHTML = '<strong>' + secondPart + '</strong>';
+
+        report.style.display = 'none';
+        return true;
     }
-});
+
+    function boot() {
+        if (apply()) return;
+
+        var mo, timer, tries = 0;
+        function stop() {
+            if (timer) clearInterval(timer);
+            if (mo) { try { mo.disconnect(); } catch (e) {} }
+        }
+        try {
+            mo = new MutationObserver(function () { if (apply()) stop(); });
+            mo.observe(document.body, { childList: true, subtree: true });
+        } catch (e) {}
+        timer = setInterval(function () { if (apply() || ++tries >= 40) stop(); }, 250);
+        setTimeout(stop, 12000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();
 </script>
