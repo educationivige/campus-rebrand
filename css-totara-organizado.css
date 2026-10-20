@@ -3788,11 +3788,12 @@ width:95%;
 }
 
 
+/* Descripción de actividad: texto plano alineado con el título, SIN caja
+   (antes caja azul #f0f5f680 con padding/esquina y margin-left:65px que la
+   dejaba muy a la derecha). margin-left:40px = mismo valor que los cursos
+   topcoll (referencia id=1265), texto ~alineado con el título. */
 #page-course-view-onetopicas .section .activity .contentafterlink {
-    background-color: #f0f5f680;
-    padding: 1em 0.5em 0 1em;
-    border-radius: 12px 0 0 0;
-    margin-left: 65px;
+    margin-left: 40px;
     margin-top:0px!important;
 }
 
