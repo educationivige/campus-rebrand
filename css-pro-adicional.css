@@ -6,26 +6,6 @@
    ============================================================ */
 
 /* ------------------------------------------------------------
-   CURSO (onetopic) — descripción de actividad SIN caja (como id=1265)
-   La regla del organizado (línea ~3791) le pone a .contentafterlink un
-   fondo #f0f5f680, padding, esquina redondeada y margin-left:65px: una
-   caja azul que quedaba muy a la derecha. Se quita la caja para dejarlo
-   como en los cursos topcoll (referencia id=1265): texto plano alineado
-   con el título. margin-left:40px = mismo valor que el topcoll de
-   referencia (texto ~alineado con el título; verificado en vivo en
-   id=1129 §5, ambas descripciones). !important porque este archivo
-   carga antes que el organizado.
-   AL FUSIONAR: en la regla del organizado quitar background-color,
-   padding y border-radius, y poner margin-left:40px; borrar esta.
-   ------------------------------------------------------------ */
-#page-course-view-onetopicas .section .activity .contentafterlink {
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  margin-left: 40px !important;
-}
-
-/* ------------------------------------------------------------
    MONTHLY SEMINARS COMPLETADOS (#inst8174) — paginación texto blanco
    La .exp-pagination (compartida con el Expediente) va con texto navy
    sobre pastilla blanca. Aquí se quiere el texto en BLANCO: pastillas
