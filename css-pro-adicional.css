@@ -6,30 +6,6 @@
    ============================================================ */
 
 /* ------------------------------------------------------------
-   MONTHLY SEMINARS COMPLETADOS (#inst8174) — paginación texto blanco
-   La .exp-pagination (compartida con el Expediente) va con texto navy
-   sobre pastilla blanca. Aquí se quiere el texto en BLANCO: pastillas
-   navy (inactivas) / azul (activa y hover) con texto blanco. Acotado a
-   #inst8174 para NO tocar el Expediente.
-   Especificidad alta (2 IDs: #region-main + #inst8174) + !important
-   porque el tema base fuerza el color de los enlaces con
-   `div#region-main a:not(#…)` — el :not lleva un ID dentro, así que
-   cuenta como 2 IDs y con !important; hay que superarlo. Verificado en
-   vivo en el dashboard 11.
-   ------------------------------------------------------------ */
-#region-main #inst8174 .exp-pagination .exp-pagination__item a {
-  background: var(--navy-blue, #08004F);
-  border-color: var(--navy-blue, #08004F);
-  color: #fff !important;
-}
-#region-main #inst8174 .exp-pagination .exp-pagination__item a:hover,
-#region-main #inst8174 .exp-pagination .exp-pagination__item.active a {
-  background: var(--light-blue, #004DF0);
-  border-color: var(--light-blue, #004DF0);
-  color: #fff !important;
-}
-
-/* ------------------------------------------------------------
    HOME (dashboard-9) — ocultar el informe "Curso Presentación"
    #inst11192. Es solo la fuente de datos del título del banner LFE
    (lo lee el JS de inst12020 y lo vuelca en .lfe-banner-titulo del

@@ -11999,3 +11999,24 @@ li.activity.label .contentwithoutlink b[style*="858585"] {
 .totara-table-container table.flexible > tbody > tr > th {
   vertical-align: middle;
 }
+
+/* ------------------------------------------------------------
+   MONTHLY SEMINARS COMPLETADOS (#inst8174) — paginación texto blanco.
+   La .exp-pagination (compartida con el Expediente) va con texto navy
+   sobre pastilla blanca; aquí las pastillas van navy (inactivas) / azul
+   (activa·hover) con texto blanco. Acotado a #inst8174 (no toca el
+   Expediente). 2 IDs (#region-main + #inst8174) + !important para superar
+   el color de enlace del tema (div#region-main a:not(#…), que cuenta como
+   2 IDs y lleva !important).
+   ------------------------------------------------------------ */
+#region-main #inst8174 .exp-pagination .exp-pagination__item a {
+  background: var(--navy-blue, #08004F);
+  border-color: var(--navy-blue, #08004F);
+  color: #fff !important;
+}
+#region-main #inst8174 .exp-pagination .exp-pagination__item a:hover,
+#region-main #inst8174 .exp-pagination .exp-pagination__item.active a {
+  background: var(--light-blue, #004DF0);
+  border-color: var(--light-blue, #004DF0);
+  color: #fff !important;
+}
