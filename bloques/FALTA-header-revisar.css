@@ -1,0 +1,21 @@
+/* ============================================================
+   FALTA del header — revisión de additionalhtmlheader-revisar.html
+   vs. additional-html-head.html (repo) + CSS por CDN (ORG/IMR)
+   Fecha: 2026-10-08
+   ------------------------------------------------------------
+   Resultado: casi TODO el revisar ya está cubierto (repo head o
+   reubicado en css-totara-organizado.css / imr/css-tenant-imr.css).
+   El cargador dinámico carlesv90/totara y el critical-css inline NO
+   se incluyen: son el enfoque ANTIGUO, superado por el <link> directo
+   a educationivige/campus-rebrand (re-añadirlos daría doble carga).
+
+   LO ÚNICO genuinamente ausente (ni en ORG ni en IMR) es la regla
+   GLOBAL de abajo. En el organizado solo existe scoped a .cta_lfe.
+   ⚠️ OJO: es un override global que afecta a TODOS los .no-overflow
+   del sitio; confirmar si realmente se quiere global antes de
+   fusionarla en css-totara-organizado.css.
+   ============================================================ */
+
+.no-overflow {
+  overflow: inherit !important;
+}
