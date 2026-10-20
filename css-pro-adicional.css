@@ -6,18 +6,6 @@
    ============================================================ */
 
 /* ------------------------------------------------------------
-   HOME (dashboard-9) — ocultar el informe "Curso Presentación"
-   #inst11192. Es solo la fuente de datos del título del banner LFE
-   (lo lee el JS de inst12020 y lo vuelca en .lfe-banner-titulo del
-   inst12019); no debe verse. Se oculta por CSS para que quede oculto
-   siempre, aunque el JS falle. El JS igualmente puede leer su
-   contenido (textContent funciona con display:none).
-   ------------------------------------------------------------ */
-#page-totara-dashboard-9 #inst11192 {
-  display: none !important;
-}
-
-/* ------------------------------------------------------------
    AVISOS de report tables vacías (p.ej. inst8174 "Monthly Seminars
    Completados") con el estilo de los avisos de Current Learning/
    Programs (inst8272): caja azul de marca + icono "i". El mensaje
