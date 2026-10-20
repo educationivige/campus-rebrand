@@ -4596,10 +4596,15 @@ table.appendChild(tfoot);
 })();
 
 /* ESTADO DE MI FORMACIÓN (Expediente, inst8161) — El self-healing del donut
-   nativo (report graph que cargaba vacío) se retiró: ese donut era redundante
-   con el panel "46 cursos" y ahora se OCULTA por CSS (#inst8161 .rb-chartjs,
-   css-totara-organizado.css §5). No reañadir self-healing aquí: forzaba
-   display:block !important y volvería a mostrar el donut oculto. */
+   nativo (report graph que cargaba vacío) se RETIRÓ: en el Expediente ese donut
+   NO se usa — expediente/estado-cursos.html construye el widget .status-chart
+   ("46 cursos" + tabla) dentro de #inst8161 y oculta el .rb-chartjs nativo. El
+   self-healing lo re-mostraba (forzaba display:block !important), pisando tanto
+   el display:none del widget como la regla FOUC del CSS → salía el donut teal
+   duplicado. NO reañadirlo: romperá el widget. El ocultado por defecto ya lo
+   hace el CSS (#page-totara-dashboard-16 .block_totara_report_graph__chart
+   .rb-chartjs {display:none}); el failsafe del widget revela el nativo si no
+   llega a montarse. */
 
 /**************** MIS CERTIFICADOS — Página de listado (list.php) ****************
  * Replica en /blocks/mycertificates/list.php la miniatura real del PDF y los
