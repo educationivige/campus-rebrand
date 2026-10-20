@@ -2615,15 +2615,6 @@ div#region-main #inst281 .header.block-header h2::after {
   display: none;
 }
 
-/* Ocultar el donut nativo "Estado de mi formación" (report graph #inst8161):
-   carga vacío/inconsistente (muestra solo "no iniciado": 100% / 36) y es
-   redundante con el panel "46 cursos" de abajo. Se mantiene el título del
-   bloque. El self-healing JS de este donut se retiró del footer (forzaba
-   display:block !important y re-mostraría el donut). */
-#inst8161 .rb-chartjs {
-  display: none !important;
-}
-
 #inst8148 thead tr th,
 #inst8154 thead tr th,
 #inst8378 thead tr th,
