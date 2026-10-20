@@ -9685,6 +9685,7 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 #inst278 .lfe-score-badge,
 #inst279 .lfe-score-badge,
 #inst280 .lfe-score-badge,
+#inst281 .lfe-score-badge,
 #inst9478 .lfe-score-badge,
 #inst9479 .lfe-score-badge,
 #inst9480 .lfe-score-badge,
@@ -9709,6 +9710,8 @@ body.cmid-20259 .datapreferences .mod-data-default-template td {
 #inst9480 .lfe-score-badge { background-color: #AC1D6B; color: #fff; }
 #inst280 .lfe-score-badge,
 #inst9481 .lfe-score-badge { background-color: #622A9C; color: #fff; }
+/* Cursos del Catálogo: navy (mismo tono que su cabecera) */
+#inst281 .lfe-score-badge { background-color: var(--navy-blue, #08004F); color: #fff; }
 /* Formación Obligatoria: azul corporativo (un único azul) */
 #inst277 .lfe-score-badge,
 #inst9478 .lfe-score-badge { background-color: var(--light-blue, #004DF0); color: #fff; }
