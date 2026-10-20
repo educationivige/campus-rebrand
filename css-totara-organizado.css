@@ -11973,3 +11973,28 @@ li.activity.label .contentwithoutlink b[style*="858585"] {
   border: 1px solid var(--red, #B4084A);
   color: #ffffff;
 }
+
+/* ------------------------------------------------------------
+   TABLAS TOTARA (.totara-table-container) — 3 ajustes globales:
+   1) Zebra-striping: las filas impares que el tema base pinta con
+      #fafafa (table.flexible > tbody > tr:nth-of-type(2n+1)) pasan a
+      #f0f5f680 (azul claro translúcido). Especificidad 0-3-3 > base 0-2-3.
+   2) Hover de fila: azul claro (--bg-blue #DCE6FF) en vez del gris
+      #f5f5f5 del tema base. !important porque choca con el striping
+      (misma especificidad 0-3-3) en las filas impares.
+   3) Filas centradas verticalmente (vertical-align:middle). Incluye td
+      Y th: la columna "Nombre completo" es un th scope=row
+      (user_namelinkicon, con avatar), no un td, y sin esto queda arriba.
+   ------------------------------------------------------------ */
+.totara-table-container table.flexible > tbody > tr:nth-of-type(2n+1) {
+  background-color: #f0f5f680;
+}
+
+.totara-table-container table.flexible > tbody > tr:hover {
+  background-color: var(--bg-blue, #DCE6FF) !important;
+}
+
+.totara-table-container table.flexible > tbody > tr > td,
+.totara-table-container table.flexible > tbody > tr > th {
+  vertical-align: middle;
+}

@@ -6,35 +6,6 @@
    ============================================================ */
 
 /* ------------------------------------------------------------
-   TABLAS TOTARA (.totara-table-container) — 3 ajustes:
-   1) Zebra-striping: las filas impares que el tema base pinta con
-      #fafafa (table.flexible > tbody > tr:nth-of-type(2n+1)) pasan a
-      #f0f5f680 (azul claro translúcido).
-   2) Hover de fila: azul claro (var --bg-blue #DCE6FF) en vez del
-      gris #f5f5f5 del tema base. !important porque choca con el
-      striping (misma especificidad 0-3-3): sin él, en las filas
-      impares ganaría la que cargue después.
-   3) Filas centradas verticalmente (vertical-align:middle; el tema
-      base deja las celdas en top y el contenido multilínea queda
-      arriba). Incluye td Y th: la columna "Nombre completo" es un
-      th scope=row (user_namelinkicon, con avatar), no un td, por lo
-      que necesita su propia regla o se queda sin centrar.
-   Todo acotado a .totara-table-container; especificidad > la base.
-   ------------------------------------------------------------ */
-.totara-table-container table.flexible > tbody > tr:nth-of-type(2n+1) {
-  background-color: #f0f5f680;
-}
-
-.totara-table-container table.flexible > tbody > tr:hover {
-  background-color: var(--bg-blue, #DCE6FF) !important;
-}
-
-.totara-table-container table.flexible > tbody > tr > td,
-.totara-table-container table.flexible > tbody > tr > th {
-  vertical-align: middle;
-}
-
-/* ------------------------------------------------------------
    CURSO (onetopic) — descripción de actividad SIN caja (como id=1265)
    La regla del organizado (línea ~3791) le pone a .contentafterlink un
    fondo #f0f5f680, padding, esquina redondeada y margin-left:65px: una
