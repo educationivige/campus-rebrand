@@ -12020,3 +12020,14 @@ li.activity.label .contentwithoutlink b[style*="858585"] {
   border-color: var(--light-blue, #004DF0);
   color: #fff !important;
 }
+
+/* ------------------------------------------------------------
+   HOME (dashboard-9) — ocultar el informe "Curso Presentación" #inst11192.
+   Es solo la FUENTE de datos del título del banner LFE (lo lee el JS de
+   inst12020 y lo vuelca en .lfe-banner-titulo de inst12019); no debe verse.
+   Se oculta por CSS para que quede oculto siempre aunque el JS falle (el JS
+   igualmente lee su textContent aunque esté en display:none).
+   ------------------------------------------------------------ */
+#page-totara-dashboard-9 #inst11192 {
+  display: none !important;
+}
