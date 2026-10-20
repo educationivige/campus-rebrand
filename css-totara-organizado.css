@@ -12031,3 +12031,48 @@ li.activity.label .contentwithoutlink b[style*="858585"] {
 #page-totara-dashboard-9 #inst11192 {
   display: none !important;
 }
+
+/* ------------------------------------------------------------
+   AVISOS de report tables vacías (p.ej. inst8174 "Monthly Seminars
+   Completados") con el estilo de los avisos de Current Learning/Programs
+   (inst8272): caja azul de marca + icono "i". El mensaje vacío nativo de
+   las report tables es <p class="no-results">. Replica el estilo de
+   .current_learningas-no-content. Global para todos los
+   .block_totara_report_table.
+   ------------------------------------------------------------ */
+.block_totara_report_table .no-results {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  margin: 16px 0;
+  padding: 18px 22px;
+  background: var(--bg-blue, #DCE6FF);
+  border: 1px solid #C4D4FB;
+  border-radius: 12px;
+  color: var(--navy-blue, #08004F);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.block_totara_report_table .no-results::before {
+  content: "info";
+  font-family: "Material Symbols Outlined";
+  font-variation-settings: 'FILL' 1;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--light-blue, #004DF0);
+  flex-shrink: 0;
+}
+
+/* Cuando el bloque está vacío (solo el aviso), quitar la TARJETA BLANCA
+   del contenedor para que el aviso azul quede sobre el fondo de la página.
+   La tarjeta blanca (#inst8174 .totara-table-container {background:#fff…})
+   es para la vista de cards; en el estado de aviso sobra. :has(.no-results)
+   → solo aplica cuando hay aviso (con datos se conserva). !important para
+   superar la regla con #id de la tarjeta. */
+.block_totara_report_table .totara-table-container:has(.no-results) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
