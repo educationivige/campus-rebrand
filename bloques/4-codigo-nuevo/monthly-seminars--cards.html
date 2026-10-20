@@ -11,10 +11,15 @@
        badge de categoría, fecha de inscripción y barra de progreso.
        Si el curso no tiene imagen queda el gradiente de marca con icono.
      - Oculta la tabla original (queda como fallback si el JS no corre).
+     - Pagina las cards en cliente (.exp-pagination, CONFIG.perPage por
+       página), como el Expediente. IMPORTANTE: el script solo ve las filas
+       que el reportbuilder ya ha pintado en el DOM (su página de servidor),
+       así que el informe debe cargar TODAS las filas: subir "Número de
+       registros por página" del informe a un número alto (p.ej. 200).
 
      Estilos: reutiliza .exp-card* / .exp-badge* / .exp-status* /
-     .exp-progress* y .cyber-standalone__grid de css-totara-organizado.css.
-     Solo añade #ms-grid (columnas auto-fill) en el CSS.
+     .exp-progress* / .exp-pagination* y .cyber-standalone__grid de
+     css-totara-organizado.css. Solo añade #ms-grid (columnas auto-fill).
 
      Datos: el informe debe exponer, además de Nombre/Progreso/Fecha de
      finalización, las columnas "Categoría del curso" y "Fecha de
@@ -31,6 +36,7 @@
     var CONFIG = {
         blockId: 'inst8174',
         gridId:  'ms-grid',
+        perPage: 9,      // tarjetas por página (paginación cliente), como el Expediente
         debug:   true
     };
 
@@ -280,25 +286,74 @@
         grid.className = 'cyber-standalone__grid';
         grid.id = CONFIG.gridId;
 
-        courses.forEach(function (course) {
-            var li = document.createElement('li');
-            var card = buildCard(course);
-            li.appendChild(card);
-            grid.appendChild(li);
-            fetchCourseImage(course.url).then(function (img) {
-                if (!img) return;
-                var bg = card.querySelector('.exp-card__bg');
-                if (bg) bg.style.backgroundImage = "url('" + img + "')";
-                card.classList.add('exp-card--has-image');
-            });
-        });
+        // Contenedor de paginación (reutiliza .exp-pagination del Expediente)
+        var pagination = document.createElement('div');
+        pagination.className = 'exp-pagination';
+        pagination.style.display = 'none';
 
-        // Ocultar contenido original (tabla + avisos) e inyectar el grid
+        function renderPagination(totalPages, current) {
+            pagination.innerHTML = '';
+            if (totalPages <= 1) { pagination.style.display = 'none'; return; }
+            pagination.style.display = '';
+
+            var ul = document.createElement('ul');
+            ul.className = 'exp-pagination__list';
+
+            function addItem(html, targetPage, disabled, active) {
+                var li = document.createElement('li');
+                li.className = 'exp-pagination__item' +
+                    (disabled ? ' disabled' : '') + (active ? ' active' : '');
+                var a = document.createElement('a');
+                a.href = '#';
+                a.innerHTML = html;
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (!disabled && targetPage !== null) renderPage(targetPage);
+                });
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+
+            addItem('&laquo;', current - 1, current === 1, false);
+            for (var i = 1; i <= totalPages; i++) addItem(String(i), i, false, i === current);
+            addItem('&raquo;', current + 1, current === totalPages, false);
+
+            pagination.appendChild(ul);
+        }
+
+        function renderPage(page) {
+            var totalPages = Math.max(1, Math.ceil(courses.length / CONFIG.perPage));
+            var current = Math.min(Math.max(1, page), totalPages);
+            var start = (current - 1) * CONFIG.perPage;
+            var pageItems = courses.slice(start, start + CONFIG.perPage);
+
+            grid.innerHTML = '';
+            pageItems.forEach(function (course) {
+                var li = document.createElement('li');
+                var card = buildCard(course);
+                li.appendChild(card);
+                grid.appendChild(li);
+                fetchCourseImage(course.url).then(function (img) {
+                    if (!img) return;
+                    var bg = card.querySelector('.exp-card__bg');
+                    if (bg) bg.style.backgroundImage = "url('" + img + "')";
+                    card.classList.add('exp-card--has-image');
+                });
+            });
+
+            renderPagination(totalPages, current);
+        }
+
+        // Ocultar contenido original (tabla + avisos) e inyectar grid + paginación
         Array.prototype.forEach.call(content.children, function (ch) { ch.style.display = 'none'; });
         content.appendChild(grid);
+        content.appendChild(pagination);
         document.body.classList.add('ms-cards-active');
 
-        log('Inicializado. Seminarios: ' + courses.length);
+        renderPage(1);
+
+        log('Inicializado. Seminarios: ' + courses.length +
+            ' (' + Math.ceil(courses.length / CONFIG.perPage) + ' págs. de ' + CONFIG.perPage + ')');
     }
 
     if (document.readyState === 'loading') {
