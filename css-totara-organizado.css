@@ -3183,9 +3183,10 @@ h2#instance-8378-header {
     pointer-events: auto !important;
 }
 
-/* Barra de búsqueda PNTs */
+/* Barra de búsqueda PNTs — alineada a la derecha */
 #page-totara-dashboard-33 .pnts-search-container {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
     gap: 12px;
     padding: 0 5px 8px 5px;
@@ -6397,6 +6398,17 @@ div:has(> #region-main) > #block-region-side-post {
 
 #block-region-side-post {
   overflow: visible !important;
+}
+
+/* Separación superior de la columna lateral derecha:
+   Must Read Papers (dashboard 12) y Monthly Seminars (11) a 25px;
+   Mi Visor de Puntos LFE (10) a 20px. */
+#page-totara-dashboard-11 #block-region-side-post,
+#page-totara-dashboard-12 #block-region-side-post {
+  margin-top: 25px;
+}
+#page-totara-dashboard-10 #block-region-side-post {
+  margin-top: 20px;
 }
 
 #inst9796,
@@ -12073,8 +12085,12 @@ li.activity.label .contentwithoutlink b[style*="858585"] {
    La tarjeta blanca (#inst8174 .totara-table-container {background:#fff…})
    es para la vista de cards; en el estado de aviso sobra. :has(.no-results)
    → solo aplica cuando hay aviso (con datos se conserva). !important para
-   superar la regla con #id de la tarjeta. */
-.block_totara_report_table .totara-table-container:has(.no-results) {
+   superar la regla con #id de la tarjeta.
+   Algunos bloques de "look antiguo" (p.ej. "Must Read Papers Completados"
+   #inst8190, dashboard 12) tienen la tarjeta en .content.block-content en
+   vez de en .totara-table-container, así que se cubre también ese caso. */
+.block_totara_report_table .totara-table-container:has(.no-results),
+.block_totara_report_table .content.block-content:has(.no-results) {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
