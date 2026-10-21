@@ -23,3 +23,15 @@
 #page-totara-dashboard-33 .pnts-search-container {
   justify-content: flex-end;
 }
+
+/* Avisos de report tables vacías (continuación de §6): algunos bloques
+   (p.ej. "Must Read Papers Completados" #inst8190, dashboard 12, "look
+   antiguo") tienen la tarjeta blanca en .content.block-content, no en
+   .totara-table-container, así que la regla :has(.no-results) de §6 no la
+   quitaba. Se quita también aquí. AL FUSIONAR: añadir
+   .content.block-content al selector de §6 en el organizado. */
+.block_totara_report_table .content.block-content:has(.no-results) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
