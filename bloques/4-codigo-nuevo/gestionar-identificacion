@@ -1,0 +1,26 @@
+<div class="login-top">
+  <span class="description-access">{mlang es}<b>Si trabajas en IVI Institute:</b>{mlang}{mlang en}<b>If you work at IVI Institute:</b>{mlang}{mlang pt}<b>Se trabalha na IVI Institute:</b>{mlang}{mlang it}<b>Se lavori in IVI Institute:</b>{mlang}{mlang cs}<b>Pokud pracujete ve společnosti IVI Institute:</b>{mlang}{mlang sv}<b>Om du arbetar på IVI Institute:</b>{mlang}</span>
+</div>
+
+<div class="login-detalles">
+  <p><em>{mlang es}Si el acceso mediante Office 365 no funciona, inicia sesión con tu usuario y contraseña.{mlang}{mlang en}If signing in with Office 365 doesn’t work, log in with your username and password.{mlang}{mlang pt}Se o acesso com o Office 365 não funcionar, entre com seu usuário e senha.{mlang}{mlang it}Se l'accesso con Office 365 non funziona, accedi con nome utente e password.{mlang}{mlang cs}Pokud přihlášení pomocí Office 365 nefunguje, přihlaste se uživatelským jménem a heslem.{mlang}{mlang sv}Om Office 365-inloggning inte fungerar, logga in med användarnamn och lösenord.{mlang}</em></p>
+
+  <div class="problemas">
+    <h4>{mlang es}¿Tienes problemas para entrar?{mlang}{mlang en}Having trouble signing in?{mlang}{mlang pt}Problemas para entrar?{mlang}{mlang it}Problemi di accesso?{mlang}{mlang cs}Máte problémy s přihlášením?{mlang}{mlang sv}Har du problem med att logga in?{mlang}</h4>
+    <ul id="list-problemas">
+      <li><a href="https://ivirma.cloud.invgate.net/" target="_blank" rel="noopener noreferrer">{mlang es}Asistencia para empleados{mlang}{mlang en}IVI Institute Employee Assistance{mlang}{mlang pt}Assistência ao colaborador{mlang}{mlang it}Assistenza per i dipendenti{mlang}{mlang cs}Podpora zaměstnanců{mlang}{mlang sv}Anställdstöd{mlang}</a></li>
+      <li><a href="https://support.ivieducationcloud.com/" target="_blank" rel="noopener noreferrer">{mlang es}Asistencia para no empleados{mlang}{mlang en}Non Employee Assistance{mlang}{mlang pt}Assistência para não colaboradores{mlang}{mlang it}Assistenza per non dipendenti{mlang}{mlang cs}Podpora pro ne-zaměstnance{mlang}{mlang sv}Stöd för externa personer{mlang}</a></li>
+      <li class="mail"><a href="mailto:ivicampus.support@ivi.com">ivicampus.support@ivi.com</a></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+ var accessDescription = document.querySelector('.description-access');
+    var subContentPotentialIdps = document.querySelector('.subcontent.potentialidps');
+
+    if (accessDescription && subContentPotentialIdps) {
+        accessDescription.parentNode.insertBefore(subContentPotentialIdps, accessDescription.nextSibling);
+    }});
+</script>
