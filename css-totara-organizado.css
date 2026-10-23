@@ -1727,6 +1727,24 @@ html .has-full-page-slider #block-region-top {
   font-size: 26px !important;
 }
 
+/* "Formación adicional" y demás secciones de bloques Current Learning: su h2
+   no lleva .title_lfe, así que caía en la global `h2 { 22px }` y se veía más
+   pequeño y "flotando". Mismo título que el resto: 26px IVI Glance bold.
+   Solo la cabecera (.title.block-title h2), no las cards ni títulos ocultos. */
+.block_current_learningas .title.block-title h2 {
+  font-family: "IVI Glance", "Noto Sans" !important;
+  font-weight: bold;
+  font-size: 26px !important;
+}
+
+/* El contenedor de tiles tenía padding-top 16px que se sumaba al margin-top
+   del aviso vacío (16px) → hueco grande bajo el título. Se quita el top y se
+   pasa el aire al padding-bottom (var(--gap-6) = 24px); hueco título→aviso ~36px. */
+.block_current_learningas-tiles {
+  padding-top: 0;
+  padding-bottom: var(--gap-6);
+}
+
 .title_lfe .content.block-content {
   background-color: var(--color-gray-light) !important;
   box-shadow: none !important;
@@ -8068,29 +8086,27 @@ body#page-totara-catalog-index .tw-catalogItemStyleToggle__btn_active {
   box-shadow: none !important;
 }
 
-/* "Ver todo" del bloque de certificados (a.seeall, botón NATIVO del
-   plugin, no lo genera nuestro script): look de botón primario ivi */
-.block_mycertificates a.seeall {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: var(--font-title, 'IVI Glance', 'Noto Sans', sans-serif) !important;
-  font-size: 15px !important;
+/* "Ver todo" del bloque de certificados (a.seeall, botón NATIVO del plugin):
+   ENLACE discreto en vez de botón primario (había demasiados botones
+   Ver/Descargar alrededor y el botón relleno competía demasiado). Navy
+   subrayado; hover azul light. El `html body` sube especificidad para ganar
+   al estilo de botón del tema (hack ya usado en este CSS). */
+html body .block_mycertificates a.seeall {
+  display: inline !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  color: var(--navy-blue, #08004F) !important;
   font-weight: 400 !important;
-  background: var(--light-blue, #004DF0) !important;
-  color: #fff !important;
-  border: 2px solid var(--light-blue, #004DF0) !important;
-  border-radius: 999px !important;
-  padding: 10px 24px !important;
-  text-decoration: none !important;
-  transition: background-color .2s ease, color .2s ease;
+  text-decoration: underline !important;
 }
 
-.block_mycertificates a.seeall:hover {
-  background: #fff !important;
+html body .block_mycertificates a.seeall:hover,
+html body .block_mycertificates a.seeall:focus {
+  background: transparent !important;
   color: var(--light-blue, #004DF0) !important;
-  border-color: var(--light-blue, #004DF0) !important;
+  text-decoration: underline !important;
 }
 
 /* "Ver todo" centrado y separado de la cuadrícula de certificados */
