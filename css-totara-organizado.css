@@ -2662,6 +2662,83 @@ h2#instance-8378-header {
   font-size: 1.2em;
 }
 
+/* Buscador de cursos del Expediente — alineado a la izquierda, debajo de los
+   tabs. Mismo patrón que el buscador de PNTs (dashboard 33), con la paleta
+   azul de esta sección. El placeholder cambia según la pestaña activa
+   ("Buscar formación finalizada", etc.). JS: expediente/expediente-script.html. */
+#page-totara-dashboard-16 .exp-search-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  padding: 0 5px 14px 5px;
+}
+
+#page-totara-dashboard-16 .exp-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 400px;
+}
+
+#page-totara-dashboard-16 .exp-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#page-totara-dashboard-16 .exp-search-input {
+  width: 100%;
+  padding: 10px 38px 10px 38px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 25px;
+  font-size: 14px;
+  color: #1f2937;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+#page-totara-dashboard-16 .exp-search-input:focus {
+  border-color: var(--light-blue, #004DF0);
+  box-shadow: 0 0 0 3px rgba(0, 77, 240, 0.12);
+}
+
+#page-totara-dashboard-16 .exp-search-input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+#page-totara-dashboard-16 .exp-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.15s ease, background 0.15s ease;
+  text-decoration: none;
+}
+
+#page-totara-dashboard-16 .exp-search-clear:hover {
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
 /* ============================================================
    6. DASHBOARD PNTs — #page-totara-dashboard-33
    ============================================================ */
