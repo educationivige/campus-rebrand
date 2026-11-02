@@ -5539,3 +5539,79 @@ table.appendChild(tfoot);
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoIssueCerts);
     else autoIssueCerts();
 })();
+
+
+/* ============================================================
+   Tokens de la descripción del curso (#duracion# / #eaccme# / #cfc#)
+   Lee los <li> ocultos de ul.ascoursecustomfields que pinta el plugin
+   local_courseextrasettings ("Tarjeta del curso" → campo con "Agregar
+   en la cabecera" marcado e "Incluir etiqueta" desmarcado) y los
+   sustituye en .course-description. Reemplaza al JS externo
+   campos-extensibles-descripcion.js y añade #cfc# (campo decimal
+   CreditosDecimal). Formato español (coma, sin ceros finales).
+   Si el <li> falta o vale 0/vacío → "No especificado".
+   ============================================================ */
+(function () {
+  // Clase del <li> con los créditos CFC = shortname del campo decimal "CreditosDecimal".
+  var CFC_LI_CLASS = 'CreditosDecimal';
+
+  // true si el valor es 0, 0.0, "0,0" o está vacío
+  function esCero(v) {
+    v = (v || '').trim();
+    if (v === '') return true;
+    var n = parseFloat(v.replace(',', '.'));
+    return !isNaN(n) && n === 0;
+  }
+
+  // Formato numérico consistente (como el curso 1069): coma decimal y sin ceros
+  // finales. Acepta entrada con "." o "," → "4.20"→"4,2", "2,5"→"2,5", "25.0"→"25".
+  // Si no es numérico, devuelve el valor tal cual.
+  function fmtNum(v) {
+    v = (v || '').trim();
+    if (v === '') return '';
+    var n = parseFloat(v.replace(',', '.'));
+    if (isNaN(n)) return v;
+    n = Math.round(n * 100) / 100;      // máx. 2 decimales, sin artefactos
+    return n.toString().replace('.', ',');
+  }
+
+  function reemplazarTokens() {
+    var desc = document.querySelector('.course-description');
+    if (!desc || desc.dataset.tokensDone === '1') return;
+
+    var eaccmeEl   = document.querySelector('li.creditoseaccmenumber');
+    var duracionEl = document.querySelector('li.duracionHoras');
+    var cfcEl      = document.querySelector('li.' + CFC_LI_CLASS);
+
+    var eaccme   = eaccmeEl   ? eaccmeEl.textContent.trim()   : '';
+    var duracion = duracionEl ? duracionEl.textContent.trim() : '';
+    var cfc      = cfcEl      ? cfcEl.textContent.trim()      : '';
+
+    var content = desc.innerHTML;
+
+    // Duración (+ " h") — formato normalizado (coma decimal, sin ceros finales)
+    if (duracion) duracion = fmtNum(duracion) + ' h';
+    content = content.replace(/#duracion#/g, duracion);
+
+    // Créditos EACCME: si es 0 o vacío → "No especificado" (quita también la unidad)
+    if (esCero(eaccme)) content = content.replace(/#eaccme#\s*ECMEC's/gi, 'No especificado');
+    content = content.replace(/#eaccme#/g, fmtNum(eaccme));
+
+    // Créditos CFC: si es 0 o vacío → "No especificado"
+    if (esCero(cfc)) content = content.replace(/#cfc#\s*créditos/gi, 'No especificado');
+    content = content.replace(/#cfc#/g, fmtNum(cfc));
+
+    desc.innerHTML = content;
+    desc.dataset.tokensDone = '1';
+
+    // Ocultar el bloque de campos personalizados de la cabecera
+    var ul = document.querySelector('ul.ascoursecustomfields');
+    if (ul) ul.style.display = 'none';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', reemplazarTokens);
+  } else {
+    reemplazarTokens();
+  }
+})();
