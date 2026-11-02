@@ -12051,6 +12051,28 @@ body.format-onetopicas .tabtree ul.nav-tabs > li.active > a:has(> div.tab_conten
   font-weight: 700 !important;
 }
 
+/* ------------------------------------------------------------
+   Onetopic — contenido como RECUADRO integrado con las pestañas.
+   La sección activa (el ul.topics que NO es .secciofora; .secciofora es la
+   Sección 0 / "Avisos", que va arriba y se deja suelta) se pinta como tarjeta
+   blanca con borde del mismo color que la línea/estante de las pestañas
+   (--tabs-border-color). El borde superior lo aporta esa línea (border-top:0 +
+   margin-top:-1px), de modo que la pestaña activa queda pegada al recuadro sin
+   separación. Esquinas inferiores redondeadas.
+   ------------------------------------------------------------ */
+body.format-onetopicas .single-section.onetopicas ul.topics:not(.secciofora) {
+  margin-top: -1px !important;
+  padding: 0 !important;
+}
+
+body.format-onetopicas .single-section.onetopicas ul.topics:not(.secciofora) > li.section {
+  background: #fff !important;
+  border: 1px solid var(--tabs-border-color, #c7c7c7) !important;
+  border-top: 0 !important;
+  border-radius: 0 0 10px 10px !important;
+  padding: 1.5em !important;
+}
+
 
 /* ------------------------------------------------------------
    20. Acordeón de subsecciones (.collapse-toggle) — hover teal → azul
