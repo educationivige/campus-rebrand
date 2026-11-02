@@ -311,7 +311,7 @@ html body .ascabecera .asinfoelem i.fa-user::before {
   background: #fff !important;
   color: var(--light-blue, #004DF0) !important;
   font-weight: 600 !important;
-  padding: 8px 18px !important;
+  padding: 4px 8px !important;
   transition: background .18s ease, color .18s ease, box-shadow .18s ease !important;
 }
 
@@ -12071,6 +12071,16 @@ body.format-onetopicas .single-section.onetopicas ul.topics:not(.secciofora) > l
   border-top: 0 !important;
   border-radius: 0 0 10px 10px !important;
   padding: 1.5em !important;
+}
+
+/* Alineación de las pestañas con el contenido del recuadro: se desplaza cada
+   li a la derecha (padding-left) para que la pestaña activa coincida con el
+   texto de debajo. Scope a onetopic (NO global .nav-tabs>li, para no mover las
+   pestañas de PNTs/Expediente/otros). El padding 4px 8px del <a> ya está en
+   §1.5 (.tabtree .nav-tabs > li > a). */
+body.format-onetopicas .tabtree .nav-tabs > li {
+  padding-left: var(--gap-6) !important;
+  padding-right: 0 !important;
 }
 
 
