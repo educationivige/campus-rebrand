@@ -1,0 +1,821 @@
+<script>
+/**
+ * OneTech Hub — Traducciones centralizadas
+ * Idiomas: ES · EN · CS · IT · PT · SV
+ *
+ * API pública:
+ *   window.OT_t('dai.loading')                          → string traducido
+ *   window.OT_t('dai.dueDateFmt', {day:5, month:'mar'}) → string con parámetros
+ *   window.OT_ta('dai.months')                          → valor original (arrays, etc.)
+ *   window.OT_lang()                                    → código de idioma activo
+ *
+ * Detección de idioma (orden de prioridad):
+ *   1. window.OT_LANG           (forzado manualmente antes de cargar este script)
+ *   2. window.M?.cfg?.lang      (configuración JS de Moodle/Totara)
+ *   3.
+ *   4. navigator.language
+ *   5. 'es'  (por defecto)
+ *
+ * Uso con data-i18n:
+ *   Añade data-i18n="clave" a cualquier elemento HTML y el script
+ *   aplicará la traducción automáticamente en DOMContentLoaded.
+ */
+(function (global) {
+  'use strict';
+
+  /* ================================================================
+     TRADUCCIONES
+  ================================================================ */
+  var T = {
+
+    /* ── ESPAÑOL ─────────────────────────────────────────────────── */
+    es: {
+      sidebar: {
+        title: 'OneTech Hub',
+        desc:  'Formación, tutoriales y sesiones bajo demanda, todo en un mismo lugar.',
+        btn:   'Explorar'
+      },
+      dai: {
+        blockTitle:         'Data & IA',
+        srHeading:          'Bloque Data & AI — Riesgos y Normativa, Copilot, IVI GenAI Portal',
+        tabRiesgos:         'Riesgos y Normativa',
+        tabCopilot:         'Copilot',
+        tabPortal:          'IVI GenAI Portal',
+        loading:            'Cargando cursos disponibles…',
+        noCoursesAvailable: 'Actualmente no tienes cursos disponibles en esta sección.',
+        comingSoon:         'Próximamente',
+        comingSoonDate:     'Próximamente: {date}',
+        accessCourse:       'Acceder al curso',
+        seeMore:            'Ver más',
+        euOnly:             'Solo UE',
+        dueDateFmt:         'Vencimiento el {day} {month}.',
+        copilotFallback:    'Accede al curso de Microsoft Copilot en la plataforma.',
+        months: ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'],
+        b1: {
+          label: 'Riesgos y Normativa',
+          m1: {
+            titulo: 'Riesgos de la IA generativa y governanza de datos',
+            desc:   'El uso de herramientas de IA generativa (IAG) puede ser un arma de doble filo, ya que implica tanto oportunidades como riesgos para las organizaciones. Teniendo en cuenta el creciente uso de estas tecnologías, las estrategias de gobernanza de datos deben regular el uso de la IA en distintos contextos, incluidos los chatbots de IAG. En este módulo, trataremos los riesgos de la IA generativa y la gobernanza de datos.'
+          },
+          m2: {
+            titulo: 'Protección de datos y privacidad en la IA',
+            desc:   'A medida que la IA sigue transformando el entorno laboral, tratar los datos de forma responsable es más importante que nunca. Los sistemas de IA suelen utilizar grandes volúmenes de datos, que pueden incluir información personal o sensible. Proteger esos datos requiere un enfoque meditado y equilibrado. En este módulo, repasaremos las estrategias clave para ayudarte a mantener los datos de la IA seguros y ajustados a la normativa.'
+          },
+          m3: {
+            titulo: 'IA ética en el trabajo',
+            desc:   'La Inteligencia Artificial (IA) es cada vez más parte de nuestra vida laboral: por ejemplo, al procesar gastos, responder consultas de RR. HH. mediante chatbots o priorizar tickets de soporte. La IA puede acelerar tareas, aportar insights e imitar el razonamiento, pero carece de contexto, empatía y conciencia ética. Esto significa que pueden producirse errores o resultados injustos. En este módulo explorarás cómo usar la IA de forma ética y cómo actuar si surgen problemas.'
+          },
+          m4: {
+            titulo: 'Ley de IA de la UE',
+            desc:   'La Ley de IA de la EU se aplica a una gran variedad de sistemas de IA. Su ámbito de aplicación incluye los sistemas de IA creados o utilizados en la UE y los procedentes de fuera de la UE.'
+          }
+        },
+        moduleLabel:        'MÓDULO {n}',
+        tutorialLabel:      'TUTORIAL {n}',
+        b3: {
+          label:       'IVI GenAI Portal',
+          pendingDesc: 'Tutorial en preparación. Disponible próximamente.'
+        }
+      },
+      cyber: {
+        title:            'Ciberseguridad',
+        bloqueLabel:      'BLOQUE {roman}',
+        pendingDate:      'Fecha pendiente',
+        comingSoon:       'Próximamente',
+        comingSoonDate:   'Próximamente: {date}',
+        finished:         'Finalizado',
+        finishedDate:     'Finalizado el {date}',
+        graceDays:        'Te quedan {days} días para terminarlo',
+        graceDueLabel:    'Periodo vencido',
+        readmore:         'Ver más',
+        dueDateFmt:       'Vencimiento el {day} {month}.',
+        months:     ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'],
+        monthsFull: ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],
+        modalDateFmt:     '{day} de {month}',
+        modalClose:       'Cerrar',
+        modalDuration:    'Duración',
+        modalDurationFmt: '{min} minutos',
+        modalContents:    'Contenidos',
+        modalObjective:   'Objetivo',
+        modalDates:       'Fechas formación',
+        modalAccessTitle: 'Accede al curso',
+        modalStartBtn:    'Empezar ahora',
+        modalMinFmt:      '{min} min',
+        b1: { titulo: 'Fundamentos de Seguridad',          objetivo: 'Introducir conceptos básicos, cultura de ciberseguridad y primeras nociones de phishing',
+              c1: { titulo: 'Encuesta sobre cultura de ciberseguridad' },
+              c2: { titulo: '60 Segundos: Riesgos de compartir contraseñas' },
+              c3: { titulo: '60 Segundos: ¿Phishing o spam?' },
+              c4: { titulo: 'Perfeccionando las contraseñas' },
+              c5: { titulo: 'Seguridad física y trabajo remoto' },
+              c6: { titulo: 'Los peligros del phishing' } },
+        b2: { titulo: 'Seguridad de Datos y Dispositivos',     objetivo: 'Proteger datos personales, dispositivos y reconocer ataques simples de phishing',
+              c1: { titulo: 'Fundamentos sobre datos personales' },
+              c2: { titulo: 'Dispositivos móviles: fundamentos de ciberseguridad' },
+              c3: { titulo: 'Phishing por entrada de datos' },
+              c4: { titulo: 'Navegación web: una hoja de ruta de seguridad' } },
+        b3: { titulo: 'Contraseñas y Autenticación',           objetivo: 'Mejorar la seguridad de accesos y phishing básico',
+              c1: { titulo: '¡Compruébalo!' },
+              c2: { titulo: '60 Segundos: ¿Qué son los stealers?' },
+              c3: { titulo: '60 Segundos: Adversario en el medio' },
+              c4: { titulo: 'Introducción al phishing' } },
+        b4: { titulo: 'Phishing y Correos Maliciosos',         objetivo: 'Identificar amenazas por email y QR',
+              c1: { titulo: 'Laptopia: Seguridad del correo electrónico' },
+              c2: { titulo: 'Buscador de phishing' },
+              c3: { titulo: 'Phishing por código QR' },
+              c4: { titulo: 'Cómo reportar emails sospechosos' } },
+        b5: { titulo: 'Amenazas Internas y Cumplimiento',      objetivo: 'Riesgos internos, buenas prácticas y phishing avanzado',
+              c1: { titulo: 'Amenazas internas maliciosas' },
+              c2: { titulo: 'Usos arriesgados de dispositivos de trabajo' },
+              c3: { titulo: 'Amenazas de tendencia' },
+              c4: { titulo: 'Email e ingeniería social' } },
+        b6: { titulo: 'Ingeniería Social Avanzada',            objetivo: 'Ataques dirigidos, vishing y spear phishing',
+              c1: { titulo: 'Ingeniería social: el juego a largo plazo' },
+              c2: { titulo: 'Vishing en acción' },
+              c3: { titulo: 'Amenazas de spear phishing' },
+              c4: { titulo: 'Métodos de ataque por email: robo de credenciales' },
+              c5: { titulo: 'Métodos de ataque por email: enlaces maliciosos' } },
+        b7: { titulo: 'Amenazas Emergentes',                   objetivo: 'Deepfakes, escenarios avanzados y phishing sofisticado',
+              c1: { titulo: 'Deepfakes generados por IA' },
+              c2: { titulo: 'Seguridad en el entorno laboral en acción' },
+              c3: { titulo: 'Métodos de ataque por email: archivos adjuntos maliciosos' },
+              c4: { titulo: 'Los peligros del phishing' } },
+        b8: { titulo: 'Refuerzo Final',                        objetivo: 'Consolidar hábitos seguros y reforzar phishing',
+              c1: { titulo: 'Ingeniería social: tácticas emocionales' },
+              c2: { titulo: 'Ingeniería social: muchos métodos, muchas motivaciones' },
+              c3: { titulo: 'Emails sospechosos: por qué es tan importante reportarlos' },
+              c4: { titulo: 'Por qué los atacantes usan phishing' } }
+      }
+    },
+
+    /* ── ENGLISH ─────────────────────────────────────────────────── */
+    en: {
+      sidebar: {
+        title: 'OneTech Hub',
+        desc:  'Training, tutorials and on-demand sessions, all in one place.',
+        btn:   'Explore'
+      },
+      dai: {
+        blockTitle:         'Data & AI',
+        srHeading:          'Data & AI Block — Risks & Compliance, Copilot, IVI GenAI Portal',
+        tabRiesgos:         'Risks & Compliance',
+        tabCopilot:         'Copilot',
+        tabPortal:          'IVI GenAI Portal',
+        loading:            'Loading available courses…',
+        noCoursesAvailable: 'You currently have no courses available in this section.',
+        comingSoon:         'Coming soon',
+        comingSoonDate:     'Coming soon: {date}',
+        accessCourse:       'Go to course',
+        seeMore:            'See more',
+        euOnly:             'EU only',
+        dueDateFmt:         'Due on {day} {month}.',
+        copilotFallback:    'Access the Microsoft Copilot course on the platform.',
+        months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        b1: {
+          label: 'Risks & Compliance',
+          m1: {
+            titulo: 'Risks of generative AI and data governance',
+            desc:   'The use of generative AI (GAI) tools can be a double-edged sword, as it involves both opportunities and risks for organisations. Given the growing use of these technologies, data governance strategies must regulate the use of AI in different contexts, including GAI chatbots. In this module, we will cover the risks of generative AI and data governance.'
+          },
+          m2: {
+            titulo: 'Data protection and privacy in AI',
+            desc:   'As AI continues to transform the workplace, handling data responsibly is more important than ever. AI systems typically use large volumes of data, which may include personal or sensitive information. Protecting that data requires a thoughtful and balanced approach. In this module, we will review key strategies to help you keep AI data safe and aligned with regulations.'
+          },
+          m3: {
+            titulo: 'Ethical AI in the workplace',
+            desc:   'Artificial Intelligence (AI) is increasingly part of our working life: for example, when processing expenses, answering HR queries via chatbots or prioritising support tickets. AI can speed up tasks, provide insights and mimic reasoning, but it lacks context, empathy and ethical awareness. This means that errors or unfair outcomes can occur. In this module you will explore how to use AI ethically and how to act if problems arise.'
+          },
+          m4: {
+            titulo: 'EU AI Act',
+            desc:   'The EU AI Act applies to a wide variety of AI systems. Its scope includes AI systems created or used in the EU and those coming from outside the EU.'
+          }
+        },
+        moduleLabel:        'MODULE {n}',
+        tutorialLabel:      'TUTORIAL {n}',
+        b3: {
+          label:       'IVI GenAI Portal',
+          pendingDesc: 'Tutorial in preparation. Coming soon.'
+        }
+      },
+      cyber: {
+        title:            'Cybersecurity',
+        bloqueLabel:      'BLOCK {roman}',
+        pendingDate:      'Date pending',
+        comingSoon:       'Coming soon',
+        comingSoonDate:   'Coming soon: {date}',
+        finished:         'Finished',
+        finishedDate:     'Finished on {date}',
+        graceDays:        'You have {days} days left to complete it',
+        graceDueLabel:    'Period expired',
+        readmore:         'See more',
+        dueDateFmt:       'Due on {day} {month}.',
+        months:     ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        monthsFull: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+        modalDateFmt:     '{month} {day}',
+        modalClose:       'Close',
+        modalDuration:    'Duration',
+        modalDurationFmt: '{min} minutes',
+        modalContents:    'Contents',
+        modalObjective:   'Objective',
+        modalDates:       'Training dates',
+        modalAccessTitle: 'Access the course',
+        modalStartBtn:    'Start now',
+        modalMinFmt:      '{min} min',
+        b1: { titulo: 'Security Fundamentals',          objetivo: 'Introduce basic concepts, cybersecurity culture and first notions of phishing',
+              c1: { titulo: 'Cybersecurity Culture Survey' },
+              c2: { titulo: '60 Seconds: Password Sharing Risks' },
+              c3: { titulo: '60 Seconds: Phishing or Spam?' },
+              c4: { titulo: 'Perfecting Passwords' },
+              c5: { titulo: 'Physical Security & Remote Working' },
+              c6: { titulo: 'The Dangers of Phishing' } },
+        b2: { titulo: 'Data and Device Security',       objetivo: 'Protect personal data, devices and recognise simple phishing attacks',
+              c1: { titulo: 'PII Fundamentals' },
+              c2: { titulo: 'Mobile Devices: Cybersecurity Fundamentals' },
+              c3: { titulo: 'Data Entry Phishing' },
+              c4: { titulo: 'Web Browsing: A Security Roadmap' } },
+        b3: { titulo: 'Passwords and Authentication',   objetivo: 'Improve access security and basic phishing awareness',
+              c1: { titulo: 'Check, Please!' },
+              c2: { titulo: '60 Seconds: What Are Stealers?' },
+              c3: { titulo: '60 Seconds: Adversary-in-the-Middle' },
+              c4: { titulo: 'Intro to Phishing' } },
+        b4: { titulo: 'Phishing and Malicious Emails',  objetivo: 'Identify email and QR code threats',
+              c1: { titulo: 'Laptopia: Email Security' },
+              c2: { titulo: 'Phish Finder' },
+              c3: { titulo: 'QR Code Phishing' },
+              c4: { titulo: 'Reporting Suspicious Emails' } },
+        b5: { titulo: 'Insider Threats and Compliance', objetivo: 'Internal risks, best practices and advanced phishing',
+              c1: { titulo: 'Malicious Insider Threats' },
+              c2: { titulo: 'Risky Uses of Work Devices' },
+              c3: { titulo: 'Trending Threats' },
+              c4: { titulo: 'Email & Social Engineering' } },
+        b6: { titulo: 'Advanced Social Engineering',    objetivo: 'Targeted attacks, vishing and spear phishing',
+              c1: { titulo: 'Social Engineering: The Long Game' },
+              c2: { titulo: 'Vishing in Action' },
+              c3: { titulo: 'Spear Phishing Threats' },
+              c4: { titulo: 'Email Attack Methods: Credential Compromise' },
+              c5: { titulo: 'Email Attack Methods: Malicious Links' } },
+        b7: { titulo: 'Emerging Threats',               objetivo: 'Deepfakes, advanced scenarios and sophisticated phishing',
+              c1: { titulo: 'AI-Generated Deepfakes' },
+              c2: { titulo: 'Workplace Security in Action' },
+              c3: { titulo: 'Email Attack Methods: Malicious Attachments' },
+              c4: { titulo: 'The Dangers of Phishing' } },
+        b8: { titulo: 'Final Reinforcement',            objetivo: 'Consolidate safe habits and reinforce phishing awareness',
+              c1: { titulo: 'Social Engineering: Emotional Tactics' },
+              c2: { titulo: 'Social Engineering: Many Methods, Many Motives' },
+              c3: { titulo: 'Suspicious Emails: Why Reporting Is So Important' },
+              c4: { titulo: 'Why Attackers Use Phishing' } }
+      }
+    },
+
+    /* ── ČEŠTINA ─────────────────────────────────────────────────── */
+    cs: {
+      sidebar: {
+        title: 'OneTech Hub',
+        desc:  'Školení, návody a relace na vyžádání, vše na jednom místě.',
+        btn:   'Prozkoumat'
+      },
+      dai: {
+        blockTitle:         'Data & AI',
+        srHeading:          'Blok Data & AI — Rizika a předpisy, Copilot, IVI GenAI portál',
+        tabRiesgos:         'Rizika a předpisy',
+        tabCopilot:         'Copilot',
+        tabPortal:          'IVI GenAI portál',
+        loading:            'Načítání dostupných kurzů…',
+        noCoursesAvailable: 'V této sekci momentálně nemáte k dispozici žádné kurzy.',
+        comingSoon:         'Brzy k dispozici',
+        comingSoonDate:     'Brzy k dispozici: {date}',
+        accessCourse:       'Přejít na kurz',
+        seeMore:            'Zobrazit více',
+        euOnly:             'Pouze EU',
+        dueDateFmt:         'Termín {day}. {month}.',
+        copilotFallback:    'Přistupte ke kurzu Microsoft Copilot na platformě.',
+        months: ['led','úno','bře','dub','kvě','čer','čvc','srp','zář','říj','lis','pro'],
+        b1: {
+          label: 'Rizika a předpisy',
+          m1: {
+            titulo: 'Rizika generativní AI a správa dat',
+            desc:   'Používání nástrojů generativní AI (GAI) může být dvojsečnou zbraní, protože přináší organizacím jak příležitosti, tak rizika. S ohledem na rostoucí využívání těchto technologií musí strategie správy dat regulovat používání AI v různých kontextech, včetně chatbotů GAI. V tomto modulu se budeme zabývat riziky generativní AI a správou dat.'
+          },
+          m2: {
+            titulo: 'Ochrana dat a soukromí v AI',
+            desc:   'Jak AI nadále transformuje pracovní prostředí, je odpovědné zacházení s daty důležitější než kdy dříve. Systémy AI obvykle využívají velké objemy dat, která mohou zahrnovat osobní nebo citlivé informace. Ochrana těchto dat vyžaduje promyšlený a vyvážený přístup. V tomto modulu si projdeme klíčové strategie, které vám pomohou udržet data AI v bezpečí a v souladu s předpisy.'
+          },
+          m3: {
+            titulo: 'Etická AI v práci',
+            desc:   'Umělá inteligence (AI) je stále více součástí našeho pracovního života: například při zpracování výdajů, odpovídání na dotazy HR prostřednictvím chatbotů nebo upřednostňování tiketů podpory. AI může zrychlovat úkoly, poskytovat přehledy a napodobovat uvažování, pero postrádá kontext, empatii a etické vědomí. To znamená, že mohou nastat chyby nebo nespravedlivé výsledky. V tomto modulu prozkoumáte, jak používat AI eticky a jak jednat, pokud nastanou problémy.'
+          },
+          m4: {
+            titulo: 'Zákon EU o AI',
+            desc:   'Zákon EU o AI se vztahuje na širokou škálu systémů AI. Jeho rozsah zahrnuje systémy AI vytvořené nebo používané v EU a ty pocházející ze zemí mimo EU.'
+          }
+        },
+        moduleLabel:        'MODUL {n}',
+        tutorialLabel:      'VÝUKOVÝ PROGRAM {n}',
+        b3: {
+          label:       'IVI GenAI portál',
+          pendingDesc: 'Výukový program v přípravě. Brzy k dispozici.'
+        }
+      },
+      cyber: {
+        title:            'Kybernetická bezpečnost',
+        bloqueLabel:      'BLOK {roman}',
+        pendingDate:      'Datum nevyplněno',
+        comingSoon:       'Brzy k dispozici',
+        comingSoonDate:   'Brzy k dispozici: {date}',
+        finished:         'Ukončeno',
+        finishedDate:     'Dokončeno {date}',
+        graceDays:        'Zbývá vám {days} dní na dokončení',
+        graceDueLabel:    'Lhůta vypršela',
+        readmore:         'Zobrazit více',
+        dueDateFmt:       'Termín {day}. {month}.',
+        months:     ['led','úno','bře','dub','kvě','čer','čvc','srp','zář','říj','lis','pro'],
+        monthsFull: ['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'],
+        modalDateFmt:     '{day}. {month}',
+        modalClose:       'Zavřít',
+        modalDuration:    'Délka',
+        modalDurationFmt: '{min} minut',
+        modalContents:    'Obsah',
+        modalObjective:   'Cíl',
+        modalDates:       'Termíny školení',
+        modalAccessTitle: 'Přistupte ke kurzu',
+        modalStartBtn:    'Začít nyní',
+        modalMinFmt:      '{min} min',
+        b1: { titulo: 'Základy bezpečnosti',                  objetivo: 'Úvod do základních pojmů, kultury kybernetické bezpečnosti a první poznatky o phishingu',
+              c1: { titulo: 'Průzkum kultury kybernetické bezpečnosti' },
+              c2: { titulo: '60 vteřin: Rizika sdílení hesel' },
+              c3: { titulo: '60 vteřin: Phishing nebo spam?' },
+              c4: { titulo: 'Zdokonalování hesel' },
+              c5: { titulo: 'Fyzická bezpečnost a práce na dálku' },
+              c6: { titulo: 'Nebezpečí phishingu' } },
+        b2: { titulo: 'Zabezpečení dat a zařízení',           objetivo: 'Ochrana osobních dat, zařízení a rozpoznávání jednoduchých phishingových útoků',
+              c1: { titulo: 'Základy ochrany osobních údajů' },
+              c2: { titulo: 'Mobilní zařízení: základy kybernetické bezpečnosti' },
+              c3: { titulo: 'Phishing prostřednictvím zadávání dat' },
+              c4: { titulo: 'Prohlížení webu: bezpečnostní průvodce' } },
+        b3: { titulo: 'Hesla a autentizace',                  objetivo: 'Zlepšení zabezpečení přístupu a phishingového povědomí',
+              c1: { titulo: 'Zkontrolujte to!' },
+              c2: { titulo: '60 vteřin: Co jsou stealery?' },
+              c3: { titulo: '60 vteřin: Útočník uprostřed spojení' },
+              c4: { titulo: 'Úvod do phishingu' } },
+        b4: { titulo: 'Phishing a škodlivé e-maily',          objetivo: 'Identifikace hrozeb prostřednictvím e-mailu a QR kódů',
+              c1: { titulo: 'Laptopia: Zabezpečení e-mailu' },
+              c2: { titulo: 'Hledač phishingu' },
+              c3: { titulo: 'Phishing přes QR kód' },
+              c4: { titulo: 'Hlášení podezřelých e-mailů' } },
+        b5: { titulo: 'Vnitřní hrozby a dodržování předpisů', objetivo: 'Interní rizika, osvědčené postupy a pokročilý phishing',
+              c1: { titulo: 'Škodlivé hrozby zevnitř' },
+              c2: { titulo: 'Riskantní využití pracovních zařízení' },
+              c3: { titulo: 'Aktuální hrozby' },
+              c4: { titulo: 'E-mail a sociální inženýrství' } },
+        b6: { titulo: 'Pokročilé sociální inženýrství',       objetivo: 'Cílené útoky, vishing a spear phishing',
+              c1: { titulo: 'Sociální inženýrství: dlouhá hra' },
+              c2: { titulo: 'Vishing v akci' },
+              c3: { titulo: 'Hrozby spear phishingu' },
+              c4: { titulo: 'Metody e-mailových útoků: kompromitace přihlašovacích údajů' },
+              c5: { titulo: 'Metody e-mailových útoků: škodlivé odkazy' } },
+        b7: { titulo: 'Nové hrozby',                          objetivo: 'Deepfakes, pokročilé scénáře a sofistikovaný phishing',
+              c1: { titulo: 'Deepfakes generované umělou inteligencí' },
+              c2: { titulo: 'Bezpečnost na pracovišti v praxi' },
+              c3: { titulo: 'Metody e-mailových útoků: škodlivé přílohy' },
+              c4: { titulo: 'Nebezpečí phishingu' } },
+        b8: { titulo: 'Závěrečné opakování',                  objetivo: 'Upevnit bezpečné návyky a posílit povědomí o phishingu',
+              c1: { titulo: 'Sociální inženýrství: emocionální taktiky' },
+              c2: { titulo: 'Sociální inženýrství: mnoho metod, mnoho motivů' },
+              c3: { titulo: 'Podezřelé e-maily: proč je hlášení tak důležité' },
+              c4: { titulo: 'Proč útočníci používají phishing' } }
+      }
+    },
+
+    /* ── ITALIANO ────────────────────────────────────────────────── */
+    it: {
+      sidebar: {
+        title: 'OneTech Hub',
+        desc:  'Formazione, tutorial e sessioni on demand, tutto in un unico posto.',
+        btn:   'Esplora'
+      },
+      dai: {
+        blockTitle:         'Data & AI',
+        srHeading:          'Blocco Data & AI — Rischi e normative, Copilot, IVI GenAI Portal',
+        tabRiesgos:         'Rischi e normative',
+        tabCopilot:         'Copilot',
+        tabPortal:          'IVI GenAI Portal',
+        loading:            'Caricamento corsi disponibili…',
+        noCoursesAvailable: 'Al momento non hai corsi disponibili in questa sezione.',
+        comingSoon:         'Prossimamente',
+        comingSoonDate:     'Prossimamente: {date}',
+        accessCourse:       'Accedi al corso',
+        seeMore:            'Scopri di più',
+        euOnly:             'Solo UE',
+        dueDateFmt:         'Scadenza il {day} {month}.',
+        copilotFallback:    'Accedi al corso Microsoft Copilot sulla piattaforma.',
+        months: ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'],
+        b1: {
+          label: 'Rischi e normative',
+          m1: {
+            titulo: "Rischi dell'IA generativa e governance dei dati",
+            desc:   "L'uso degli strumenti di IA generativa (IAG) può essere un'arma a doppio taglio, in quanto comporta sia opportunità che rischi per le organizzazioni. Tenendo conto del crescente utilizzo di queste tecnologie, le strategie di governance dei dati devono regolamentare l'uso dell'IA in diversi contesti, inclusi i chatbot IAG. In questo modulo tratteremo i rischi dell'IA generativa e la governance dei dati."
+          },
+          m2: {
+            titulo: "Protezione dei dati e privacy nell'IA",
+            desc:   "Man mano che l'IA continua a trasformare l'ambiente di lavoro, gestire i dati in modo responsabile è più importante che mai. I sistemi di IA utilizzano tipicamente grandi volumi di dati, che possono includere informazioni personali o sensibili. Proteggere tali dati richiede un approccio ponderato ed equilibrato. In questo modulo esamineremo le strategie chiave per aiutarti a mantenere i dati dell'IA al sicuro e conformi alle normative."
+          },
+          m3: {
+            titulo: 'IA etica nel lavoro',
+            desc:   "L'Intelligenza Artificiale (IA) è sempre più parte della nostra vita lavorativa: ad esempio nell'elaborazione delle spese, nel rispondere alle domande delle risorse umane tramite chatbot o nel dare priorità ai ticket di supporto. L'IA può accelerare le attività, fornire approfondimenti e imitare il ragionamento, ma manca di contesto, empatia e consapevolezza etica. Ciò significa che possono verificarsi errori o risultati ingiusti. In questo modulo esplorerai come usare l'IA in modo etico e come agire se sorgono problemi."
+          },
+          m4: {
+            titulo: "Legge sull'IA dell'UE",
+            desc:   "La legge sull'IA dell'UE si applica a un'ampia varietà di sistemi di IA. Il suo ambito di applicazione include i sistemi di IA creati o utilizzati nell'UE e quelli provenienti da fuori dell'UE."
+          }
+        },
+        moduleLabel:        'MODULO {n}',
+        tutorialLabel:      'TUTORIAL {n}',
+        b3: {
+          label:       'IVI GenAI Portal',
+          pendingDesc: 'Tutorial in preparazione. Disponibile a breve.'
+        }
+      },
+      cyber: {
+        title:            'Sicurezza informatica',
+        bloqueLabel:      'BLOCCO {roman}',
+        pendingDate:      'Data da definire',
+        comingSoon:       'Prossimamente',
+        comingSoonDate:   'Prossimamente: {date}',
+        finished:         'Terminato',
+        finishedDate:     'Terminato il {date}',
+        graceDays:        'Hai ancora {days} giorni per completarlo',
+        graceDueLabel:    'Periodo scaduto',
+        readmore:         'Scopri di più',
+        dueDateFmt:       'Scadenza il {day} {month}.',
+        months:     ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'],
+        monthsFull: ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'],
+        modalDateFmt:     '{day} {month}',
+        modalClose:       'Chiudi',
+        modalDuration:    'Durata',
+        modalDurationFmt: '{min} minuti',
+        modalContents:    'Contenuti',
+        modalObjective:   'Obiettivo',
+        modalDates:       'Date del corso',
+        modalAccessTitle: 'Accedi al corso',
+        modalStartBtn:    'Inizia ora',
+        modalMinFmt:      '{min} min',
+        b1: { titulo: 'Fondamenti di sicurezza',        objetivo: 'Introdurre concetti di base, cultura della sicurezza informatica e prime nozioni di phishing',
+              c1: { titulo: 'Sondaggio sulla cultura della sicurezza informatica' },
+              c2: { titulo: '60 secondi: rischi della condivisione delle password' },
+              c3: { titulo: '60 secondi: phishing o spam?' },
+              c4: { titulo: 'Perfezionare le password' },
+              c5: { titulo: 'Sicurezza fisica e lavoro da remoto' },
+              c6: { titulo: 'I pericoli del phishing' } },
+        b2: { titulo: 'Sicurezza di dati e dispositivi', objetivo: 'Proteggere i dati personali, i dispositivi e riconoscere semplici attacchi di phishing',
+              c1: { titulo: 'Fondamenti sulla protezione dei dati personali' },
+              c2: { titulo: 'Dispositivi mobili: fondamenti di sicurezza informatica' },
+              c3: { titulo: 'Phishing tramite inserimento dati' },
+              c4: { titulo: 'Navigazione web: una guida alla sicurezza' } },
+        b3: { titulo: 'Password e autenticazione',       objetivo: 'Migliorare la sicurezza degli accessi e la consapevolezza del phishing di base',
+              c1: { titulo: 'Controlla, per favore!' },
+              c2: { titulo: '60 secondi: cosa sono gli stealer?' },
+              c3: { titulo: '60 secondi: avversario nel mezzo' },
+              c4: { titulo: 'Introduzione al phishing' } },
+        b4: { titulo: 'Phishing ed email dannose',       objetivo: 'Identificare le minacce via email e codici QR',
+              c1: { titulo: 'Laptopia: Sicurezza email' },
+              c2: { titulo: 'Cacciatore di phishing' },
+              c3: { titulo: 'Phishing tramite codice QR' },
+              c4: { titulo: 'Come segnalare email sospette' } },
+        b5: { titulo: 'Minacce interne e conformità',    objetivo: 'Rischi interni, buone pratiche e phishing avanzato',
+              c1: { titulo: 'Minacce interne dolose' },
+              c2: { titulo: 'Usi rischiosi dei dispositivi di lavoro' },
+              c3: { titulo: 'Minacce di tendenza' },
+              c4: { titulo: 'Email e ingegneria sociale' } },
+        b6: { titulo: 'Ingegneria sociale avanzata',     objetivo: 'Attacchi mirati, vishing e spear phishing',
+              c1: { titulo: 'Ingegneria sociale: il gioco lungo' },
+              c2: { titulo: 'Vishing in azione' },
+              c3: { titulo: 'Minacce di spear phishing' },
+              c4: { titulo: 'Metodi di attacco email: compromissione delle credenziali' },
+              c5: { titulo: 'Metodi di attacco email: link dannosi' } },
+        b7: { titulo: 'Minacce emergenti',               objetivo: 'Deepfake, scenari avanzati e phishing sofisticato',
+              c1: { titulo: "Deepfake generati dall'IA" },
+              c2: { titulo: 'Sicurezza sul posto di lavoro in azione' },
+              c3: { titulo: 'Metodi di attacco email: allegati dannosi' },
+              c4: { titulo: 'I pericoli del phishing' } },
+        b8: { titulo: 'Rinforzo finale',                 objetivo: 'Consolidare abitudini sicure e rafforzare la consapevolezza del phishing',
+              c1: { titulo: 'Ingegneria sociale: tattiche emotive' },
+              c2: { titulo: 'Ingegneria sociale: molti metodi, molte motivazioni' },
+              c3: { titulo: 'Email sospette: perché segnalarle è così importante' },
+              c4: { titulo: 'Perché gli aggressori usano il phishing' } }
+      }
+    },
+
+    /* ── PORTUGUÊS ───────────────────────────────────────────────── */
+    pt: {
+      sidebar: {
+        title: 'OneTech Hub',
+        desc:  'Formação, tutoriais e sessões sob demanda, tudo num só lugar.',
+        btn:   'Explorar'
+      },
+      dai: {
+        blockTitle:         'Data & IA',
+        srHeading:          'Bloco Data & AI — Riscos e Normativa, Copilot, IVI GenAI Portal',
+        tabRiesgos:         'Riscos e Normativa',
+        tabCopilot:         'Copilot',
+        tabPortal:          'IVI GenAI Portal',
+        loading:            'A carregar cursos disponíveis…',
+        noCoursesAvailable: 'De momento não tem cursos disponíveis nesta secção.',
+        comingSoon:         'Em breve',
+        comingSoonDate:     'Em breve: {date}',
+        accessCourse:       'Aceder ao curso',
+        seeMore:            'Ver mais',
+        euOnly:             'Apenas UE',
+        dueDateFmt:         'Prazo {day} {month}.',
+        copilotFallback:    'Aceda ao curso Microsoft Copilot na plataforma.',
+        months: ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],
+        b1: {
+          label: 'Riscos e Normativa',
+          m1: {
+            titulo: 'Riscos da IA generativa e governança de dados',
+            desc:   'O uso de ferramentas de IA generativa (IAG) pode ser uma faca de dois gumes, pois implica tanto oportunidades como riscos para as organizações. Tendo em conta o crescente uso destas tecnologias, as estratégias de governança de dados devem regular o uso da IA em diferentes contextos, incluindo os chatbots de IAG. Neste módulo, abordaremos os riscos da IA generativa e a governança de dados.'
+          },
+          m2: {
+            titulo: 'Proteção de dados e privacidade na IA',
+            desc:   'À medida que a IA continua a transformar o ambiente de trabalho, tratar os dados de forma responsável é mais importante do que nunca. Os sistemas de IA geralmente utilizam grandes volumes de dados, que podem incluir informações pessoais ou sensíveis. Proteger esses dados requer uma abordagem ponderada e equilibrada. Neste módulo, revisaremos as principais estratégias para ajudá-lo a manter os dados de IA seguros e em conformidade com as normas.'
+          },
+          m3: {
+            titulo: 'IA ética no trabalho',
+            desc:   'A Inteligência Artificial (IA) é cada vez mais parte da nossa vida profissional: por exemplo, ao processar despesas, responder a consultas de RH através de chatbots ou priorizar tickets de suporte. A IA pode acelerar tarefas, fornecer insights e imitar o raciocínio, mas carece de contexto, empatia e consciência ética. Isso significa que podem ocorrer erros ou resultados injustos. Neste módulo, você explorará como usar a IA de forma ética e como agir se surgirem problemas.'
+          },
+          m4: {
+            titulo: 'Lei da IA da UE',
+            desc:   'A Lei da IA da UE aplica-se a uma grande variedade de sistemas de IA. O seu âmbito de aplicação inclui os sistemas de IA criados ou utilizados na UE e os provenientes de fora da UE.'
+          }
+        },
+        moduleLabel:        'MÓDULO {n}',
+        tutorialLabel:      'TUTORIAL {n}',
+        b3: {
+          label:       'IVI GenAI Portal',
+          pendingDesc: 'Tutorial em preparação. Disponível em breve.'
+        }
+      },
+      cyber: {
+        title:            'Cibersegurança',
+        bloqueLabel:      'BLOCO {roman}',
+        pendingDate:      'Data pendente',
+        comingSoon:       'Em breve',
+        comingSoonDate:   'Em breve: {date}',
+        finished:         'Concluído',
+        finishedDate:     'Concluído a {date}',
+        graceDays:        'Tem {days} dias restantes para concluir',
+        graceDueLabel:    'Período expirado',
+        readmore:         'Ver mais',
+        dueDateFmt:       'Prazo {day} {month}.',
+        months:     ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],
+        monthsFull: ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'],
+        modalDateFmt:     '{day} de {month}',
+        modalClose:       'Fechar',
+        modalDuration:    'Duração',
+        modalDurationFmt: '{min} minutos',
+        modalContents:    'Conteúdos',
+        modalObjective:   'Objetivo',
+        modalDates:       'Datas de formação',
+        modalAccessTitle: 'Aceder ao curso',
+        modalStartBtn:    'Começar agora',
+        modalMinFmt:      '{min} min',
+        b1: { titulo: 'Fundamentos de Segurança',           objetivo: 'Introduzir conceitos básicos, cultura de cibersegurança e primeiras noções de phishing',
+              c1: { titulo: 'Inquérito sobre cultura de cibersegurança' },
+              c2: { titulo: '60 Segundos: Riscos de partilha de palavras-passe' },
+              c3: { titulo: '60 Segundos: Phishing ou spam?' },
+              c4: { titulo: 'Aperfeiçoando as palavras-passe' },
+              c5: { titulo: 'Segurança física e trabalho remoto' },
+              c6: { titulo: 'Os perigos do phishing' } },
+        b2: { titulo: 'Segurança de Dados e Dispositivos',  objetivo: 'Proteger dados pessoais, dispositivos e reconhecer ataques simples de phishing',
+              c1: { titulo: 'Fundamentos sobre dados pessoais' },
+              c2: { titulo: 'Dispositivos móveis: fundamentos de cibersegurança' },
+              c3: { titulo: 'Phishing por introdução de dados' },
+              c4: { titulo: 'Navegação web: um roteiro de segurança' } },
+        b3: { titulo: 'Palavras-passe e Autenticação',      objetivo: 'Melhorar a segurança de acessos e consciencialização básica sobre phishing',
+              c1: { titulo: 'Por favor, verifique!' },
+              c2: { titulo: '60 Segundos: O que são stealers?' },
+              c3: { titulo: '60 Segundos: Adversário no meio' },
+              c4: { titulo: 'Introdução ao phishing' } },
+        b4: { titulo: 'Phishing e Emails Maliciosos',       objetivo: 'Identificar ameaças por email e código QR',
+              c1: { titulo: 'Laptopia: Segurança de email' },
+              c2: { titulo: 'Detetor de phishing' },
+              c3: { titulo: 'Phishing por código QR' },
+              c4: { titulo: 'Como reportar emails suspeitos' } },
+        b5: { titulo: 'Ameaças Internas e Conformidade',    objetivo: 'Riscos internos, boas práticas e phishing avançado',
+              c1: { titulo: 'Ameaças internas maliciosas' },
+              c2: { titulo: 'Utilizações arriscadas de dispositivos de trabalho' },
+              c3: { titulo: 'Ameaças em tendência' },
+              c4: { titulo: 'Email e engenharia social' } },
+        b6: { titulo: 'Engenharia Social Avançada',         objetivo: 'Ataques dirigidos, vishing e spear phishing',
+              c1: { titulo: 'Engenharia social: o jogo longo' },
+              c2: { titulo: 'Vishing em ação' },
+              c3: { titulo: 'Ameaças de spear phishing' },
+              c4: { titulo: 'Métodos de ataque por email: comprometimento de credenciais' },
+              c5: { titulo: 'Métodos de ataque por email: links maliciosos' } },
+        b7: { titulo: 'Ameaças Emergentes',                 objetivo: 'Deepfakes, cenários avançados e phishing sofisticado',
+              c1: { titulo: 'Deepfakes gerados por IA' },
+              c2: { titulo: 'Segurança no local de trabalho em ação' },
+              c3: { titulo: 'Métodos de ataque por email: anexos maliciosos' },
+              c4: { titulo: 'Os perigos do phishing' } },
+        b8: { titulo: 'Reforço Final',                      objetivo: 'Consolidar hábitos seguros e reforçar a consciencialização sobre phishing',
+              c1: { titulo: 'Engenharia social: táticas emocionais' },
+              c2: { titulo: 'Engenharia social: muitos métodos, muitas motivações' },
+              c3: { titulo: 'Emails suspeitos: por que reportar é tão importante' },
+              c4: { titulo: 'Por que os atacantes usam phishing' } }
+      }
+    },
+
+    /* ── SVENSKA ─────────────────────────────────────────────────── */
+    sv: {
+      sidebar: {
+        title: 'OneTech Hub',
+        desc:  'Utbildning, handledningar och on-demand-sessioner, allt på ett ställe.',
+        btn:   'Utforska'
+      },
+      dai: {
+        blockTitle:         'Data & AI',
+        srHeading:          'Data & AI-block — Risker och regelefterlevnad, Copilot, IVI GenAI-portal',
+        tabRiesgos:         'Risker och regelefterlevnad',
+        tabCopilot:         'Copilot',
+        tabPortal:          'IVI GenAI-portal',
+        loading:            'Laddar tillgängliga kurser…',
+        noCoursesAvailable: 'Du har för närvarande inga kurser tillgängliga i det här avsnittet.',
+        comingSoon:         'Kommer snart',
+        comingSoonDate:     'Kommer snart: {date}',
+        accessCourse:       'Gå till kurs',
+        seeMore:            'Läs mer',
+        euOnly:             'Endast EU',
+        dueDateFmt:         'Förfaller {day} {month}.',
+        copilotFallback:    'Gå till Microsoft Copilot-kursen på plattformen.',
+        months: ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'],
+        b1: {
+          label: 'Risker och regelefterlevnad',
+          m1: {
+            titulo: 'Risker med generativ AI och datastyrning',
+            desc:   'Användningen av generativa AI-verktyg (GAI) kan vara ett tveeggat svärd, eftersom det innebär både möjligheter och risker för organisationer. Med tanke på den växande användningen av dessa teknologier måste datastyrningsstrategier reglera användningen av AI i olika sammanhang, inklusive GAI-chatbotar. I denna modul kommer vi att behandla riskerna med generativ AI och datastyrning.'
+          },
+          m2: {
+            titulo: 'Dataskydd och integritet i AI',
+            desc:   'I takt med att AI fortsätter att förändra arbetsplatsen är det viktigare än någonsin att hantera data på ett ansvarsfullt sätt. AI-system använder vanligtvis stora mängder data, vilket kan inkludera personlig eller känslig information. Att skydda dessa data kräver ett genomtänkt och balanserat tillvägagångssätt. I denna modul går vi igenom viktiga strategier för att hjälpa dig hålla AI-data säkra och i linje med regelverket.'
+          },
+          m3: {
+            titulo: 'Etisk AI på arbetsplatsen',
+            desc:   'Artificiell intelligens (AI) är i allt högre grad en del av vårt arbetsliv: till exempel vid behandling av utgifter, svar på HR-frågor via chatbotar eller prioritering av supportärenden. AI kan påskynda uppgifter, ge insikter och efterlikna resonemang, men saknar kontext, empati och etisk medvetenhet. Det innebär att fel eller orättvisa resultat kan uppstå. I denna modul utforskar du hur du använder AI på ett etiskt sätt och hur du agerar om problem uppstår.'
+          },
+          m4: {
+            titulo: 'EU:s AI-lag',
+            desc:   'EU:s AI-lag gäller ett brett utbud av AI-system. Dess tillämpningsområde inkluderar AI-system som skapas eller används inom EU och de som kommer från länder utanför EU.'
+          }
+        },
+        moduleLabel:        'MODUL {n}',
+        tutorialLabel:      'HANDLEDNING {n}',
+        b3: {
+          label:       'IVI GenAI-portal',
+          pendingDesc: 'Handledning under förberedelse. Kommer snart.'
+        }
+      },
+      cyber: {
+        title:            'Cybersäkerhet',
+        bloqueLabel:      'BLOCK {roman}',
+        pendingDate:      'Datum saknas',
+        comingSoon:       'Kommer snart',
+        comingSoonDate:   'Kommer snart: {date}',
+        finished:         'Avslutad',
+        finishedDate:     'Avslutad {date}',
+        graceDays:        'Du har {days} dagar kvar att slutföra det',
+        graceDueLabel:    'Perioden har gått ut',
+        readmore:         'Läs mer',
+        dueDateFmt:       'Förfaller {day} {month}.',
+        months:     ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'],
+        monthsFull: ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'],
+        modalDateFmt:     '{day} {month}',
+        modalClose:       'Stäng',
+        modalDuration:    'Varaktighet',
+        modalDurationFmt: '{min} minuter',
+        modalContents:    'Innehåll',
+        modalObjective:   'Mål',
+        modalDates:       'Utbildningsdatum',
+        modalAccessTitle: 'Gå till kursen',
+        modalStartBtn:    'Börja nu',
+        modalMinFmt:      '{min} min',
+        b1: { titulo: 'Säkerhetsgrunder',               objetivo: 'Introducera grundläggande begrepp, cybersäkerhetskultur och första kunskaper om nätfiske',
+              c1: { titulo: 'Enkät om cybersäkerhetskultur' },
+              c2: { titulo: '60 sekunder: Risker med att dela lösenord' },
+              c3: { titulo: '60 sekunder: Nätfiske eller skräppost?' },
+              c4: { titulo: 'Förbättra lösenorden' },
+              c5: { titulo: 'Fysisk säkerhet och distansarbete' },
+              c6: { titulo: 'Farorna med nätfiske' } },
+        b2: { titulo: 'Data- och enhetssäkerhet',       objetivo: 'Skydda personuppgifter, enheter och känna igen enkla nätfiskeattacker',
+              c1: { titulo: 'Grundläggande om personuppgifter' },
+              c2: { titulo: 'Mobila enheter: grundläggande cybersäkerhet' },
+              c3: { titulo: 'Nätfiske via datainmatning' },
+              c4: { titulo: 'Webbläsning: en säkerhetsguide' } },
+        b3: { titulo: 'Lösenord och autentisering',     objetivo: 'Förbättra åtkomstsäkerhet och grundläggande nätfiskemedvetenhet',
+              c1: { titulo: 'Kontrollera det!' },
+              c2: { titulo: '60 sekunder: Vad är stealers?' },
+              c3: { titulo: '60 sekunder: Angripare i mitten' },
+              c4: { titulo: 'Introduktion till nätfiske' } },
+        b4: { titulo: 'Nätfiske och skadliga mejl',     objetivo: 'Identifiera hot via e-post och QR-koder',
+              c1: { titulo: 'Laptopia: E-postsäkerhet' },
+              c2: { titulo: 'Nätfiskejägare' },
+              c3: { titulo: 'Nätfiske via QR-kod' },
+              c4: { titulo: 'Rapportera misstänkta e-postmeddelanden' } },
+        b5: { titulo: 'Interna hot och efterlevnad',    objetivo: 'Interna risker, god praxis och avancerat nätfiske',
+              c1: { titulo: 'Skadliga interna hot' },
+              c2: { titulo: 'Riskfylld användning av jobbenheter' },
+              c3: { titulo: 'Trendande hot' },
+              c4: { titulo: 'E-post och social manipulation' } },
+        b6: { titulo: 'Avancerad social manipulation',  objetivo: 'Riktade attacker, vishing och spear phishing',
+              c1: { titulo: 'Social manipulation: det långa spelet' },
+              c2: { titulo: 'Vishing i praktiken' },
+              c3: { titulo: 'Hot från spear phishing' },
+              c4: { titulo: 'E-postattackmetoder: kompromettering av inloggningsuppgifter' },
+              c5: { titulo: 'E-postattackmetoder: skadliga länkar' } },
+        b7: { titulo: 'Nya hot',                        objetivo: 'Deepfakes, avancerade scenarier och sofistikerat nätfiske',
+              c1: { titulo: 'AI-genererade deepfakes' },
+              c2: { titulo: 'Säkerhet på arbetsplatsen i praktiken' },
+              c3: { titulo: 'E-postattackmetoder: skadliga bilagor' },
+              c4: { titulo: 'Farorna med nätfiske' } },
+        b8: { titulo: 'Slutlig repetition',             objetivo: 'Befästa säkra vanor och förstärka medvetenheten om nätfiske',
+              c1: { titulo: 'Social manipulation: emotionella taktiker' },
+              c2: { titulo: 'Social manipulation: många metoder, många motiv' },
+              c3: { titulo: 'Misstänkta e-postmeddelanden: varför rapportering är så viktigt' },
+              c4: { titulo: 'Varför angripare använder nätfiske' } }
+      }
+    }
+
+  }; // end T
+
+  /* ================================================================
+     DETECCIÓN DE IDIOMA
+  ================================================================ */
+  function detectLang() {
+    var raw = (
+      global.OT_LANG ||
+      (global.M && global.M.cfg && global.M.cfg.lang) ||
+      (document.documentElement && document.documentElement.getAttribute('lang')) ||
+      (global.navigator && navigator.language) ||
+      'es'
+    );
+    var code = String(raw).toLowerCase().slice(0, 2);
+    return T[code] ? code : 'es';
+  }
+
+  /* ================================================================
+     NAVEGACIÓN DE CLAVES (dot-notation)
+  ================================================================ */
+  function navigate(obj, parts) {
+    return parts.reduce(function (o, k) { return (o != null) ? o[k] : undefined; }, obj);
+  }
+
+  /* ================================================================
+     API DE TRADUCCIÓN
+  ================================================================ */
+  function t(key, params) {
+    var lang  = detectLang();
+    var parts = key.split('.');
+    var val   = navigate(T[lang], parts);
+    if (typeof val !== 'string') val = navigate(T['es'], parts);
+    if (typeof val !== 'string') return key;
+    if (params) {
+      Object.keys(params).forEach(function (k) {
+        val = val.replace(new RegExp('\\{' + k + '\\}', 'g'), String(params[k]));
+      });
+    }
+    return val;
+  }
+
+  function ta(key) {
+    var lang  = detectLang();
+    var parts = key.split('.');
+    var val   = navigate(T[lang], parts);
+    if (val === undefined) val = navigate(T['es'], parts);
+    return val;
+  }
+
+  /* ================================================================
+     APLICACIÓN AUTOMÁTICA DE data-i18n
+  ================================================================ */
+  function applyDOM() {
+    var els = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < els.length; i++) {
+      var el  = els[i];
+      var key = el.getAttribute('data-i18n');
+      if (key) el.textContent = t(key);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyDOM);
+  } else {
+    applyDOM();
+  }
+
+  /* ================================================================
+     API PÚBLICA
+  ================================================================ */
+  global.OT_TRANSLATIONS = T;
+  global.OT_t    = t;
+  global.OT_ta   = ta;
+  global.OT_lang = detectLang;
+
+}(window));
+</script>
