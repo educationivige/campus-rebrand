@@ -1,0 +1,409 @@
+<div class="dai-wrap"><h2 class="sr-only" data-i18n="dai.srHeading">Bloque Data &amp; AI — Riesgos y Normativa, Copilot, IVI GenAI Portal
+  </h2>
+
+  <div class="dai-filters" role="tablist">
+    <button class="dai-filter-btn active" data-tab="b1" role="tab" aria-selected="true" data-i18n="dai.tabRiesgos">
+      Riesgos y Normativa
+    </button>
+    <button class="dai-filter-btn" data-tab="b2" role="tab" aria-selected="false" data-i18n="dai.tabCopilot">
+      Copilot
+    </button>
+    <button class="dai-filter-btn" data-tab="b3" role="tab" aria-selected="false" data-i18n="dai.tabPortal">
+      IVI GenAI Portal
+    </button>
+  </div>
+
+  <div id="dai-grid-aud" class="dai-grid"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Helpers de traducción (usan translations.js si está cargado) ──
+  function _t(key, fallback) {
+    return (window.OT_t && window.OT_t(key)) || fallback;
+  }
+  function _ta(key, fallback) {
+    return (window.OT_ta && window.OT_ta(key)) || fallback;
+  }
+
+  // ── Scope: encontrar el contenedor de ESTE bloque ──────────────
+  // currentScript se captura de forma síncrona antes de cualquier async.
+  var _script = document.currentScript;
+  var _wrap   = _script && _script.previousElementSibling; // el .dai-wrap de este bloque
+
+  function _q(sel)  { return _wrap ? _wrap.querySelector(sel)    : document.querySelector(sel); }
+  function _qa(sel) { return _wrap ? _wrap.querySelectorAll(sel) : document.querySelectorAll(sel); }
+
+  // IDs únicos para este bloque (evitan colisión con inst11275)
+  var GRID_ID   = 'dai-grid-aud';
+  var UL_ID     = 'dai-grid-cyber-aud';
+  var LOADER_ID = 'dai-copilot-loader-aud';
+
+  // ── Tenant europeo ─────────────────────────────────────────────
+  const EU_TENANTS = ['IB', 'IT', 'NEU'];
+  function isEU() {
+    const t = (window.ivirmaTenant || document.body.dataset.tenant || 'IB').toUpperCase();
+    return EU_TENANTS.includes(t);
+  }
+
+  // ── Truncar texto ──────────────────────────────────────────────
+  const CLAMP_CHARS = 120;
+  function truncateText(text) {
+    if (!text) return '';
+    if (text.length <= CLAMP_CHARS) return text + '\u2026';
+    const cut = text.lastIndexOf(' ', CLAMP_CHARS);
+    return text.slice(0, cut > 0 ? cut : CLAMP_CHARS) + '\u2026';
+  }
+
+  // ── Helpers de fecha ───────────────────────────────────────────
+  // MESES: siempre en ES (las fechas en TABS se configuran en español)
+  const MESES = { ene:0, feb:1, mar:2, abr:3, may:4, jun:5,
+                  jul:6, ago:7, sep:8, oct:9, nov:10, dic:11 };
+
+  function parseFechas(str) {
+    if (!str) return null;
+    const parts = str.split(/\s*[–—-]\s*/);
+    if (parts.length < 2) return null;
+    function pd(s) {
+      const m = s.trim().match(/^(\d{1,2})\s+([a-záéíóú]+)/i);
+      if (!m) return null;
+      const mon = MESES[m[2].toLowerCase().slice(0,3)];
+      return (mon !== undefined) ? new Date(2026, mon, +m[1]) : null;
+    }
+    const start = pd(parts[0]), end = pd(parts[1]);
+    return (start && end) ? { start, end } : null;
+  }
+
+  function isActive(fechasStr) {
+    const p = parseFechas(fechasStr);
+    return !p || p.start <= new Date();
+  }
+
+  function formatVencimiento(fechasStr) {
+    const p = parseFechas(fechasStr);
+    if (!p) return '';
+    const months = _ta('dai.months', ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']);
+    const mes = months[p.end.getMonth()];
+    return _t('dai.dueDateFmt', 'Vencimiento el {day} {month}.')
+      .replace('{day}', p.end.getDate())
+      .replace('{month}', mes);
+  }
+
+  function formatFechaCorta(date) {
+    if (!date) return '';
+    const months = _ta('dai.months', ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']);
+    return `${date.getDate()} ${months[date.getMonth()]}`;
+  }
+
+  // ── FETCH del DOM de un curso Totara ───────────────────────────
+  async function fetchCourseData(url) {
+    try {
+      const res = await fetch(url, { credentials: 'same-origin' });
+      if (!res.ok) return null;
+      if (!res.url.includes('/course/view.php')) return null;
+
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      if (!doc.querySelector('.ascoursetitle, .ascabecera')) return null;
+
+      const tituloEl = doc.querySelector('.ascoursetitle');
+      const titulo = tituloEl
+        ? (tituloEl.querySelector('.text_to_html') || tituloEl).textContent.trim()
+        : doc.querySelector('title')?.textContent.replace(/^Curso:\s*/i, '').trim() || '';
+
+      let imagen = '';
+      const asimageEl = doc.querySelector('.asimage');
+      if (asimageEl) {
+        const m = (asimageEl.getAttribute('style') || '')
+          .match(/background-image\s*:\s*url\(["']?([^"')]+)["']?\)/);
+        if (m) imagen = m[1];
+      }
+
+      const introEl = doc.querySelector('section.course-overview .introduction p');
+      const descripcion = introEl ? introEl.textContent.trim() : '';
+      const durEl = doc.querySelector('li.duracionHoras');
+      const duracion = durEl ? durEl.textContent.trim() + ' h' : '';
+      const compEl = doc.querySelector('.competencias ul li, .competencias li');
+      const competencia = compEl ? compEl.textContent.trim() : '';
+
+      return { titulo, imagen, descripcion, duracion, competencia, url };
+    } catch (err) {
+      console.warn('[DAI-AUD Copilot] fetchCourseData error:', url, err);
+      return null;
+    }
+  }
+
+  // ── Configuración de pestañas ───────────────────────────────────
+  const TABS = {
+
+    b1: {
+      label: _t('dai.b1.label', 'Riesgos y Normativa'),
+      type:  'cyberStatic',
+      cols:  3,
+      items: [
+        {
+          bloque: _t('dai.moduleLabel', 'MÓDULO {n}').replace('{n}', '1'),
+          titulo: _t('dai.b1.m1.titulo', 'Riesgos de la IA generativa y governanza de datos'),
+          desc:   _t('dai.b1.m1.desc', 'El uso de herramientas de IA generativa (IAG) puede ser un arma de doble filo, ya que implica tanto oportunidades como riesgos para las organizaciones. Teniendo en cuenta el creciente uso de estas tecnologías, las estrategias de gobernanza de datos deben regular el uso de la IA en distintos contextos, incluidos los chatbots de IAG. En este módulo, trataremos los riesgos de la IA generativa y la gobernanza de datos.'),
+          duracion: '4 min',
+          imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/onetech_0001_ia-generativa.jpg',
+          url: 'https://ivi.ws02-securityeducation.com/content-details/6851de70-aa8c-4968-9b4f-1ece5abaf6ae',
+        },
+        {
+          bloque: _t('dai.moduleLabel', 'MÓDULO {n}').replace('{n}', '2'),
+          titulo: _t('dai.b1.m2.titulo', 'Protección de datos y privacidad en la IA'),
+          desc:   _t('dai.b1.m2.desc', 'A medida que la IA sigue transformando el entorno laboral, tratar los datos de forma responsable es más importante que nunca. Los sistemas de IA suelen utilizar grandes volúmenes de datos, que pueden incluir información personal o sensible. Proteger esos datos requiere un enfoque meditado y equilibrado. En este módulo, repasaremos las estrategias clave para ayudarte a mantener los datos de la IA seguros y ajustados a la normativa.'),
+          duracion: '5 min',
+          imagen: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&q=80',
+          url: 'https://ivi.ws02-securityeducation.com/content-details/8600cfac-89a5-4127-a6de-cc2f1fa10be3',
+        },
+        {
+          bloque: _t('dai.moduleLabel', 'MÓDULO {n}').replace('{n}', '3'),
+          titulo: _t('dai.b1.m3.titulo', 'IA ética en el trabajo'),
+          desc:   _t('dai.b1.m3.desc', 'La Inteligencia Artificial (IA) es cada vez más parte de nuestra vida laboral: por ejemplo, al procesar gastos, responder consultas de RR. HH. mediante chatbots o priorizar tickets de soporte. La IA puede acelerar tareas, aportar insights e imitar el razonamiento, pero carece de contexto, empatía y conciencia ética. Esto significa que pueden producirse errores o resultados injustos. En este módulo explorarás cómo usar la IA de forma ética y cómo actuar si surgen problemas.'),
+          duracion: '3 min',
+          imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/onetech_0000_etica-ia.jpg',
+          url: 'https://ivi.ws02-securityeducation.com/content-details/9a360eeb-6309-4fcf-bad9-b15df40b8312',
+        },
+        {
+          bloque: _t('dai.moduleLabel', 'MÓDULO {n}').replace('{n}', '4'),
+          titulo: _t('dai.b1.m4.titulo', 'Ley de IA de la UE'),
+          desc:   _t('dai.b1.m4.desc', 'La Ley de IA de la EU se aplica a una gran variedad de sistemas de IA. Su ámbito de aplicación incluye los sistemas de IA creados o utilizados en la UE y los procedentes de fuera de la UE.'),
+          duracion: '8 min',
+          imagen: 'https://campus.iviinstitute.com/pluginfile.php/1/local_uploadfiles/additionalimages/0/onetech_0002_ley-ue.jpg',
+          url: 'https://ivi.ws02-securityeducation.com/content-details/a015fd82-f077-471b-8c7b-d1704d447857',
+          euOnly: true,
+        },
+      ]
+    },
+
+    b2: {
+      label: 'Copilot',
+      type:  'cyber',
+      cols:  3,
+      fechas: '',
+      courseUrls: [
+        'https://campus.iviinstitute.com/course/view.php?id=1372',
+        'https://campus.iviinstitute.com/course/view.php?id=1373'
+      ]
+    },
+
+    b3: {
+      label: _t('dai.b3.label', 'IVI GenAI Portal'),
+      type:  'cyberStatic',
+      cols:  3,
+      items: []
+    }
+  };
+
+  const eu = isEU();
+  let activeTab = 'b1';
+
+  // ── Helpers DOM (scoped a este bloque) ─────────────────────────
+  function getGrid() {
+    return document.getElementById(GRID_ID) || _q('.dai-grid');
+  }
+
+  function getOrCreateCyberUl() {
+    let ul = document.getElementById(UL_ID);
+    if (!ul) {
+      ul = document.createElement('ul');
+      ul.id = UL_ID;
+      const grid = getGrid();
+      grid.parentNode.insertBefore(ul, grid);
+    }
+    return ul;
+  }
+
+  function getOrCreateLoader() {
+    let loader = document.getElementById(LOADER_ID);
+    if (!loader) {
+      loader = document.createElement('div');
+      loader.id = LOADER_ID;
+      loader.className = 'dai-copilot-loader';
+      loader.innerHTML = `
+        <span class="dai-copilot-loader__spinner" aria-hidden="true"></span>
+        ${_t('dai.loading', 'Cargando cursos disponibles…')}`;
+      const grid = getGrid();
+      grid.parentNode.insertBefore(loader, grid);
+    }
+    return loader;
+  }
+
+  function showLoader() {
+    getOrCreateLoader().style.display = 'flex';
+    const ul = document.getElementById(UL_ID);
+    if (ul) ul.style.display = 'none';
+  }
+
+  function hideLoader() {
+    const loader = document.getElementById(LOADER_ID);
+    if (loader) loader.style.display = 'none';
+  }
+
+  // ── Render Copilot ─────────────────────────────────────────────
+  function renderCyberCards(ul, courses, fechasStr, cols) {
+    ul.innerHTML = '';
+    const accesibles = courses.filter(c => c !== null);
+
+    if (accesibles.length === 0) {
+      ul.className = '';
+      ul.innerHTML = `
+        <li class="dai-empty-notice">
+          <span class="dai-empty-notice__icon">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+          </span>
+          ${_t('dai.noCoursesAvailable', 'Actualmente no tienes cursos disponibles en esta sección.')}
+        </li>`;
+      return;
+    }
+
+    ul.className = 'cyber-standalone__grid cols-' + Math.min(cols || 2, accesibles.length);
+
+    accesibles.forEach(c => {
+      const active      = isActive(fechasStr);
+      const vencimiento = formatVencimiento(fechasStr);
+
+      const li   = document.createElement('li');
+      const card = document.createElement('a');
+      card.className = 'cyber-card' + (active ? '' : ' is-disabled');
+      card.href      = active ? c.url : '#';
+      if (active) { card.target = '_blank'; card.rel = 'noopener'; }
+      if (!active) card.setAttribute('aria-disabled', 'true');
+
+      const soonBadge = !active ? (() => {
+        const p  = parseFechas(fechasStr);
+        const fi = p ? formatFechaCorta(p.start) : '';
+        const soonText = fi
+          ? _t('dai.comingSoonDate', 'Próximamente: {date}').replace('{date}', fi)
+          : _t('dai.comingSoon', 'Próximamente');
+        return `<span class="cyber-card__soon"><i class="fa fa-lock" aria-hidden="true"></i>${soonText}</span>`;
+      })() : '';
+
+      const bodyText = c.descripcion
+        || _t('dai.copilotFallback', 'Accede al curso de Microsoft Copilot en la plataforma.');
+
+      card.innerHTML = `
+        <div class="cyber-card__image">
+          <div class="cyber-card__bg"${c.imagen ? ` style="background-image:url('${c.imagen}')"` : ''}></div>
+          ${soonBadge}
+          <div class="cyber-card__overlay">
+            <strong class="cyber-card__overlay-title">${c.titulo || 'Copilot'}</strong>
+          </div>
+        </div>
+        <div class="cyber-card__body">
+          <p class="cyber-card__desc cyber-card__desc--clamp">${truncateText(bodyText)}</p>
+        </div>
+        <div class="cyber-card__footer">
+          <span class="cyber-card__readmore">${_t('dai.accessCourse', 'Acceder al curso')}</span>
+          ${vencimiento ? `<span class="cyber-card__due">${vencimiento}</span>` : ''}
+        </div>
+      `;
+
+      li.appendChild(card);
+      ul.appendChild(li);
+    });
+  }
+
+  // ── Render estático (b1 y b3) ──────────────────────────────────
+  function renderStaticCyberCards(ul, tab) {
+    ul.innerHTML = '';
+
+    const visibleItems = tab.items.filter(it => !(it.euOnly && !eu));
+
+    if (visibleItems.length === 0) {
+      ul.className = '';
+      ul.innerHTML = `
+        <li class="dai-empty-notice">
+          <span class="dai-empty-notice__icon">
+            <i class="fa fa-info-circle" aria-hidden="true"></i>
+          </span>
+          ${_t('dai.noCoursesAvailable', 'Actualmente no tienes cursos disponibles en esta sección.')}
+        </li>`;
+      return;
+    }
+
+    ul.className = 'cyber-standalone__grid cols-' + (tab.cols || 3);
+
+    visibleItems.forEach(it => {
+      const active = !it.pending;
+
+      const li   = document.createElement('li');
+      const card = document.createElement('a');
+      card.className = 'cyber-card' + (active ? '' : ' is-disabled');
+      card.href      = (it.url && it.url !== '#') ? it.url : '#';
+      if (it.url && it.url !== '#') { card.target = '_blank'; card.rel = 'noopener'; }
+      if (!it.url || it.url === '#') card.setAttribute('aria-disabled', 'true');
+
+      const pendingBadge = (it.pending && (!it.url || it.url === '#'))
+        ? `<span class="cyber-card__soon">
+             <i class="fa fa-lock" aria-hidden="true"></i>${_t('dai.comingSoon', 'Próximamente')}
+           </span>`
+        : '';
+
+      card.innerHTML = `
+        <div class="cyber-card__image">
+          <div class="cyber-card__bg"${it.imagen ? ` style="background-image:url('${it.imagen}')"` : ''}></div>
+          ${pendingBadge}
+          <div class="cyber-card__overlay">
+            <strong class="cyber-card__overlay-title">${it.titulo}</strong>
+          </div>
+        </div>
+        <div class="cyber-card__body">
+          <p class="cyber-card__desc cyber-card__desc--clamp">${truncateText(it.desc)}</p>
+        </div>
+        <div class="cyber-card__footer">
+          ${(it.url && it.url !== '#') ? `<span class="cyber-card__readmore">${_t('dai.seeMore', 'Ver más')}</span>` : ''}
+          ${it.euOnly ? `<span class="cyber-card__due" style="background:#E8EEF7;color:#17417B">${_t('dai.euOnly', 'Solo UE')}</span>` : ''}
+        </div>
+      `;
+
+      li.appendChild(card);
+      ul.appendChild(li);
+    });
+  }
+
+  // ── Render principal ────────────────────────────────────────────
+  async function renderGrid() {
+    const tab  = TABS[activeTab];
+    const grid = getGrid();
+    if (!grid) return;
+
+    grid.style.display = 'none';
+    hideLoader();
+
+    const ul = getOrCreateCyberUl();
+
+    if (tab.type === 'cyber') {
+      ul.style.display = 'none';
+      showLoader();
+      const courses = await Promise.all(tab.courseUrls.map(fetchCourseData));
+      hideLoader();
+      if (activeTab === 'b2') {
+        ul.style.display = '';
+        renderCyberCards(ul, courses, tab.fechas || '', tab.cols);
+      }
+    } else if (tab.type === 'cyberStatic') {
+      ul.style.display = '';
+      renderStaticCyberCards(ul, tab);
+    }
+  }
+
+  // ── Listeners de tabs (scoped al propio .dai-wrap) ─────────────
+  _qa('.dai-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _qa('.dai-filter-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      activeTab = btn.dataset.tab;
+      renderGrid();
+    });
+  });
+
+  renderGrid();
+})();
+</script>
