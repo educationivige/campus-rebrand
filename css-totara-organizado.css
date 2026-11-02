@@ -302,7 +302,6 @@ html body .ascabecera .asinfoelem i.fa-user::before {
 }
 
 .tabtree .nav-tabs > li {
-  margin: 0 8px 6px 0 !important;
   border: 0 !important;
 }
 
@@ -3945,7 +3944,7 @@ width:95%;
 }
 
 .course-description .competencias {
-  border-left: 2px solid #52b4bb40;
+  border-left: 2px solid rgba(0, 77, 240, 0.25);   /* --light-blue al 25% (antes #52b4bb40 teal) */
 }
 
 .course-description .competencias ul li::marker {
@@ -3963,25 +3962,27 @@ width:95%;
   flex: 1;
   min-width: 180px;
   background: var(--color-background) !important;   /* antes --color-gray-light */
-  padding: var(--spacing-medium);
+  padding: 12px;                 /* antes var(--spacing-medium): 3 cajas (Duración/EACCME/CFC) por fila */
   border-radius: var(--border-radius);
   display: flex;
   align-items: flex-start;
   flex-direction: row-reverse;
-  gap: 12px;
+  gap: 8px;                      /* antes 12px */
   text-align: left;
   justify-content: space-between;
 }
 
 .course-description .detalles .icon-text img {
-  width: 50px !important;
-  margin: 0 0 0.5em 0.5em !important;
+  width: 36px !important;        /* antes 50px: iconos más pequeños para que "CRÉDITOS EACCME:" no parta */
+  margin: 0 0 0.5em 0.25em !important;
 }
 
 .course-description .detalles .icon-text .text-box span {
   font-weight: bold !important;
   color: var(--navy-blue) !important;   /* antes #e39282 (naranja) */
   text-transform: uppercase;
+  font-size: 14px;                      /* que "CRÉDITOS EACCME:" entre en una línea */
+  line-height: 1.2;
 }
 
 .course-description .accreditation {
@@ -4014,6 +4015,41 @@ width:95%;
   width: auto !important;
   padding: 0 !important;
   margin-right: 0px !important;
+}
+
+/* Acreditación con imagen integrada — modificador .acred-cfc sobre .accreditation:
+   el 1er párrafo (EACCME) a ancho completo; los párrafos CFC + "Para completar…"
+   comparten fila con la imagen (.acred-row), alineada abajo (align-self:flex-end).
+   Clase nueva para NO romper los cursos antiguos con el flex .izq (76%) + .img-dcha (24%). */
+.course-description .accreditation.acred-cfc {
+  display: block;
+  padding: 1.25em 1.5em 0;
+}
+
+.course-description .accreditation.acred-cfc .izq {
+  width: auto;
+  padding-bottom: 0;
+}
+
+.course-description .accreditation.acred-cfc .acred-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.5em;
+}
+
+.course-description .accreditation.acred-cfc .acred-text {
+  flex: 1;
+  min-width: 250px;
+  padding-bottom: 1.25em;
+}
+
+.course-description .accreditation.acred-cfc .acred-img {
+  align-self: flex-end;
+  margin-left: auto;
+  width: 175px;
+  max-width: 40%;
+  height: auto;
 }
 
 .course-description .compatibility {
@@ -11969,7 +12005,6 @@ body.format-onetopicas .tabtree ul.nav-tabs > li > a:has(> div.tab_content) {
   background: transparent !important;
   border: 0 !important;
   border-radius: 4px 4px 0 0 !important;
-  padding: 12px 30px !important;
   margin: 0 2px 0 0 !important;
   box-shadow: none !important;
 }
