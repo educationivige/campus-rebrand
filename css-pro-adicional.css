@@ -4,7 +4,7 @@
    instante, sin purga de jsDelivr. Al verificar, fusionar en
    css-totara-organizado.css y vaciar este archivo.
 
-   VACÍO (2026-11-02): los fixes de "Detalle de curso" (icon-text,
-   .acred-cfc, línea de Competencias) ya están fusionados en
-   css-totara-organizado.css. Requiere purga de jsDelivr @pro.
+   VACÍO (2026-11-02): el recuadro onetopic se metió directo al
+   organizado (el campo "CSS adicional" del tema no está disponible
+   para pegar el staging). Requiere purga de jsDelivr @pro.
    ============================================================ */
