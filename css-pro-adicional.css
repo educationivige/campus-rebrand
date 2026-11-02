@@ -3,4 +3,8 @@
    Se pega en el campo "CSS adicional" del tema de PRO: aplica al
    instante, sin purga de jsDelivr. Al verificar, fusionar en
    css-totara-organizado.css y vaciar este archivo.
+
+   VACÍO (2026-11-02): los fixes de "Detalle de curso" (icon-text,
+   .acred-cfc, línea de Competencias) ya están fusionados en
+   css-totara-organizado.css. Requiere purga de jsDelivr @pro.
    ============================================================ */
