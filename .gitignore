@@ -41,6 +41,7 @@ Cambios-Campus-IVI.xlsx
 # CSS en pruebas: se pega a mano en "CSS adicional" del tema; al verificar
 # la sección se fusiona en css-totara-organizado.css (no se versiona)
 bloques/css-adicional.css
+/css-pro-adicional.css
 
 # Scripts del Expediente (se gestionan en Totara, no en el repo)
 expediente/
