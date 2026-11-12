@@ -81,6 +81,17 @@ document.addEventListener('DOMContentLoaded', function() {
             targetBlock: 'inst280'     // bloque "Certificados" del visor (vacío) donde listarlos
         },
 
+        // Envuelve el número de "LFE puntos" (td.course_custom_field_10) de las
+        // tablas del visor en un <span class="ivi-lfe-pts"> para poder pintarlo
+        // como badge por CSS (el color lo da el CSS según el bloque). La celda
+        // trae el número como texto pelado y CSS no puede empastillar un nodo de
+        // texto suelto; por eso el wrap va en JS.
+        puntosBadgeConfig: {
+            enabledForIds: ['10'],
+            enabledForAllPatterns: false,
+            instancias: ['inst281']    // Cursos del Catálogo (ampliable a inst278/279…)
+        },
+
         // Configuración para reemplazo de caras en cuestionarios de satisfacción
         feedbackFacesConfig: {
             enabledForPaths: ['/feedback'], // Rutas exclusivas para esta función
@@ -1511,6 +1522,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Sin formación obligatoria → ocultar ambos badges nuevos
                 this.toggleBadgesEstado(null);
+
+                // Sin formación obligatoria → ocultar también el aviso "Recuerda…"
+                this.toggleAvisoObligatoria(false);
             } catch (error) {
                 Utils.log('Estados', `ERROR manipulando divs de estado: ${error.message}`, true);
             }
@@ -1680,6 +1694,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Badges del rebranding 2026 (.ivi-status-badge--complete/--incomplete,
                 // se muestran/ocultan con .oculto). Sustituyen a .fo-completa/.fo-incompleta.
                 this.toggleBadgesEstado(todosCompletados);
+
+                // Aviso "Recuerda que debes superar la formación obligatoria…":
+                // solo cuando está INCOMPLETA.
+                this.toggleAvisoObligatoria(!todosCompletados);
             } catch (error) {
                 Utils.log('Estados', `ERROR actualizando divs de estado: ${error.message}`, true);
             }
@@ -1704,6 +1722,29 @@ document.addEventListener('DOMContentLoaded', function() {
             badgeComplete.classList.toggle('oculto', !todosCompletados);
             badgeIncomplete.classList.toggle('oculto', !!todosCompletados);
             Utils.log('Estados', `Badge de estado -> ${todosCompletados ? 'COMPLETA' : 'INCOMPLETA'}`);
+        },
+
+        /**
+         * Muestra el aviso "Recuerda que debes superar toda la formación
+         * obligatoria…" SOLO cuando la formación obligatoria está INCOMPLETA.
+         * Si está completa (o no hay obligatoria) lo oculta. El aviso es el
+         * .no-obligatorio que NO cuelga de .obligatorio-ko (ese otro es el aviso
+         * "no hay cursos obligatorios"). Se oculta/muestra su bloque con .oculto.
+         * @param {boolean} mostrar  true = incompleta → mostrar; false = ocultar
+         */
+        toggleAvisoObligatoria: function(mostrar) {
+            const avisos = Array.prototype.slice
+                .call(document.querySelectorAll('.no-obligatorio'))
+                .filter(function(el) { return !el.closest('.obligatorio-ko'); });
+            if (!avisos.length) {
+                Utils.log('Estados', `No se encontró el aviso de formación obligatoria`);
+                return;
+            }
+            avisos.forEach(function(aviso) {
+                const bloque = aviso.closest('[id^="inst"]') || aviso;
+                bloque.classList.toggle('oculto', !mostrar);
+            });
+            Utils.log('Estados', `Aviso formación obligatoria -> ${mostrar ? 'MOSTRAR (incompleta)' : 'OCULTAR'}`);
         },
 
         /**
@@ -2241,6 +2282,37 @@ document.addEventListener('DOMContentLoaded', function() {
             // Sumar al visor los certificados de la BD d=3 (async; corre tras
             // initAcordeones para que el acordeón de inst280 ya exista)
             CertDataScoreModule.init();
+
+            // Empastillar los puntos "LFE puntos" de las tablas configuradas
+            this.envolverPuntosLFE();
+        },
+
+        /**
+         * Envuelve el número de la celda de puntos (td.course_custom_field_10)
+         * de los bloques configurados en un <span class="ivi-lfe-pts"> para que
+         * el CSS pueda pintarlo como badge (p.ej. Cursos del Catálogo, inst281).
+         */
+        envolverPuntosLFE: function() {
+            const cfg = config.puntosBadgeConfig;
+            if (!cfg) return;
+            if (Utils.esEditorDeBloques && Utils.esEditorDeBloques()) return;
+            const id = Utils.getQueryParam('id');
+            if (!cfg.enabledForAllPatterns && !(id && cfg.enabledForIds.indexOf(id) !== -1)) return;
+
+            const envolver = () => {
+                cfg.instancias.forEach(instId => {
+                    const bloque = document.getElementById(instId);
+                    if (!bloque) return;
+                    bloque.querySelectorAll('td.course_custom_field_10').forEach(td => {
+                        if (td.children.length) return;                 // ya envuelto o con markup → no tocar
+                        const txt = td.textContent.trim();
+                        if (!/^\d+([.,]\d+)?$/.test(txt)) return;        // solo valores numéricos pelados
+                        td.innerHTML = '<span class="ivi-lfe-pts">' + txt + '</span>';
+                    });
+                });
+            };
+            envolver();
+            setTimeout(envolver, 700);   // red de seguridad por si la tabla pinta tarde
         },
 
         /**
