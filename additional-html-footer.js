@@ -68,6 +68,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
 
+        // Suma al Visor de Puntos los certificados que el usuario sube a la BD
+        // mod_data "Registro de Certificados LfE" (d=3). El bloque de certificados
+        // del visor (inst280) lee de Evidencias y sale vacío; estos certificados
+        // viven en d=3, desconectados. Como el alumno solo ve SUS certificados en
+        // d=3, un fetch de la vista devuelve solo los suyos; sumamos los APROBADOS
+        // (los que tienen "Puntos LFE: N", excluyendo "Pendiente de revisar").
+        certScoreConfig: {
+            enabledForIds: ['10'],     // dashboards del visor donde aplica (ampliable a '27')
+            enabledForAllPatterns: false,
+            dataId: 3,                 // d de la BD "Registro de Certificados LfE"
+            targetBlock: 'inst280'     // bloque "Certificados" del visor (vacío) donde listarlos
+        },
+
         // Configuración para reemplazo de caras en cuestionarios de satisfacción
         feedbackFacesConfig: {
             enabledForPaths: ['/feedback'], // Rutas exclusivas para esta función
@@ -899,6 +912,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const ScoreManager = {
         puntuacionCalculada: 0,
         contenidoEncontrado: false,
+        // Puntos de los certificados aprobados de la BD mod_data (d=3), que
+        // CertDataScoreModule obtiene por fetch async y deja aquí para que se
+        // sumen al total del visor (el alumno solo ve sus propios certificados).
+        puntosCertificados: 0,
 
         /**
          * Calcula la puntuación total de las tablas
@@ -921,13 +938,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 sumaPuntuacionTotal += this.procesarTablasDiv(div, tablas);
             });
 
-            this.puntuacionCalculada = sumaPuntuacionTotal;
-            this.contenidoEncontrado = contenidoEncontrado;
+            const totalConCertificados = sumaPuntuacionTotal + (this.puntosCertificados || 0);
+            this.puntuacionCalculada = totalConCertificados;
+            this.contenidoEncontrado = contenidoEncontrado || (this.puntosCertificados || 0) > 0;
 
-            Utils.log('Puntuación', `Puntuación total calculada: ${sumaPuntuacionTotal}`, true);
-            Utils.log('Puntuación', `¿Se encontró contenido? ${contenidoEncontrado ? 'Sí' : 'No'}`, true);
+            Utils.log('Puntuación', `Puntuación tablas: ${sumaPuntuacionTotal} + certificados: ${this.puntosCertificados || 0} = ${totalConCertificados}`, true);
+            Utils.log('Puntuación', `¿Se encontró contenido? ${this.contenidoEncontrado ? 'Sí' : 'No'}`, true);
 
-            return sumaPuntuacionTotal;
+            return totalConCertificados;
         },
 
         /**
@@ -1129,6 +1147,160 @@ document.addEventListener('DOMContentLoaded', function() {
     return 'YYYY';
 }
 };
+
+    // ============================================================
+    // CERTIFICADOS DE LA BD (mod_data d=3) → VISOR DE PUNTOS
+    // El bloque "Certificados" del visor (inst280) lee de un informe de
+    // Evidencias y sale VACÍO: los certificados reales se suben a la BD
+    // "Registro de Certificados LfE" (d=3), un sistema desconectado. Aquí los
+    // traemos por fetch de la vista de la BD (el alumno solo ve SUS propios
+    // certificados), sumamos los APROBADOS al total del visor y los listamos
+    // en el bloque. La verificación debe hacerse como ALUMNO real: admin y
+    // "iniciar sesión como" ven TODOS los certificados → sumarían de más.
+    // ============================================================
+    const CertDataScoreModule = {
+        yaEjecutado: false,
+
+        estaHabilitado: function() {
+            const cfg = config.certScoreConfig;
+            if (!cfg) return false;
+            if (Utils.esEditorDeBloques && Utils.esEditorDeBloques()) return false;
+            if (cfg.enabledForAllPatterns) return true;
+            const id = Utils.getQueryParam('id');
+            return !!(id && cfg.enabledForIds.indexOf(id) !== -1);
+        },
+
+        init: function() {
+            if (this.yaEjecutado) return;
+            if (!this.estaHabilitado()) {
+                Utils.log('CertVisor', 'Dashboard no habilitado para la suma de certificados');
+                return;
+            }
+            this.yaEjecutado = true;
+            this.obtenerYSumar();
+        },
+
+        obtenerYSumar: function() {
+            const cfg = config.certScoreConfig;
+            const url = '/mod/data/view.php?d=' + cfg.dataId + '&perpage=1000';
+            fetch(url, { credentials: 'same-origin' })
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const resultado = this.parseCertificados(doc);
+                    Utils.log('CertVisor', `Certificados aprobados: ${resultado.items.length} · Puntos: ${resultado.total}`, true);
+
+                    // 1) Sumar los puntos al total del visor
+                    ScoreManager.puntosCertificados = resultado.total;
+                    ScoreManager.calcularPuntuacionTotal();
+                    ScoreManager.actualizarSpansPuntuacion();
+
+                    // 2) Listar los certificados en el bloque (que estaba vacío)
+                    this.pintarEnBloque(resultado.items);
+                })
+                .catch(err => {
+                    Utils.log('CertVisor', 'No se pudieron obtener los certificados de la BD: ' + err.message, true);
+                });
+        },
+
+        /**
+         * Suma los puntos de los certificados APROBADOS y devuelve la lista.
+         * Reglas (validadas contra la BD real, 2026-11-12):
+         *   - Cada certificado es un .ividb_cert. La 2ª columna de datos
+         *     (.ividb_left_1 > .ividb_uservisible_1) lleva estado y puntos.
+         *   - Pendiente: el <b> de ##approvalstatus## contiene "pend" → se excluye.
+         *     (ojo: las clases is-pending/is-approved las añade JS de la BD, que
+         *     NO corre al parsear el HTML del fetch; por eso filtramos por texto.)
+         *   - Puntos: texto FIJO "Puntos LFE: N" (no se traduce). Solo los
+         *     validados llevan número; rechazados y pendientes no suman.
+         */
+        parseCertificados: function(doc) {
+            let total = 0;
+            const items = [];
+            doc.querySelectorAll('.ividb_cert').forEach(cert => {
+                const cols = cert.querySelectorAll('.ividb_left_1 > .ividb_uservisible_1');
+                const col = cols[1];
+                if (!col) return;
+
+                const statusB = col.querySelector('.ividb_text_1 b');
+                const statusTxt = statusB ? statusB.textContent.toLowerCase().trim() : '';
+                if (/pend/.test(statusTxt)) return;   // pendiente de revisar → no cuenta
+
+                let puntos = null;
+                col.querySelectorAll('p').forEach(p => {
+                    const m = p.textContent.match(/Puntos\s*LFE\s*:\s*(\d+)/i);
+                    if (m) puntos = parseInt(m[1], 10);
+                });
+                if (puntos === null) return;          // sin puntos (rechazado/0) → no cuenta
+
+                total += puntos;
+                const nombreEl = cert.querySelector('.ividb_name');
+                items.push({
+                    nombre: nombreEl ? nombreEl.textContent.trim() : 'Certificado',
+                    puntos: puntos
+                });
+            });
+            return { total, items };
+        },
+
+        /**
+         * Rellena el bloque de certificados del visor (vacío porque el informe
+         * de Evidencias no tiene filas) con la lista de certificados aprobados.
+         * NO es una <table> a propósito: así ScoreManager no la vuelve a sumar
+         * (el total ya lo lleva ScoreManager.puntosCertificados).
+         */
+        pintarEnBloque: function(items) {
+            const bloque = document.getElementById(config.certScoreConfig.targetBlock);
+            if (!bloque || !items.length) return;
+            const contenedor = bloque.querySelector('.totara-table-container') ||
+                               bloque.querySelector('.content.block-content');
+            if (!contenedor) return;
+            if (contenedor.querySelector('.ivi-cert-visor-list')) return;  // idempotente
+
+            this.inyectarEstilos();
+
+            const noResults = contenedor.querySelector('.no-results');
+            if (noResults) noResults.style.display = 'none';
+
+            const lista = document.createElement('div');
+            lista.className = 'ivi-cert-visor-list';
+            lista.innerHTML = items.map(it =>
+                '<div class="ivi-cert-visor-row">' +
+                    '<span class="ivi-cert-visor-name">' + this.escapar(it.nombre) + '</span>' +
+                    '<span class="ivi-cert-visor-pts">' + it.puntos + '</span>' +
+                '</div>'
+            ).join('');
+            contenedor.appendChild(lista);
+
+            // Reajustar el alto del acordeón ahora que el bloque tiene contenido
+            // (sin forzar apertura si estaba colapsado).
+            const content = bloque.querySelector('.content.block-content');
+            if (content && content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        },
+
+        inyectarEstilos: function() {
+            if (document.getElementById('ivi-cert-visor-styles')) return;
+            const st = document.createElement('style');
+            st.id = 'ivi-cert-visor-styles';
+            st.textContent =
+                '.ivi-cert-visor-list{display:flex;flex-direction:column;gap:8px;padding:4px 0;}' +
+                '.ivi-cert-visor-row{display:flex;align-items:center;justify-content:space-between;' +
+                    'gap:12px;padding:10px 14px;border:1px solid var(--neutral-200,#E3E6F0);' +
+                    'border-radius:12px;background:var(--white,#fff);}' +
+                '.ivi-cert-visor-name{color:var(--navy-blue,#08004F);font-weight:600;line-height:1.3;}' +
+                '.ivi-cert-visor-pts{flex:0 0 auto;min-width:46px;text-align:center;font-weight:700;' +
+                    'color:#fff;background:var(--primary-blue,#004DF0);border-radius:999px;padding:4px 12px;}';
+            document.head.appendChild(st);
+        },
+
+        escapar: function(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+    };
 
 
 
@@ -2065,6 +2237,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Inicializar Plan Ciberseguridad 2026 (async, no bloquea al resto)
             CyberPlanModule.init();
+
+            // Sumar al visor los certificados de la BD d=3 (async; corre tras
+            // initAcordeones para que el acordeón de inst280 ya exista)
+            CertDataScoreModule.init();
         },
 
         /**
