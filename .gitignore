@@ -21,12 +21,20 @@ Code Mockup FIGMA/
 assets/
 iconos-home/
 
-# Proceso bloque a bloque: capturas de diseño y estado actual
-# (el código de 3-codigo-actual/ y 4-codigo-nuevo/ SÍ se versiona)
+# Proceso bloque a bloque: capturas de diseño y estado actual (no se versiona)
 bloques/1-diseno/*
 bloques/2-actual/*
 !bloques/1-diseno/.gitkeep
 !bloques/2-actual/.gitkeep
+
+# Código actual y nuevo: se pega a mano en los bloques de Totara (no se sirve
+# por CDN) y son snapshots de página completa con datos de sesión reales
+# (sesskey / logintoken). NO deben estar en el repo PÚBLICO → solo en local.
+bloques/3-codigo-actual/
+bloques/4-codigo-nuevo/
+# Snapshots sueltos con datos de sesión (críticos): solo en local
+bloques/catalogo--listado.html
+bloques/cookie-bot.html
 
 # Documento interno de flujo de trabajo (no se versiona)
 FLUJO-DE-TRABAJO.md
