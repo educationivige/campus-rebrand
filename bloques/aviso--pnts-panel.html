@@ -1,0 +1,32 @@
+<!-- ============================================================
+   BLOQUE:   Aviso — dónde ver los PNTs (panel lateral)
+   SLUG:     aviso--pnts-panel
+   PÁGINA:   Expediente (dashboard 16) u otra.
+   QUÉ HACE: caja informativa (icono info). Todo el texto es un enlace al panel
+             completo de PNTs (dashboard 33). Los PNTs SIGUEN apareciendo en el
+             expediente; esto es solo un acceso directo al panel dedicado.
+   CSS:      en css-pro-adicional.css (clase .ivi-aviso-pnts). Totara borra los
+             <style> del bloque HTML → pegar ese CSS en Apariencia ▸ tema ▸
+             "CSS adicional" (aplica al instante) o fundirlo en
+             css-totara-organizado.css.
+   ICONO:    Material Symbols ("info"), ya cargado en el campus.
+   IDIOMAS:  filtro multiidioma de Totara {mlang xx}…{mlang}.
+   ------------------------------------------------------------
+   Pegar TODO lo de debajo de esta cabecera en el bloque HTML de Totara
+   (editor en MODO CÓDIGO, no visual). La cabecera no se pega.
+   NOTA idiomas: it/pt/cs/sv provisionales (revisar con nativo).
+   ============================================================ -->
+<div class="ivi-aviso-pnts" role="note">
+  <div class="izq"><span class="material-symbols-outlined" aria-hidden="true">info</span></div>
+  <div class="dcha">
+    <a class="ivi-aviso-pnts__link" href="/totara/dashboard/index.php?id=33">
+      {mlang es}<div>El panel para consultar <b>todos los PNTs</b> se encuentra en el <b>panel lateral situado a la derecha</b> de esta página.</div>{mlang}
+      {mlang en}<div>The panel to view <b>all the SOPs</b> is located in the <b>side panel on the right</b> of this page.</div>{mlang}
+      {mlang it}<div>Il pannello per visualizzare <b>tutte le SOP</b> si trova nel <b>pannello laterale a destra</b> di questa pagina.</div>{mlang}
+      {mlang pt}<div>O painel para consultar <b>todos os SOPs</b> encontra-se no <b>painel lateral à direita</b> desta página.</div>{mlang}
+      {mlang cs}<div>Panel pro zobrazení <b>všech SOP</b> se nachází v <b>bočním panelu vpravo</b> na této stránce.</div>{mlang}
+      {mlang sv}<div>Panelen för att visa <b>alla SOP:er</b> finns i <b>sidopanelen till höger</b> på den här sidan.</div>{mlang}
+      {mlang other}<div>The panel to view <b>all the SOPs</b> is located in the <b>side panel on the right</b> of this page.</div>{mlang}
+    </a>
+  </div>
+</div>
