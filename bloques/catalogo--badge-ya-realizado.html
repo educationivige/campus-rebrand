@@ -1,0 +1,425 @@
+<!-- ============================================================================
+   Catálogo IVI — Badge "Ya realizado" + fecha en cursos completados/importados
+   ----------------------------------------------------------------------------
+   DÓNDE: se pega en la página del catálogo (/totara/catalog/index.php), como un
+   bloque HTML más, igual que catalogo--Js-imagenes-dinamicas.html. NO va por el
+   footer/CDN (los bloques HTML sueltos de Totara no borran estos <script>).
+
+   QUÉ HACE:
+   · Lee UNA sola vez el Registro de aprendizaje del usuario
+     (/totara/plan/record/courses.php) en segundo plano, con su propia sesión
+     (fetch same-origin, sin tokens). Cachea el resultado en sessionStorage
+     (TTL 10 min) para no repetir la petición al recargar.
+   · Un curso está "REALIZADO" si tiene FECHA DE FINALIZACIÓN en el Registro
+     (celda .course_completion_timecompleted no vacía). Eso cubre "Completado" e
+     "Importado" (RPL) por igual, y NO depende del texto del estado (que cambia
+     con el idioma). La fecha mostrada sale de esa misma celda.
+   · Construye un mapa { courseid -> fecha } y pinta un badge NAVY (mismo estilo
+     que el badge "Finalizado" del expediente) "✔ Finalizado: <fecha corta>" en la
+     ESQUINA SUPERIOR IZQUIERDA sobre la imagen de cada tarjeta cuyo curso esté
+     realizado. Multiidioma (es/en/it/pt/cs/sv), fecha corta con Intl.
+   · courseid de la tarjeta  = data-redirect-url (/course/view.php?id=N).
+     courseid del Registro    = enlace de la celda .course_courselink.
+   · Reaplica en tarjetas nuevas (auto-carga / filtros) con un MutationObserver,
+     igual que el resto de scripts del catálogo.
+   · Un curso realizado vuelve a ser clicable aunque estuviera "vencido" (para
+     poder repasarlo), se le oculta el badge de "Fecha límite / No disponible" y,
+     como el badge va arriba a la izquierda (donde iría el ribbon "Requiere
+     Aprobación"), en tarjetas realizadas ese ribbon se oculta.
+   · Añade en la columna de filtros (aside) un SWITCH "Ocultar cursos ya
+     realizados" (por defecto DESACTIVADO: los realizados se ven; recordado en
+     localStorage). Al activarlo
+     oculta la celda del grid de cada curso realizado —completado o importado—
+     poniendo la clase body.ivi-hide-done; el CSS hace el resto. Los cursos no
+     disponibles se ocultan SIEMPRE (eso lo lleva el otro bloque del catálogo).
+   · Coopera con el CONTADOR (otro bloque): expone window.__iviCat.isDoneCourseId
+     y dispara el evento 'ivi-cat-recount' al cargar el Registro y al conmutar el
+     switch, para que el badge "N cursos disponibles" reste los ya realizados.
+
+   NOTA idiomas: las traducciones it/pt/cs/sv de "Finalizado" son provisionales
+   (pendientes de revisar con nativo), igual que en los otros scripts del catálogo.
+============================================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    // ── Etiqueta "Finalizado" por idioma (igual que el badge del expediente) ──
+    var LABELS = {
+        es: 'Finalizado',
+        en: 'Completed',
+        it: 'Completato',
+        pt: 'Concluído',
+        cs: 'Dokončeno',
+        sv: 'Slutförd'
+    };
+
+    // ── Etiqueta del switch "Ocultar formación finalizada" por idioma ─────────
+    var TOGGLE_LABELS = {
+        es: 'Ocultar formación finalizada',
+        en: 'Hide completed training',
+        it: 'Nascondi formazione completata',
+        pt: 'Ocultar formação concluída',
+        cs: 'Skrýt dokončené vzdělávání',
+        sv: 'Dölj slutförd utbildning'
+    };
+    // Nota: clave versionada (-v3). Al cambiar el defecto, renombrarla ignora los
+    // valores guardados en pruebas previas, así todos ven el nuevo defecto (quien
+    // lo cambie a partir de ahora sí se recuerda).
+    var TOGGLE_STORE_KEY = 'ivi-cat-hide-done-v3';
+    var hideDone = false;           // por defecto DESACTIVADO: los realizados SE VEN
+
+    function lang() {
+        var l = (document.documentElement.lang || 'es').slice(0, 2).toLowerCase();
+        if (l === 'cz') l = 'cs';                 // Totara a veces usa "cz" para checo
+        return LABELS[l] ? l : 'es';
+    }
+
+    // ── Parseo de fecha localizada (mismo criterio que el resto del catálogo) ──
+    var MONTHS = {
+        enero: 0, ene: 0, january: 0, jan: 0, gennaio: 0, gen: 0,
+        janeiro: 0, led: 0, ledna: 0, januari: 0,
+        febrero: 1, feb: 1, february: 1, febbraio: 1, fevereiro: 1,
+        unor: 1, uno: 1, unora: 1, februari: 1,
+        marzo: 2, mar: 2, march: 2, marco: 2, bre: 2, brezna: 2, mars: 2,
+        abril: 3, abr: 3, april: 3, apr: 3, aprile: 3, dub: 3, dubna: 3,
+        mayo: 4, may: 4, maggio: 4, mag: 4, maio: 4, mai: 4,
+        kve: 4, kvetna: 4, maj: 4,
+        junio: 5, jun: 5, june: 5, giugno: 5, giu: 5, junho: 5,
+        cvn: 5, cervna: 5, juni: 5,
+        julio: 6, jul: 6, july: 6, luglio: 6, lug: 6, julho: 6,
+        cvc: 6, cervence: 6, juli: 6,
+        agosto: 7, ago: 7, august: 7, aug: 7, srp: 7, srpna: 7, augusti: 7,
+        septiembre: 8, sept: 8, sep: 8, setiembre: 8, set: 8,
+        september: 8, settembre: 8, zari: 8,
+        octubre: 9, oct: 9, october: 9, ottobre: 9, ott: 9,
+        outubro: 9, out: 9, rij: 9, rijna: 9, oktober: 9, okt: 9,
+        noviembre: 10, nov: 10, november: 10, listopadu: 10, lis: 10,
+        diciembre: 11, dic: 11, december: 11, dec: 11, dicembre: 11,
+        dezembro: 11, dez: 11, prosince: 11, pro: 11
+    };
+
+    function normaliseDate(value) {
+        var text = String(value || '').toLowerCase().replace(/ /g, ' ');
+        if (text.normalize) text = text.normalize('NFD').replace(/[̀-ͯ]/g, '');
+        return text.replace(/[.,]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function validDate(year, month, day) {
+        var d = new Date(year, month, day, 0, 0, 0, 0);
+        if (d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) return null;
+        return d;
+    }
+
+    function parseDate(value) {
+        var raw = String(value || '').trim();
+        if (!raw) return null;
+
+        var iso = raw.match(/\b(\d{4})-(\d{1,2})-(\d{1,2})\b/);
+        if (iso) return validDate(parseInt(iso[1], 10), parseInt(iso[2], 10) - 1, parseInt(iso[3], 10));
+
+        var numeric = raw.match(/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})\b/);
+        if (numeric) return validDate(parseInt(numeric[3], 10), parseInt(numeric[2], 10) - 1, parseInt(numeric[1], 10));
+
+        var text = normaliseDate(raw);
+        var yearM = text.match(/\b(\d{4})\b/);
+        if (!yearM) return null;
+        var tokens = text.split(' ');
+        var month = -1, day = null;
+        for (var i = 0; i < tokens.length; i++) {
+            if (month < 0 && MONTHS[tokens[i]] !== undefined) month = MONTHS[tokens[i]];
+            else if (day === null && /^\d{1,2}$/.test(tokens[i])) day = parseInt(tokens[i], 10);
+        }
+        if (month < 0 || day === null) return null;
+        return validDate(parseInt(yearM[1], 10), month, day);
+    }
+
+    // Fecha corta ("30 nov 2025") en el idioma de la página.
+    function formatShort(date) {
+        try {
+            return new Intl.DateTimeFormat(lang(), {
+                day: 'numeric', month: 'short', year: 'numeric'
+            }).format(date);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // ── Estado ────────────────────────────────────────────────────────────────
+    var doneMap = null;            // { courseid(string) -> Date }  (null = aún no leído)
+    var fetchStarted = false;
+
+    var CACHE_KEY = 'ivi-cat-done-map-v2';   // -v2: invalida cachés previas (solo leían la página 1 del ROL)
+    var CACHE_TTL = 10 * 60 * 1000;   // 10 min
+
+    function readCache() {
+        try {
+            var raw = sessionStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            var obj = JSON.parse(raw);
+            if (!obj || (Date.now() - obj.t) > CACHE_TTL) return null;
+            var map = {};
+            Object.keys(obj.m).forEach(function (id) {
+                var d = new Date(obj.m[id]);
+                if (!isNaN(d.getTime())) map[id] = d;
+            });
+            return map;
+        } catch (e) { return null; }
+    }
+
+    function writeCache(map) {
+        try {
+            var m = {};
+            Object.keys(map).forEach(function (id) { m[id] = map[id].getTime(); });
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), m: m }));
+        } catch (e) {}
+    }
+
+    // ── Parsear la tabla del Registro de aprendizaje → mapa realizado ─────────
+    // Identificadores ESTABLES (clases de columna de reportbuilder), no texto:
+    //   .course_courselink            → celda del título, con el enlace al curso
+    //   .course_completion_timecompleted → fecha de finalización (vacía si no hecho)
+    function parseRol(docOrHtml, map) {
+        var doc = (typeof docOrHtml === 'string')
+            ? new DOMParser().parseFromString(docOrHtml, 'text/html')
+            : docOrHtml;
+        var tbl = doc.getElementById('plan_courses');
+        if (!tbl) return doc;
+        var rows = tbl.querySelectorAll('tbody tr');
+        Array.prototype.forEach.call(rows, function (tr) {
+            var link = tr.querySelector('.course_courselink a[href]');
+            if (!link) return;
+            var mId = (link.getAttribute('href') || '').match(/[?&]id=(\d+)/);
+            if (!mId) return;
+            var dateCell = tr.querySelector('.course_completion_timecompleted');
+            var raw = dateCell ? dateCell.textContent.trim() : '';
+            if (!raw) return;                       // sin fecha → no realizado
+            var d = parseDate(raw);
+            if (!d) return;
+            map[mId[1]] = d;                        // realizado (Completado o Importado)
+        });
+        return doc;
+    }
+
+    // Lee el Registro de aprendizaje del usuario (vista "Todos los cursos") y
+    // RECORRE TODAS sus páginas por spage. OJO: el paginador de Totara da hrefs
+    // ABSOLUTOS (https://…); resolverlos como relativos construía una URL basura y
+    // solo se leía la página 1 → se perdían los cursos de las páginas 2+ (incluidos
+    // los "Completado" y los "Importado" que estuvieran ahí). Aquí se piden las
+    // páginas directamente con ?status=all&spage=N hasta que una venga vacía o
+    // incompleta (menos filas que la primera = última página).
+    function fetchRol() {
+        var map = {};
+        var base = '/totara/plan/record/courses.php?status=all&spage=';
+        var perPage = 0;
+        function go(page) {
+            if (page > 50) return Promise.resolve();          // tope de seguridad
+            return fetch(base + page, { credentials: 'same-origin' })
+                .then(function (r) { return r.ok ? r.text() : ''; })
+                .then(function (html) {
+                    if (!html) return;
+                    var doc = parseRol(html, map);            // suma esta página al mapa
+                    var tbl = doc.getElementById('plan_courses');
+                    var n = tbl ? tbl.querySelectorAll('tbody tr').length : 0;
+                    if (!n) return;                            // página vacía → fin
+                    if (page === 0) perPage = n;               // tamaño de página de referencia
+                    if (perPage && n < perPage) return;        // última página (incompleta) → fin
+                    return go(page + 1);                       // página llena → siguiente
+                });
+        }
+        return go(0).then(function () { return map; });
+    }
+
+    // Expone la detección "realizado" por courseid y avisa al contador (otro bloque)
+    // para que reste los realizados de "N cursos disponibles". Se llama al cargar el
+    // Registro y también al conmutar el switch.
+    function publishDone() {
+        window.__iviCat = window.__iviCat || {};
+        window.__iviCat.isDoneCourseId = function (id) {
+            return !!(doneMap && id != null && doneMap[String(id)]);
+        };
+        window.__iviCat.doneReady = !!doneMap;
+        try { document.dispatchEvent(new CustomEvent('ivi-cat-recount')); } catch (e) {}
+    }
+
+    function ensureData() {
+        if (fetchStarted) return;
+        fetchStarted = true;
+
+        var cached = readCache();
+        if (cached) { doneMap = cached; applyAll(); publishDone(); return; }
+
+        fetchRol()
+            .then(function (map) { doneMap = map; writeCache(map); applyAll(); publishDone(); })
+            .catch(function () { doneMap = {}; publishDone(); });   // fail-safe: sin badges
+    }
+
+    // ── Estilos (una vez) ─────────────────────────────────────────────────────
+    function injectStyle() {
+        if (document.getElementById('ivi-cat-done-style')) return;
+        var css = [
+            // La imagen es el contexto de posicionamiento del badge
+            "body#page-totara-catalog-index .tw-catalogItemNarrow__image,body#page-totara-catalog-index .tw-catalogItemWide__image{position:relative!important;}",
+            // Badge "Finalizado": estilo del badge del expediente (.exp-status--done)
+            // pastilla NAVY + texto blanco + icono check en círculo, pero algo más
+            // pequeño y con BORDE BLANCO para destacar sobre la imagen. Esquina sup.
+            // izquierda; top:15px → su centro (badge de ~26px) queda a 28px, alineado
+            // con el centro de la etiqueta LFE (top:3px, 50px → centro 28px).
+            "body#page-totara-catalog-index .ivi-cat-done{position:absolute!important;top:15px!important;left:10px!important;z-index:20!important;display:inline-flex!important;align-items:center!important;gap:5px!important;max-width:calc(100% - 20px)!important;margin:0!important;padding:5px 10px!important;border-radius:999px!important;background:var(--navy-blue,#08004F)!important;color:#fff!important;font-family:var(--font-body,'Noto Sans',sans-serif)!important;font-size:11px!important;font-weight:700!important;line-height:1!important;letter-spacing:0.01em!important;white-space:nowrap!important;border:1.2px solid #fff!important;box-shadow:0 3px 9px rgba(8,0,79,0.3)!important;pointer-events:none!important;}",
+            "body#page-totara-catalog-index .ivi-cat-done::before{content:'task_alt'!important;font-family:'Material Symbols Outlined'!important;font-weight:normal!important;font-size:13px!important;line-height:1!important;font-feature-settings:'liga'!important;-webkit-font-feature-settings:'liga'!important;}",
+            // Esa esquina la ocuparía el ribbon "Requiere Aprobación": en tarjetas realizadas se oculta
+            "body#page-totara-catalog-index [data-ivi-done='1'] .etiqueta-obligatorio{display:none!important;}",
+            // Curso realizado: clicable aunque estuviera "vencido" (para repasarlo),
+            // pero la imagen se ATENÚA (grisácea + un pelín translúcida) para
+            // distinguir visualmente lo ya hecho. El filtro va sobre el <img>, NO
+            // sobre el contenedor, así el badge "Ya realizado" (hermano de la imagen)
+            // sigue bien visible. Especificidad extra (clase de card) para ganar a la
+            // regla de "vencido" (grayscale 1) en cursos realizados+vencidos.
+            "body#page-totara-catalog-index .tw-catalogItemNarrow[data-ivi-done='1'],body#page-totara-catalog-index .tw-catalogItemWide[data-ivi-done='1']{opacity:1!important;pointer-events:auto!important;}",
+            "body#page-totara-catalog-index .tw-catalogItemNarrow[data-ivi-done='1'] .tw-catalogItemNarrow__image_ratio_img,body#page-totara-catalog-index .tw-catalogItemWide[data-ivi-done='1'] .tw-catalogItemWide__image_ratio_img{filter:grayscale(0.85) opacity(0.9)!important;}",
+            // Si está realizado, el badge de Fecha límite / No disponible sobra
+            "body#page-totara-catalog-index [data-ivi-done='1'] .ivi-cat-deadline{display:none!important;}",
+            // ── Switch "Ocultar cursos ya realizados" (columna de filtros) ──
+            // Con el switch activo (body.ivi-hide-done) se oculta la CELDA del grid
+            // de cada curso realizado (no solo la card, para no dejar hueco).
+            "body#page-totara-catalog-index.ivi-hide-done [data-tw-grid-item]:has([data-ivi-done='1']){display:none!important;}",
+            "body#page-totara-catalog-index .tw-catalog__aside .ivi-hidedone{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;box-sizing:border-box!important;margin:0 0 16px!important;padding:0 2px!important;cursor:pointer!important;font-family:var(--font-body,'Noto Sans',sans-serif)!important;font-size:12px!important;font-weight:600!important;color:var(--navy-blue,#08004F)!important;-webkit-user-select:none!important;user-select:none!important;}",
+            "body#page-totara-catalog-index .ivi-hidedone__track{position:relative!important;flex:0 0 auto!important;width:38px!important;height:22px!important;border-radius:999px!important;background:var(--border-soft,#E4E2EE)!important;transition:background .2s ease!important;}",
+            "body#page-totara-catalog-index .ivi-hidedone__track::after{content:''!important;position:absolute!important;top:2px!important;left:2px!important;width:18px!important;height:18px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 1px 3px rgba(0,0,0,0.25)!important;transition:transform .2s ease!important;}",
+            "body#page-totara-catalog-index .ivi-hidedone input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;margin:0!important;}",
+            "body#page-totara-catalog-index .ivi-hidedone input:checked + .ivi-hidedone__track{background:var(--teal,#0CE3C6)!important;}",
+            "body#page-totara-catalog-index .ivi-hidedone input:checked + .ivi-hidedone__track::after{transform:translateX(16px)!important;}",
+            "body#page-totara-catalog-index .ivi-hidedone input:focus-visible + .ivi-hidedone__track{outline:2px solid var(--teal,#0CE3C6)!important;outline-offset:2px!important;}"
+        ].join('');
+        var s = document.createElement('style');
+        s.id = 'ivi-cat-done-style';
+        s.textContent = css;
+        document.head.appendChild(s);
+    }
+
+    // ── Switch "Ocultar cursos ya realizados" en la columna de filtros ────────
+    function setHideDone(on) {
+        hideDone = !!on;
+        try { localStorage.setItem(TOGGLE_STORE_KEY, on ? '1' : '0'); } catch (e) {}
+        document.body.classList.toggle('ivi-hide-done', hideDone);
+        try { document.dispatchEvent(new CustomEvent('ivi-cat-recount')); } catch (e) {}  // que el contador reste/sume
+    }
+
+    // Crea (una vez) el switch en el aside, ENCIMA del panel de filtros, y en cada
+    // pasada sincroniza su estado marcado y su etiqueta al idioma. El switch solo
+    // pone/quita body.ivi-hide-done; el CSS oculta la celda de las tarjetas
+    // realizadas (data-ivi-done="1"). Es independiente del fetch del Registro:
+    // aparece aunque aún no se sepa qué cursos están realizados.
+    function ensureToggle() {
+        var aside = document.querySelector('.tw-catalog__aside');
+        if (!aside) return;
+        var lg = lang();
+        var toggle = aside.querySelector('.ivi-hidedone');
+        if (!toggle) {
+            toggle = document.createElement('label');
+            toggle.className = 'ivi-hidedone';
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.checked = hideDone;
+            input.setAttribute('aria-label', TOGGLE_LABELS[lg] || TOGGLE_LABELS.es);
+            var track = document.createElement('span');
+            track.className = 'ivi-hidedone__track';
+            track.setAttribute('aria-hidden', 'true');
+            var text = document.createElement('span');
+            text.className = 'ivi-hidedone__label';
+            text.textContent = TOGGLE_LABELS[lg] || TOGGLE_LABELS.es;
+            toggle.appendChild(input);
+            toggle.appendChild(track);
+            toggle.appendChild(text);
+            input.addEventListener('change', function () { setHideDone(input.checked); });
+            aside.insertBefore(toggle, aside.firstChild);   // al principio → ENCIMA de los filtros
+        }
+        // Mantenerlo arriba del todo aunque Totara re-renderice el aside.
+        if (aside.firstChild !== toggle) aside.insertBefore(toggle, aside.firstChild);
+        var inp = toggle.querySelector('input');
+        if (inp && inp.checked !== hideDone) inp.checked = hideDone;
+        var lbl = toggle.querySelector('.ivi-hidedone__label');
+        var wanted = TOGGLE_LABELS[lg] || TOGGLE_LABELS.es;
+        if (lbl && lbl.textContent !== wanted) lbl.textContent = wanted;
+    }
+
+    // Estilos + switch: chrome independiente del fetch del Registro (se puede
+    // pintar antes de saber qué cursos están realizados; el CSS reacciona solo
+    // en cuanto buildBadge marca las tarjetas con data-ivi-done).
+    function applyChrome() {
+        injectStyle();
+        ensureToggle();
+    }
+
+    // ── Badge por tarjeta ──────────────────────────────────────────────────────
+    function buildBadge(card) {
+        if (card.getAttribute('data-type') !== 'course') return;
+        var url = card.getAttribute('data-redirect-url') || '';
+        var m = url.match(/[?&]id=(\d+)/);
+        var date = (m && doneMap) ? doneMap[m[1]] : null;
+
+        var existing = card.querySelector('.ivi-cat-done');
+        if (!date) {
+            if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+            card.removeAttribute('data-ivi-done');
+            return;
+        }
+
+        // El badge va sobre la imagen, arriba a la izquierda.
+        var isWide = card.classList.contains('tw-catalogItemWide');
+        var imgBox = card.querySelector(isWide
+            ? '.tw-catalogItemWide__image'
+            : '.tw-catalogItemNarrow__image');
+        if (!imgBox) return;
+
+        var shown = formatShort(date);
+        var text = LABELS[lang()] + (shown ? ': ' + shown : '');
+
+        var badge = existing;
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'ivi-cat-done';
+            imgBox.appendChild(badge);
+        } else if (badge.parentNode !== imgBox) {
+            imgBox.appendChild(badge);        // reubicar si quedó colgando de otro sitio
+        }
+        if (badge.dataset.k !== text) {
+            badge.textContent = text;
+            badge.dataset.k = text;
+            badge.setAttribute('title', text);
+        }
+        card.setAttribute('data-ivi-done', '1');
+    }
+
+    function applyAll() {
+        if (!doneMap) return;
+        injectStyle();
+        document.querySelectorAll('.tw-catalogItemNarrow, .tw-catalogItemWide').forEach(buildBadge);
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────────
+    function init() {
+        // Estado inicial del switch: por defecto DESACTIVADO (los realizados se VEN);
+        // si el usuario ya lo cambió alguna vez, se respeta lo guardado en localStorage.
+        try { var st = localStorage.getItem(TOGGLE_STORE_KEY); hideDone = st === null ? false : st === '1'; } catch (e) { hideDone = false; }
+        document.body.classList.toggle('ivi-hide-done', hideDone);
+
+        publishDone();          // deja disponible isDoneCourseId (aún sin datos) para el contador
+        applyChrome();
+        ensureData();
+        var scope = document.querySelector('.tw-catalog') || document.body;
+        var t;
+        new MutationObserver(function () {
+            clearTimeout(t);
+            t = setTimeout(function () { applyChrome(); applyAll(); }, 150);
+        }).observe(scope, { childList: true, subtree: true });
+        [600, 1500, 3000].forEach(function (ms) { setTimeout(function () { applyChrome(); applyAll(); }, ms); });
+        window.addEventListener('load', function () { applyChrome(); applyAll(); });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>

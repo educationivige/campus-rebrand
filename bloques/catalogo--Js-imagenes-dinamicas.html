@@ -65,11 +65,103 @@
         return false;
     }
 
+    // ── Lista de cursos LFE (para marcar SIEMPRE, no solo con el filtro) ───────
+    // Las tarjetas NO exponen su "Filtro_bloque", así que no se puede saber si un
+    // curso es LFE por la card sola. Se obtiene la lista de courseids LFE del propio
+    // catálogo: una llamada al AJAX del catálogo filtrada por la opción LFE del
+    // filtro_bloque, paginando. Se cachea en sessionStorage (TTL 30 min).
+    var LFE_FILTER_KEY  = 'cfp_menu_filtrobloquemla_39281';
+    var LFE_CACHE_KEY   = 'ivi-cat-lfe-ids';
+    var LFE_CACHE_TTL   = 30 * 60 * 1000;
+    var lfeCourseIds    = null;    // { courseid: true }  (null = aún no cargado)
+    var lfeFetchStarted = false;
+
+    // Clave (valor) de la opción "LFE" del filtro_bloque: es la cadena multiidioma
+    // {mlang es}Curso de Excelencia LFE{mlang}…. Se localiza por su etiqueta/clave
+    // que contiene "LFE", así no depende del orden de las opciones.
+    function getLfeOptionKey() {
+        var filterEl = document.querySelector('[data-tw-selectmulti-key="' + LFE_FILTER_KEY + '"]');
+        if (!filterEl) return null;
+        var opts = filterEl.querySelectorAll('[data-tw-selectmulti-optionkey]');
+        for (var i = 0; i < opts.length; i++) {
+            var raw = opts[i].getAttribute('data-tw-selectmulti-optionkey') || '';
+            var label = opts[i].querySelector('.tw-selectMulti__link_text');
+            var txt = (label ? label.textContent : '').toUpperCase();
+            if (txt.indexOf('LFE') !== -1 || decodeURIComponent(raw).toUpperCase().indexOf('LFE') !== -1) {
+                return decodeURIComponent(raw);
+            }
+        }
+        return null;
+    }
+
+    function readLfeCache() {
+        try {
+            var raw = sessionStorage.getItem(LFE_CACHE_KEY);
+            if (!raw) return null;
+            var o = JSON.parse(raw);
+            if (!o || (Date.now() - o.t) > LFE_CACHE_TTL) return null;
+            return o.ids;
+        } catch (e) { return null; }
+    }
+    function writeLfeCache(ids) {
+        try { sessionStorage.setItem(LFE_CACHE_KEY, JSON.stringify({ t: Date.now(), ids: ids })); } catch (e) {}
+    }
+
+    // Pide al AJAX del catálogo la lista filtrada por LFE y pagina hasta el final.
+    // Reintenta si el filtro/AMD aún no están listos.
+    function fetchLfeCourseIds(attempt) {
+        attempt = attempt || 0;
+        var optKey = getLfeOptionKey();
+        if (!optKey || typeof window.require !== 'function') {
+            if (attempt < 12) setTimeout(function () { fetchLfeCourseIds(attempt + 1); }, 600);
+            return;
+        }
+        window.require(['core/ajax'], function (ajax) {
+            var ids = {};
+            // maxcount se ENCADENA entre páginas (pd.max_count), igual que el contador;
+            // con maxcount:0 la paginación se comporta mal. Se para en end_of_results.
+            function page(limitfrom, maxcount) {
+                var fp = {}; fp[LFE_FILTER_KEY] = [optKey];
+                var args = { debug: false, filterparams: fp, limitfrom: limitfrom, maxcount: maxcount,
+                             orderbykey: 'featured', request: Date.now(), resultsonly: true, itemstyle: 'narrow' };
+                ajax.call([{ methodname: 'totara_catalog_external_get_catalog_template_data', args: args }], true, true)[0]
+                    .then(function (data) {
+                        var tiles = (data.grid_template_data || {}).tiles || [];
+                        tiles.forEach(function (t) {
+                            var m = JSON.stringify(t.template_data || {}).match(/view\.php\?id=(\d+)/);
+                            if (m) ids[m[1]] = true;
+                        });
+                        var pd = data.pagination_template_data || {};
+                        if (!pd.end_of_results && pd.limit_from != null && pd.limit_from > limitfrom) {
+                            page(pd.limit_from, pd.max_count != null ? pd.max_count : maxcount);
+                        } else {
+                            lfeCourseIds = ids; writeLfeCache(ids); procesarTodo();
+                        }
+                    }, function () { lfeCourseIds = lfeCourseIds || {}; });
+            }
+            page(0, 1000);
+        });
+    }
+
+    function ensureLfeIds() {
+        if (lfeFetchStarted) return;
+        lfeFetchStarted = true;
+        var cached = readLfeCache();
+        if (cached) { lfeCourseIds = cached; procesarTodo(); return; }
+        fetchLfeCourseIds(0);
+    }
+
     function isLfe(card) {
-        // Si el filtro LFE está activo, todos los cursos visibles son LFE
+        // Si el filtro LFE está activo, todos los cursos visibles son LFE.
         if (lfeFilterActive()) return true;
-        // Fallback: título contiene "Learning for Excellence" o "LFE"
-        var title = card.querySelector('.tw-catalogItemNarrow__title');
+        // Por courseid: la card es LFE si su curso está en la lista LFE del catálogo.
+        // Así el badge sale SIEMPRE, no solo con el filtro puesto. Vale Narrow y Wide.
+        if (lfeCourseIds) {
+            var m = (card.getAttribute('data-redirect-url') || '').match(/[?&]id=(\d+)/);
+            if (m && lfeCourseIds[m[1]]) return true;
+        }
+        // Fallback: título contiene "Learning for Excellence" o "LFE".
+        var title = card.querySelector('.tw-catalogItemNarrow__title, .tw-catalogItemWide__title');
         if (!title) return false;
         var t = title.textContent.toUpperCase();
         return t.includes('LFE') || t.includes('LEARNING FOR EXCELLENCE');
@@ -327,6 +419,7 @@
         observar();
         setupListeners();
         observarFiltro();
+        ensureLfeIds();   // carga la lista de cursos LFE (badge siempre, no solo con el filtro)
         procesarTodo();
         [500, 1200, 2500].forEach(function (ms) { setTimeout(procesarTodo, ms); });
     }
@@ -561,23 +654,21 @@
             /* Vencido: rojo "No disponible" + icono de bloqueo */
             'body#page-totara-catalog-index .ivi-cat-deadline--expired{background:var(--red,#B4084A)!important;box-shadow:0 2px 8px rgba(180,8,74,0.3)!important;}',
             "body#page-totara-catalog-index .ivi-cat-deadline--expired::before{content:'block'!important;}",
+            /* Vista Wide (listado): el título lleva padding-left 20px (.tw-catalogItemWide__ellipsis),
+               así que el badge, hermano del título, quedaba 20px a la izquierda del texto. Lo
+               alineamos con el TEXTO del título (no con el borde del contenedor). */
+            "body#page-totara-catalog-index .tw-catalogItemWide .ivi-cat-deadline{margin-left:20px!important;}",
+            /* Vista grid (cuadros): más aire entre el título y el badge de fecha límite. */
+            "body#page-totara-catalog-index .tw-catalogItemNarrow .ivi-cat-deadline{margin-top:12px!important;}",
             /* Tarjeta vencida: apagada, imagen en gris y sin clic */
             'body#page-totara-catalog-index .tw-catalogItemNarrow[data-cat-expired="1"],body#page-totara-catalog-index .tw-catalogItemWide[data-cat-expired="1"]{opacity:0.6!important;pointer-events:none!important;}',
             'body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemNarrow__image_ratio_img,body#page-totara-catalog-index [data-cat-expired="1"] .tw-catalogItemWide__image_ratio_img{filter:grayscale(1)!important;}',
-            /* ── Toggle "Ocultar cursos no disponibles" + ocultación de vencidos ── */
-            /* Con el toggle activo (body.ivi-hide-unavailable) se oculta la CELDA del
-               grid de cada curso vencido (no solo la card, para no dejar hueco). */
+            /* ── Cursos no disponibles (vencidos): ocultos SIEMPRE ── */
+            /* body.ivi-hide-unavailable (puesta siempre por el contador) oculta la
+               CELDA del grid de cada curso vencido (no solo la card, para no dejar hueco). */
             'body#page-totara-catalog-index.ivi-hide-unavailable [data-tw-grid-item]:has([data-cat-expired="1"]){display:none!important;}',
-            /* El contenedor del recuento en fila: los dos badges (total/disponibles) */
+            /* El contenedor del recuento en fila: los badges de recuento */
             'body#page-totara-catalog-index .tw-catalogResultsCount{display:flex!important;align-items:center!important;gap:14px!important;flex-wrap:wrap!important;}',
-            /* Toggle en la columna de filtros (aside), debajo del panel, a lo ancho */
-            "body#page-totara-catalog-index .tw-catalog__aside .ivi-hideunav{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;box-sizing:border-box!important;margin:16px 0 0!important;padding:0 2px!important;cursor:pointer!important;font-family:var(--font-body,'Noto Sans',sans-serif)!important;font-size:12px!important;font-weight:600!important;color:var(--navy-blue,#08004F)!important;-webkit-user-select:none!important;user-select:none!important;}",
-            "body#page-totara-catalog-index .ivi-hideunav__track{position:relative!important;flex:0 0 auto!important;width:38px!important;height:22px!important;border-radius:999px!important;background:var(--border-soft,#E4E2EE)!important;transition:background .2s ease!important;}",
-            "body#page-totara-catalog-index .ivi-hideunav__track::after{content:''!important;position:absolute!important;top:2px!important;left:2px!important;width:18px!important;height:18px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 1px 3px rgba(0,0,0,0.25)!important;transition:transform .2s ease!important;}",
-            'body#page-totara-catalog-index .ivi-hideunav input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;margin:0!important;}',
-            "body#page-totara-catalog-index .ivi-hideunav input:checked + .ivi-hideunav__track{background:var(--light-blue,#004DF0)!important;}",
-            "body#page-totara-catalog-index .ivi-hideunav input:checked + .ivi-hideunav__track::after{transform:translateX(16px)!important;}",
-            "body#page-totara-catalog-index .ivi-hideunav input:focus-visible + .ivi-hideunav__track{outline:2px solid var(--light-blue,#004DF0)!important;outline-offset:2px!important;}",
             /* Badge "cursos en total": variante secundaria (pastilla warm-gray con
                borde e icono de libro), para distinguirla del de "disponibles"
                (que sigue en azul con icono school). La base .ivi-results-badge la
@@ -824,8 +915,8 @@
 (function () {
     'use strict';
 
-    var state = { key: '', count: null, expired: 0, exact: false, pending: false, run: 0, timer: null, hideUnavailable: true };
-    var STORE_KEY = 'ivi-cat-hide-unavailable';
+    var state = { key: '', count: null, expired: 0, exact: false, pending: false, run: 0, timer: null, hideUnavailable: true,
+                  expiredMap: null, courseIds: null };
 
     // one/many/few = badge "cursos disponibles"; totalOne/totalMany/totalFew =
     // badge "cursos en total". Se muestran los dos badges a la vez.
@@ -836,15 +927,6 @@
         pt: { one: 'curso disponível',  many: 'cursos disponíveis', totalOne: 'curso no total',  totalMany: 'cursos no total'  },
         cs: { one: 'dostupný kurz', few: 'dostupné kurzy', many: 'dostupných kurzů', totalOne: 'kurz celkem', totalFew: 'kurzy celkem', totalMany: 'kurzů celkem' },
         sv: { one: 'tillgänglig kurs',  many: 'tillgängliga kurser', totalOne: 'kurs totalt',     totalMany: 'kurser totalt' }
-    };
-
-    var TOGGLE_I18N = {
-        es: 'Ocultar cursos no disponibles',
-        en: 'Hide unavailable courses',
-        it: 'Nascondi i corsi non disponibili',
-        pt: 'Ocultar cursos indisponíveis',
-        cs: 'Skrýt nedostupné kurzy',
-        sv: 'Dölj otillgängliga kurser'
     };
 
     function lang() {
@@ -877,16 +959,43 @@
         return (root || document).querySelectorAll('[data-tw-grid] > [data-tw-grid-item]');
     }
 
-    function addItemIds(root, ids, prefix, expiredIds) {
+    // courseid de una tarjeta renderizada: data-redirect-url = /course/view.php?id=N
+    function courseIdFromCard(card) {
+        var url = card && card.getAttribute('data-redirect-url');
+        var m = url && url.match(/[?&]id=(\d+)/);
+        return m ? m[1] : null;
+    }
+
+    // courseid de un TILE crudo del AJAX: la URL de curso vive en su template_data
+    // (la plantilla la usa para el data-redirect-url). Como no conocemos la clave
+    // exacta, la buscamos en el tile stringificado (…/view.php?id=N).
+    function courseIdFromTile(td) {
+        if (!td) return null;
+        var direct = td.redirect_url || td.url || td.link;
+        var m = direct && String(direct).match(/[?&]id=(\d+)/);
+        if (m) return m[1];
+        try {
+            var s = JSON.stringify(td);
+            var mm = s.match(/view\.php\?id=(\d+)/) || s.match(/[?&]id=(\d+)/);
+            if (mm) return mm[1];
+        } catch (e) {}
+        return null;
+    }
+
+    function addItemIds(root, ids, prefix, expiredIds, courseIds) {
         var items = gridItems(root);
         for (var i = 0; i < items.length; i++) {
             var id = items[i].getAttribute('data-tw-grid-item-id');
             var key = id ? 'id:' + id : prefix + ':' + i;
             ids[key] = true;
-            if (expiredIds && window.__iviCat && window.__iviCat.isCardExpired) {
-                var card = items[i].querySelector('.tw-catalogItemNarrow, .tw-catalogItemWide');
-                var isWide = !!(card && card.classList.contains('tw-catalogItemWide'));
-                if (card && window.__iviCat.isCardExpired(card, isWide)) expiredIds[key] = true;
+            var card = items[i].querySelector('.tw-catalogItemNarrow, .tw-catalogItemWide');
+            if (expiredIds && card && window.__iviCat && window.__iviCat.isCardExpired) {
+                var isWide = card.classList.contains('tw-catalogItemWide');
+                if (window.__iviCat.isCardExpired(card, isWide)) expiredIds[key] = true;
+            }
+            if (courseIds && card) {
+                var cid = courseIdFromCard(card);
+                if (cid) courseIds[key] = cid;
             }
         }
     }
@@ -894,7 +1003,7 @@
     // Igual que addItemIds pero sobre los TILES CRUDOS del AJAX (sin renderizar la
     // plantilla del grid). Rebajar el recuento a solo-datos evita re-renderizar ~13
     // páginas en segundo plano, que era lo que saturaba el hilo al "Cargar más".
-    function addTiles(tiles, ids, prefix, expiredIds) {
+    function addTiles(tiles, ids, prefix, expiredIds, courseIds) {
         if (!tiles) return;
         for (var i = 0; i < tiles.length; i++) {
             var td = (tiles[i] && tiles[i].template_data) || {};
@@ -903,6 +1012,10 @@
             ids[key] = true;
             if (expiredIds && window.__iviCat && window.__iviCat.isExpiredFromPlaceholders) {
                 if (window.__iviCat.isExpiredFromPlaceholders(td.text_placeholders)) expiredIds[key] = true;
+            }
+            if (courseIds) {
+                var cid = courseIdFromTile(td);
+                if (cid) courseIds[key] = cid;
             }
         }
     }
@@ -958,48 +1071,28 @@
         return null;
     }
 
-    function setHideUnavailable(on) {
-        state.hideUnavailable = !!on;
-        try { localStorage.setItem(STORE_KEY, on ? '1' : '0'); } catch (e) {}
-        document.body.classList.toggle('ivi-hide-unavailable', !!on);
-        renderBadge();
+    // ¿Está activo el switch "Ocultar cursos ya realizados"? (lo pone el bloque del
+    // badge; la clase vive en el body).
+    function hideDoneOn() {
+        return document.body.classList.contains('ivi-hide-done');
     }
 
-    // Crea (una vez) el toggle "Ocultar cursos no disponibles" en la columna de
-    // filtros (aside), DEBAJO del panel de filtros; en cada render sincroniza su
-    // estado marcado y su etiqueta al idioma.
-    function ensureToggle() {
-        var aside = document.querySelector('.tw-catalog__aside');
-        if (!aside) return;
-        var lg = lang();
-        var toggle = aside.querySelector('.ivi-hideunav');
-        if (!toggle) {
-            toggle = document.createElement('label');
-            toggle.className = 'ivi-hideunav';
-            var input = document.createElement('input');
-            input.type = 'checkbox';
-            input.setAttribute('aria-label', TOGGLE_I18N[lg] || TOGGLE_I18N.es);
-            var track = document.createElement('span');
-            track.className = 'ivi-hideunav__track';
-            track.setAttribute('aria-hidden', 'true');
-            var text = document.createElement('span');
-            text.className = 'ivi-hideunav__label';
-            toggle.appendChild(input);
-            toggle.appendChild(track);
-            toggle.appendChild(text);
-            input.addEventListener('change', function () { setHideUnavailable(input.checked); });
-            aside.appendChild(toggle);      // al final del aside → debajo de los filtros
+    // Cuántos de los cursos DISPONIBLES (no vencidos) tiene ya realizados el usuario.
+    // Usa los courseid recogidos en el barrido + la detección por-usuario que expone
+    // el bloque del badge (window.__iviCat.isDoneCourseId). Se recalcula en cada
+    // render, así que en cuanto el Registro carga o se conmuta el switch, cuadra.
+    function computeDone() {
+        var cids = state.courseIds, exp = state.expiredMap || {};
+        if (!cids || !(window.__iviCat && window.__iviCat.isDoneCourseId)) return 0;
+        var n = 0;
+        for (var key in cids) {
+            if (exp[key]) continue;                 // vencido → ya fuera de "disponibles"
+            if (window.__iviCat.isDoneCourseId(cids[key])) n++;
         }
-        var inp = toggle.querySelector('input');
-        if (inp && inp.checked !== state.hideUnavailable) inp.checked = state.hideUnavailable;
-        var lbl = toggle.querySelector('.ivi-hideunav__label');
-        var wanted = TOGGLE_I18N[lg] || TOGGLE_I18N.es;
-        if (lbl && lbl.textContent !== wanted) lbl.textContent = wanted;
+        return n;
     }
 
     function renderBadge() {
-        ensureToggle();
-
         var p = document.querySelector('.tw-catalogResultsCount__text');
         if (!p) return;
         var host = resultsHost(p);
@@ -1018,15 +1111,15 @@
             return;
         }
 
-        // UN SOLO badge que conmuta con el toggle:
-        //   ON  -> "N cursos disponibles" (total - no disponibles), estilo azul/school
-        //   OFF -> "N cursos en total"    (total),                  estilo gris/libro
+        // Los no disponibles se ocultan siempre → el badge muestra "N cursos
+        // disponibles" (total - no disponibles). Si además el switch "Ocultar
+        // cursos ya realizados" está activo, restamos también los realizados.
         var lg = lang();
         var expired = state.expired || 0;
-        var showAvailable = !!state.hideUnavailable;
-        var kind = showAvailable ? 'available' : 'total';
-        var variant = showAvailable ? 'ivi-results-badge--available' : 'ivi-results-badge--total';
-        var n = showAvailable ? Math.max(0, total - expired) : total;
+        var done = hideDoneOn() ? computeDone() : 0;
+        var kind = 'available';
+        var variant = 'ivi-results-badge--available';
+        var n = Math.max(0, total - expired - done);
         var count = formatNumber(n, lg) + (state.exact ? '' : '+');
         var exact = state.exact ? '1' : '0';
 
@@ -1055,20 +1148,22 @@
         p.setAttribute('aria-hidden', 'true');
     }
 
-    function publish(key, ids, expiredIds, exact) {
+    function publish(key, ids, expiredIds, courseIds, exact) {
         if (key !== catalogKey()) return;
         state.key = key;
         state.count = objectSize(ids);
         state.expired = objectSize(expiredIds);
+        state.expiredMap = expiredIds;      // para recalcular "realizados" sin re-fetch
+        state.courseIds = courseIds;
         state.exact = exact;
         renderBadge();
     }
 
-    function countRemaining(key, run, ids, expiredIds, firstPage) {
+    function countRemaining(key, run, ids, expiredIds, courseIds, firstPage) {
         function stopCounting() {
             if (run !== state.run || key !== catalogKey()) return;
             state.pending = false;
-            publish(key, ids, expiredIds, false);
+            publish(key, ids, expiredIds, courseIds, false);
         }
 
         if (typeof window.require !== 'function') {
@@ -1093,7 +1188,7 @@
                 request.then(function (data) {
                     if (run !== state.run || key !== catalogKey()) return;
                     var gtd = data.grid_template_data || {};
-                    addTiles(gtd.tiles, ids, 'page-' + pageNumber, expiredIds);
+                    addTiles(gtd.tiles, ids, 'page-' + pageNumber, expiredIds, courseIds);
 
                     // La paginación viene en los datos del AJAX: {limit_from, max_count,
                     // end_of_results}. No hace falta renderizar la plantilla para leerla.
@@ -1105,7 +1200,7 @@
                     // exact=true. Solo paramos con "N+" si el pager se queda atascado
                     // (following con el mismo limitfrom), nunca al llegar al final.
                     state.pending = !!following;
-                    publish(key, ids, expiredIds, !following);
+                    publish(key, ids, expiredIds, courseIds, !following);
                     if (following && String(following.limitfrom) !== String(page.limitfrom)) {
                         next(following, pageNumber + 1);
                     } else if (following) {
@@ -1133,13 +1228,13 @@
         }
 
         var run = ++state.run;
-        var ids = {}, expiredIds = {};
-        addItemIds(grid, ids, 'initial', expiredIds);
+        var ids = {}, expiredIds = {}, courseIds = {};
+        addItemIds(grid, ids, 'initial', expiredIds, courseIds);
         var page = pagerData(catalog);
 
         state.pending = !!page;
-        publish(key, ids, expiredIds, !page);
-        if (page) countRemaining(key, run, ids, expiredIds, page);
+        publish(key, ids, expiredIds, courseIds, !page);
+        if (page) countRemaining(key, run, ids, expiredIds, courseIds, page);
     }
 
     function scheduleCount(delay) {
@@ -1148,11 +1243,13 @@
     }
 
     function init() {
-        // Estado inicial del toggle: ON por defecto; recuerda la elección del usuario.
-        var stored = null;
-        try { stored = localStorage.getItem(STORE_KEY); } catch (e) {}
-        state.hideUnavailable = stored === null ? true : stored === '1';
-        document.body.classList.toggle('ivi-hide-unavailable', state.hideUnavailable);
+        // Los cursos no disponibles (vencidos) se ocultan SIEMPRE: sin toggle.
+        state.hideUnavailable = true;
+        document.body.classList.add('ivi-hide-unavailable');
+
+        // Recalcular el badge cuando el bloque del badge carga el Registro o se
+        // conmuta el switch "Ocultar cursos ya realizados" (evento del otro bloque).
+        document.addEventListener('ivi-cat-recount', renderBadge);
 
         calculateCount();
         [300, 800, 1500, 2500].forEach(function (ms) {
@@ -1218,16 +1315,24 @@
     function items() { var g = grid(); return g ? g.querySelectorAll(':scope > [data-tw-grid-item]') : []; }
     function nativeTrig() { return document.querySelector('[data-tw-pagination-trigger]'); }
     function hideUnav() { return document.body.classList.contains('ivi-hide-unavailable'); }
+    function hideDone() { return document.body.classList.contains('ivi-hide-done'); }
     function curView() { return document.querySelector('.tw-catalogItemWide') ? 'wide' : 'narrow'; }
 
-    // "mostrable" = NO la oculta el toggle de no disponibles (cálculo síncrono,
-    // sin depender del render, para poder contar y aplicar el tope al instante).
+    // "mostrable" = la tarjeta se VE con los filtros actuales (cálculo síncrono, sin
+    // depender del render, para contar y aplicar el tope al instante). NO es
+    // mostrable si está vencida (no disponibles, ocultos siempre) o —con el switch
+    // activo— si el usuario ya la tiene realizada (data-ivi-done lo pone el badge).
+    // Así el tope de 60 se llena solo con tarjetas realmente visibles (sin tandas
+    // cortas ni huecos al final).
     function showable(it) {
-        if (!hideUnav()) return true;
         var c = it.querySelector('.tw-catalogItemNarrow, .tw-catalogItemWide');
         if (!c) return true;
-        var wide = c.classList.contains('tw-catalogItemWide');
-        return !(window.__iviCat && window.__iviCat.isCardExpired && window.__iviCat.isCardExpired(c, wide));
+        if (hideUnav() && window.__iviCat && window.__iviCat.isCardExpired) {
+            var wide = c.classList.contains('tw-catalogItemWide');
+            if (window.__iviCat.isCardExpired(c, wide)) return false;
+        }
+        if (hideDone() && c.getAttribute('data-ivi-done') === '1') return false;
+        return true;
     }
 
     // Aplica el tope: muestra hasta st.cap mostrables y oculta el resto de
@@ -1381,6 +1486,14 @@
         if (nt) pump(); else { applyCap(); setBtn(false); }
     }
 
+    // El grid de Totara posiciona las tarjetas y no las recoloca solo cuando les
+    // ponemos display:none sobre la marcha → al ocultar/mostrar realizados forzamos
+    // un recálculo de su maquetación con un evento resize (lo que escucha su JS),
+    // para que no queden huecos.
+    function relayoutGrid() {
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+    }
+
     var t;
     function schedule() {
         clearTimeout(t);
@@ -1397,6 +1510,12 @@
         new MutationObserver(function () { schedule(); }).observe(document.body, { childList: true, subtree: true });
         // conmutar el toggle cambia la clase del body → re-aplicar el tope
         new MutationObserver(function () { schedule(); }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        // el badge avisa (carga del Registro / conmutar "Ocultar ya realizados") →
+        // re-aplicar el tope y recolocar el grid para que no queden huecos.
+        document.addEventListener('ivi-cat-recount', function () {
+            schedule();
+            setTimeout(relayoutGrid, 360);   // tras el pump/applyCap (schedule va debounced 300ms)
+        });
         window.addEventListener('load', function () { setTimeout(resetAndRun, 500); });
     }
 
